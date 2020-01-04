@@ -187,7 +187,7 @@ function show_error_msg(title, msg) {
 
 function execute() {
     $("#error").hide();
-    clear_atom();
+    clear_viewer();
 
     // テキストの読み込み
     r = parseParameterInp($('#parameters').val());
@@ -195,9 +195,11 @@ function execute() {
     if (0 <= r) plot_atom();
 }
 
-function clear_atom() {
+function clear_viewer() {
     while (atom_model.children.length > 0)
         atom_model.remove(atom_model.children[0]);
+    while (lattice_model.children.length > 0)
+        lattice_model.remove(lattice_model.children[0]);
 }
 
 
@@ -365,7 +367,7 @@ $('#viewer').click(function(e){
         var i = intersects[0].object.atom_index;
         var tmp = '';
 
-        tmp += "Site: " + i + "\n";
+        tmp += "Site: #" + (i+1) + "\n";
         tmp += "Element: " + (atom_type[i]) + "\n";
         tmp += "Line no: " + (atom_line[i] + 1) + " (atom.xyz)\n";
 
