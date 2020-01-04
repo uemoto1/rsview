@@ -51,18 +51,26 @@
                 <p>
 
                     <ul>
-                        <li>Write <code>parameters.inp</code> and <code>atom.xyz</code> source in editor below.</li>
-                        <li>Click <strong>Plot crystal structure</strong> button.</li>
+                        <li>Write <code>parameters.inp</code> and <code>atom.xyz</code> source in editor and click a button below.</li>
                     </ul>
 
+                    <pre id='atom_info'>
+                        Click 'Plot crystal structure'
+                    </pre>
+    
 
                     <button type="button" class="btn btn-primary" id='run'>Plot crystal structure</button>
                 </p>
-                <canvas id="viewer"></canvas>
+
+
                 <div class="alert alert-danger" role="alert" id='error' style='display:none;'>
                     <strong id='error_title'>Error</strong>
                     <p id='error_msg'></p>
                 </div>
+
+                <canvas id="viewer"></canvas>
+
+
             </div>
 
         </div>

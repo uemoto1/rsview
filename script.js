@@ -128,7 +128,7 @@ function calc_point(flg_pbc) {
     var xs = [],
         ys = [],
         zs = [],
-        ts = [];
+        ks = [];
 
     if (flg_pbc) {
         var nrx1 = -1;
@@ -153,8 +153,6 @@ function calc_point(flg_pbc) {
     }
 
     for (i = 0; i < natom; i++) {
-        t = atom_type[i];
-
         for (irx = nrx1; irx <= nrx2; irx++) {
             x = atom_coor[i].x + ax * irx
             if (flg_pbc && (x < bx1 || bx2 < x)) continue;
@@ -168,15 +166,15 @@ function calc_point(flg_pbc) {
                     if (flg_pbc && (z < bz1 || bz2 < z)) continue;
 
                     // 座標を追加
+                    ks.push(i);
                     xs.push(x);
                     ys.push(y);
                     zs.push(z);
-                    ts.push(t);
                 }
             }
         }
     }
-    return [xs, ys, zs, ts];
+    return [ks, xs, ys, zs];
 }
 
 function show_error_msg(title, msg) {
@@ -204,8 +202,8 @@ function clear_atom() {
 
 
 function plot_atom() {
-    var xs, ys, zs, ts;
-    [xs, ys, zs, ts] = calc_point(nperi == 3);
+    var ks, xs, ys, zs
+    [ks, xs, ys, zs] = calc_point(nperi == 3);
 
     // バウンディングボックスの計算
     x_min = Math.min(...xs);
@@ -225,12 +223,13 @@ function plot_atom() {
     for (var i = 0; i < xs.length; i++) {
         var geometry = new THREE.SphereGeometry(1.0 / scale);
         var material = new THREE.MeshLambertMaterial({
-            color: colortable[ts[i]]
+            color: colortable[atom_type[ks[i]]]
         });
         var mesh = new THREE.Mesh(geometry, material);
         mesh.position.x = (xs[i] - cx) / scale;
         mesh.position.y = (ys[i] - cy) / scale;
         mesh.position.z = (zs[i] - cz) / scale;
+        mesh.atom_index = ks[i];
         atom_model.add(mesh);
     }
 
@@ -256,7 +255,7 @@ function plot_atom() {
             v[stroke[2 * i]], v[stroke[2 * i + 1]]
         );
         var line = new THREE.Line(geometry, material);
-        atom_model.add(line);
+        lattice_model.add(line);
     }
 
 
@@ -348,5 +347,31 @@ $("#atom").text(template_atom_xyz);
 
 initRender(400, 400);
 
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2();
+
+$('#viewer').click(function(e){
+
+   mouse.x = ( event.offsetX / 400 ) * 2 - 1;
+    mouse.y = - ( event.offsetY / 400 ) * 2 + 1;
+    
+
+    raycaster.setFromCamera( mouse, camera );
+
+    var intersects = raycaster.intersectObjects( atom_model.children );
+
+    
+    if(intersects.length > 0){
+        var i = intersects[0].object.atom_index;
+        var tmp = '';
+
+        tmp += "Site: " + i + "\n";
+        tmp += "Element: " + (atom_type[i]) + "\n";
+        tmp += "Line no: " + (atom_line[i] + 1) + " (atom.xyz)\n";
+
+        $("#atom_info").text(tmp);
+    }
+});
+
+
 $('#run').click(execute);
-create_template();
