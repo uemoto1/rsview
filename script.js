@@ -1,5 +1,4 @@
-// パラメータ変数
-radius = 1.00
+// rsview
 
 // グローバル変数
 var natom = 0;
@@ -203,6 +202,8 @@ function clear_viewer() {
 }
 
 
+lattice_material =  new THREE.LineBasicMaterial({ color: 0x000000 });
+
 function plot_atom() {
     var ks, xs, ys, zs
     [ks, xs, ys, zs] = calc_point(nperi == 3);
@@ -245,20 +246,17 @@ function plot_atom() {
                     ((k - 0.5) * az - cz) / scale
                 )));
 
-    var stroke = [0, 1, 0, 2, 0, 4, 1, 3, 1, 5, 2, 3, 2, 6, 3, 7, 4, 5, 4, 6, 5, 7, 6, 7];
 
-    for (var i = 0; i < 12; i++) {
-        var material = new THREE.LineBasicMaterial({
-            color: 0x000000,
-            linewidth: 10
-        });
-        var geometry = new THREE.Geometry();
-        geometry.vertices.push(
-            v[stroke[2 * i]], v[stroke[2 * i + 1]]
-        );
-        var line = new THREE.Line(geometry, material);
-        lattice_model.add(line);
-    }
+
+    var geometry = new THREE.BoxGeometry(ax / scale, ay / scale, az / scale);
+    var edges = new THREE.EdgesGeometry( geometry );
+    var line = new THREE.LineSegments(edges, lattice_material );
+    line.position.x -= cx / scale;
+    line.position.y -= cy / scale;
+    line.position.z -= cz / scale;
+
+    
+    scene.add( line );
 
 
 
@@ -282,10 +280,10 @@ function initRender(width, height) {
     // Start the renderer.
     renderer.setSize(width, height);
     //
-    light = new THREE.DirectionalLight(0xFFFFFF, 0.5);
+    light = new THREE.DirectionalLight(0xFFFFFF, 0.40);
     light.position.set(-1, -1, -1).normalize();
     scene.add(light);
-    light = new THREE.AmbientLight(0xFFFFFF, 0.5);
+    light = new THREE.AmbientLight(0xFFFFFF, 0.60);
     scene.add(light);
     renderer.render(scene, camera);
     atom_model = new THREE.Group();
@@ -377,3 +375,20 @@ $('#viewer').click(function(e){
 
 
 $('#run').click(execute);
+
+
+// var m0 = new THREE.Vector2();
+// var cp0 = new THREE.Vector3();
+
+// $('#viewer').mousemove(function(e){
+//     if(e.button >= 0) {
+//         sx = 
+//     }
+// });
+
+// $('#viewer').mousedown(function(e){
+//     m0.x = e.clientX;
+//     m0.y = e.clientY;
+//     cp0 = 
+// });
+
