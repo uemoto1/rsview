@@ -288,9 +288,11 @@ function initRender(width, height) {
     renderer.render(scene, camera);
     atom_model = new THREE.Group();
     lattice_model = new THREE.Group();
+    selector_model = new THREE.Group();
 
     scene.add(lattice_model);
     scene.add(atom_model);
+    scene.add(selector_model);
 
 
     // arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
@@ -359,15 +361,27 @@ $('#viewer').click(function(e){
     raycaster.setFromCamera( mouse, camera );
 
     var intersects = raycaster.intersectObjects( atom_model.children );
+    selector_model.remove(selector_model.children[0]);
 
     
     if(intersects.length > 0){
         var i = intersects[0].object.atom_index;
         var tmp = '';
 
-        tmp += "Site: #" + (i+1) + "\n";
-        tmp += "Element: " + (atom_type[i]) + "\n";
         tmp += "Line no: " + (atom_line[i] + 1) + " (atom.xyz)\n";
+        tmp += "Element: " + (atom_type[i]) + "\n";
+
+
+
+        var geometry = new THREE.SphereGeometry(1.00 / scale);
+        var edges = new THREE.EdgesGeometry( geometry );
+        var line = new THREE.LineSegments(edges, lattice_material );
+        line.position.x=(intersects[0].object.position.x);
+        line.position.y=(intersects[0].object.position.y);
+        line.position.z=(intersects[0].object.position.z);
+        
+        selector_model.add(line);
+        renderer.render(scene, camera);
 
         $("#atom_info").text(tmp);
     }
