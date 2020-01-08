@@ -349,6 +349,7 @@ $("#atom").text(template_atom_xyz);
 
 initRender(400, 400);
 
+
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
 
