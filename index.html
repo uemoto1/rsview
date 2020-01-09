@@ -13,7 +13,7 @@
     <script src="./lib/js/jquery-3.4.1.min.js "></script>
     <script src="./lib/js/bootstrap.min.js"></script>
     <script src="./lib/js/three.min.js"></script>
-    <script type="text/javascript" src="./lib/js/OrbitControl.js"></script>
+    <!-- <script type="text/javascript" src="./lib/js/OrbitControl.js"></script> -->
     <script type="text/javascript" src="./lib/js/jquery-linedtextarea.js"></script>
     <link rel="stylesheet" href="./lib/css/jquery-linedtextarea.css">
 
@@ -33,6 +33,7 @@
         <p>
             Source code:
             <a href="https://github.com/uemoto1/rsview/">http://github.com/uemoto1/rsview</a>
+            by M. Uemoto @ Kobe Univ.
         </p>
 
 
@@ -48,7 +49,7 @@
 
                 <form>
                     <strong> parameters.inp</strong>
-                    <textarea class="lined" rows="12"  style="width:100%;" id='parameters'></textarea>
+                    <textarea class="lined" rows="12" style="width:100%;" id='parameters'></textarea>
                     <strong> atom.xyz</strong>
                     <textarea class="lined" rows="12" style="width:100%;" id='atom'></textarea>
                 </form>
@@ -66,10 +67,11 @@
                 <p>
 
                     <ul>
-                        <li>Write <code>parameters.inp</code> and <code>atom.xyz</code> source in editor and click a button below.</li>
+                        <li>Write <code>parameters.inp</code> and <code>atom.xyz</code> source in editor and click a
+                            button below.</li>
                     </ul>
 
-    
+
 
                     <button type="button" class="btn btn-primary" id='run'>Plot crystal structure</button>
                 </p>
@@ -80,12 +82,33 @@
                     <p id='error_msg'></p>
                 </div>
 
+                <!-- <div class="btn-toolbar" role="toolbar" aria-label="ボタングループのツールバー">
+                    <div class="btn-group" role="group" aria-label="第一グループ">
+
+
+                        <div class="btn-group" role="group" aria-label="基本のボタングループ">
+                            <button type="button" class="btn btn-secondary" id="cam_x">X</button>
+                            <button type="button" class="btn btn-secondary" id="cam_y">Y</button>
+                            <button type="button" class="btn btn-secondary" id="cam_z">Z</button>
+                        </div>
+
+
+                    </div>
+                    <div class="btn-group" role="group" aria-label="第二グループ">
+                        <button type="button" class="btn btn-secondary" id="rot_x">Rot X</button>
+                        <button type="button" class="btn btn-secondary" id="rot_y">Rot Y</button>
+                        <button type="button" class="btn btn-secondary" id="rot_z">Rot Z</button>
+                    </div>
+                </div> -->
+
+
+
                 <canvas id="viewer"></canvas>
-                
+
                 <pre id='atom_info'>Click 'Plot crystal structure'</pre>
 
 
-                
+
             </div>
 
         </div>
@@ -96,13 +119,13 @@
 
 
 
-        <script>
-        $(function() {
-                $(".lined").linedtextarea();
+    <script>
+        $(function () {
+            $(".lined").linedtextarea();
         });
-        </script>
-        
-    
+    </script>
+
+
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

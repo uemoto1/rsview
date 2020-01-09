@@ -236,18 +236,6 @@ function plot_atom() {
         atom_model.add(mesh);
     }
 
-    var v = []
-    for (var i = 0; i <= 1; i++)
-        for (var j = 0; j <= 1; j++)
-            for (var k = 0; k <= 1; k++)
-                v = v.concat((new THREE.Vector3(
-                    ((i - 0.5) * ax - cx) / scale,
-                    ((j - 0.5) * ay - cy) / scale,
-                    ((k - 0.5) * az - cz) / scale
-                )));
-
-
-
     var geometry = new THREE.BoxGeometry(ax / scale, ay / scale, az / scale);
     var edges = new THREE.EdgesGeometry( geometry );
     var line = new THREE.LineSegments(edges, lattice_material );
@@ -255,9 +243,7 @@ function plot_atom() {
     line.position.y -= cy / scale;
     line.position.z -= cz / scale;
 
-    
-    scene.add( line );
-
+    lattice_model.add( line );
 
 
 
@@ -271,12 +257,15 @@ function initRender(width, height) {
     renderer = new THREE.WebGLRenderer({
         canvas: document.querySelector('#viewer')
     });
-    renderer.setClearColor(0xeeeeee, 1.0);
+    renderer.setClearColor(0xffffff, 1.0);
     camera = new THREE.OrthographicCamera(-1.0, +1.0, -1.0, +1.0);
-    camera.position.set(-10, -10, 50);
+    camera.position.set(-0.1, -0.1, 1);
+    camera.lookAt(0, 0, 0);
+
+
     scene = new THREE.Scene();
     scene.add(camera);
-    scene.background = 0xffffff;
+
     // Start the renderer.
     renderer.setSize(width, height);
     //
@@ -295,20 +284,17 @@ function initRender(width, height) {
     scene.add(selector_model);
 
 
-    // arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
-    //scene.add( arrowHelper );
+    // controls = new THREE.OrbitControls(camera, renderer.domElement);
+    // controls.update();
 
-    controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.update();
+    // tick();
 
-    tick();
-
-    // 毎フレーム時に実行されるループイベントです
-    function tick() {
-        // レンダリング
-        renderer.render(scene, camera);
-        requestAnimationFrame(tick);
-    }
+    // // 毎フレーム時に実行されるループイベントです
+    // function tick() {
+    //     // レンダリング
+    //     renderer.render(scene, camera);
+    //     requestAnimationFrame(tick);
+    // }
 
 }
 
@@ -385,6 +371,8 @@ $('#viewer').click(function(e){
         renderer.render(scene, camera);
 
         $("#atom_info").text(tmp);
+
+        $("#atom").selectedLine=atom_line[i]+1;
     }
 });
 
@@ -395,15 +383,47 @@ $('#run').click(execute);
 // var m0 = new THREE.Vector2();
 // var cp0 = new THREE.Vector3();
 
-// $('#viewer').mousemove(function(e){
-//     if(e.button >= 0) {
-//         sx = 
-//     }
-// });
+var rot_state = false;
 
-// $('#viewer').mousedown(function(e){
-//     m0.x = e.clientX;
-//     m0.y = e.clientY;
-//     cp0 = 
-// });
+$('#viewer').mousemove(function(e){
+    if(e.buttons == 1 && rot_state) {
+        ep.y = -(e.clientX - x0) / 400 * Math.PI;
+        ep.x = +(e.clientY - y0) / 400 * Math.PI;
+        camera.position.copy(p0);
+        camera.position.applyEuler(ep);
+        camera.lookAt(0, 0, 0);
+        camera.up.set(0, 1, 0);
+        renderer.render(scene, camera);
+    }
+});
+
+$('#viewer').mousedown(function(e){
+    if(e.buttons == 1) {
+        x0 = e.clientX;
+        y0 = e.clientY;
+        p0 = camera.position.clone();
+        ep = new THREE.Euler(0, 0, 0);
+        rot_state = true;
+    }
+});
+
+
+
+// $("#cam_x").click(function(){
+//     camera.position.set(1, 0, 0);
+//     camera.lookAt(0, 0, 0);
+//     renderer.render(scene, camera);
+// })
+
+// $("#cam_y").click(function(){
+//     camera.position.set(1, 0, 0);
+//     camera.lookAt(0, 0, 0);
+//     renderer.render(scene, camera);
+// })
+
+// $("#cam_z").click(function(){
+//     camera.position.set(1, 0, 0);
+//     camera.lookAt(0, 0, 0);
+//     renderer.render(scene, camera);
+// })
 
