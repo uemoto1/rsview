@@ -372,7 +372,10 @@ $('#viewer').click(function(e){
 
         $("#atom_info").text(tmp);
 
-        $("#atom").selectedLine=atom_line[i]+1;
+        select_line($("#atom"), atom_line[i] );
+        $("#viewer").focus();
+
+
     }
 });
 
@@ -433,7 +436,7 @@ function init_editor() {
         div = $(item).children('div');
         textarea = $(item).children('textarea');
         for(var j=1; j<=1000; j++) {
-            div.append(j + ":<br/>");
+            div.append(  j + "<br/>");
         }
         div.outerHeight(textarea.outerHeight());
 
@@ -452,6 +455,27 @@ function resize_editor() {
             $(item).innerWidth() - div.outerWidth()
         );
     });
+}
+
+function select_line(item, i) {
+    icount = 0;
+    ipos_prev = 0;
+    text = item.text();
+    while (0 <= ipos_prev) {
+        ipos = text.indexOf('\n', ipos_prev+1);
+        if (icount == i) {
+            item[0].select();
+
+            item[0].selectionStart = ipos_prev+1;
+            if (ipos_prev <= ipos) {
+                item[0].selectionEnd = ipos+1;
+            } else {
+                item[0].selectionEnd = text.length;
+            }
+        }
+        ipos_prev = ipos;
+        icount ++;
+    }
 }
 
 

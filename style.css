@@ -12,7 +12,7 @@ div.editor div {
     border-color: lightgray;
     background-color: lightgray;
     color: dimgray;
-    font-family: "Courier New", Consolas, monospace;;
+    font-family: "Courier New", Courier, Monaco, monospace;
     font-size: medium;
     text-align: right;
 }
@@ -24,6 +24,6 @@ div.editor textarea {
     border-color: lightgray;
     background-color: white;
     color: black;
-    font-family: "Courier New", Consolas, monospace;;
+    font-family: "Courier New", Courier, Monaco, monospace;
     font-size: medium;
 }
