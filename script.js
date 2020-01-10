@@ -427,3 +427,35 @@ $('#viewer').mousedown(function(e){
 //     renderer.render(scene, camera);
 // })
 
+
+function init_editor() {
+    $('div.editor').each(function(i, item){
+        div = $(item).children('div');
+        textarea = $(item).children('textarea');
+        for(var j=1; j<=1000; j++) {
+            div.append(j + ":<br/>");
+        }
+        div.outerHeight(textarea.outerHeight());
+
+        textarea.scroll(function(){
+            $(this).prev('div').scrollTop($(this).scrollTop());
+        })
+    });
+}
+
+function resize_editor() {
+    $('div.editor').each(function(i, item){
+        div = $(item).children('div');
+        textarea = $(item).children('textarea');
+        textarea.outerWidth(
+            $(item).innerWidth() - div.outerWidth()
+        );
+    });
+}
+
+
+$(window).resize(function(){
+    resize_editor();
+})
+
+init_editor()
