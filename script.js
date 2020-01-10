@@ -441,6 +441,7 @@ function init_editor() {
             $(this).prev('div').scrollTop($(this).scrollTop());
         })
     });
+    resize_editor();
 }
 
 function resize_editor() {
