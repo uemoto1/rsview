@@ -1,20 +1,29 @@
 
 .editor {
     width: 100%;
+    font-family: "Courier New", Courier, Monaco, monospace;
+    font-size: medium;
 }
 
-div.editor div {
+div.editor div.lineno {
     float: left;
     overflow: hidden;
     margin: 0px;
-    padding: 0px 16px;
     border-width: 1px;
     border-color: lightgray;
     background-color: lightgray;
     color: dimgray;
-    font-family: "Courier New", Courier, Monaco, monospace;
-    font-size: medium;
     text-align: right;
+}
+
+div.editor div.lineno div.label {
+    width: 100%;
+    padding: 0px 16px;
+}
+
+div.editor div.lineno div.selected {
+    background-color: yellow;
+    color: black;
 }
 
 div.editor textarea {
@@ -24,6 +33,4 @@ div.editor textarea {
     border-color: lightgray;
     background-color: white;
     color: black;
-    font-family: "Courier New", Courier, Monaco, monospace;
-    font-size: medium;
 }

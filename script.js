@@ -1,14 +1,34 @@
-// rsview
+// Web RSPACE Viewer
+//  Mitsuharu UEMOTO @ Kobe University
+//  Copyright(c) 2019 All rights reserved.
 
 // グローバル変数
-var natom = 0;
-var atom_type = [];
-var atom_line = [];
-var atom_coor = [];
-var nperi = 0;
-var ax = 0.0;
-var ay = 0.0;
-var ax = 0.0;
+var natom = 0; // 全原子数
+var atom_type = []; // 元素種
+var atom_line = []; // 行番号(atom.xyz)
+var atom_coor = []; // 原子座標
+var nperi = 0; // 周期境界条件フラグ
+var xmax = 0; // xmax
+var ymax = 0; // ymax
+var zmax = 0; // zmax
+var ax = 0.0; // 格子定数(ax)
+var ay = 0.0; // 格子定数(ay)
+var ax = 0.0; // 格子定数(az)
+
+// 内部状態
+var flag_init = false; // 初期化済みの場合はtrue
+var flag_load = false; // 入力ファイル読み込み済みの場合はtrue
+var flag_edit = false; // 入力ファイル編集済みの場合はtrue
+
+// 三次元レンダラ関連
+var renderer; // レンダラオブジェクト init_rendererで初期化
+var camera; // カメラ
+var scene; // シーン
+var object; // オブジェクト
+var atom_group; // 原子(球)
+var lat_group; // 格子セル(ワイヤーフレーム)
+
+var raycaster = new THREE.Raycaster();
 
 
 // parameters.inpファイルの展開
@@ -195,17 +215,19 @@ function execute() {
 }
 
 function clear_viewer() {
-    while (atom_model.children.length > 0)
-        atom_model.remove(atom_model.children[0]);
-    while (lattice_model.children.length > 0)
-        lattice_model.remove(lattice_model.children[0]);
+    while (atom_group.children.length > 0)
+        atom_group.remove(atom_group.children[0]);
+    while (lat_group.children.length > 0)
+        lat_group.remove(lat_group.children[0]);
 }
 
 
-lattice_material =  new THREE.LineBasicMaterial({ color: 0x000000 });
+lattice_material = new THREE.LineBasicMaterial({
+    color: 0x000000
+});
 
 function plot_atom() {
-    var ks, xs, ys, zs
+    var ks, xs, ys, zs;
     [ks, xs, ys, zs] = calc_point(nperi == 3);
 
     // バウンディングボックスの計算
@@ -233,17 +255,24 @@ function plot_atom() {
         mesh.position.y = (ys[i] - cy) / scale;
         mesh.position.z = (zs[i] - cz) / scale;
         mesh.atom_index = ks[i];
-        atom_model.add(mesh);
+        atom_group.add(mesh);
     }
 
     var geometry = new THREE.BoxGeometry(ax / scale, ay / scale, az / scale);
-    var edges = new THREE.EdgesGeometry( geometry );
-    var line = new THREE.LineSegments(edges, lattice_material );
+    var edges = new THREE.EdgesGeometry(geometry);
+    var line = new THREE.LineSegments(edges, lattice_material);
     line.position.x -= cx / scale;
     line.position.y -= cy / scale;
     line.position.z -= cz / scale;
+    lat_group.add(line);
 
-    lattice_model.add( line );
+    var geometry = new THREE.SphereGeometry(1.00 / scale);
+    var edges = new THREE.EdgesGeometry(geometry);
+    var line = new THREE.LineSegments(edges, lattice_material);
+    selector_obj = line;
+    selector_obj.visible = false;
+    scene.add(selector_obj);
+
 
 
 
@@ -255,7 +284,7 @@ function initRender(width, height) {
     // ３次元表示画面の初期化
     // renderer = new THREE.WebGLRenderer({'canvas': $("#viewer")[0]});
     renderer = new THREE.WebGLRenderer({
-        canvas: document.querySelector('#viewer')
+        canvas: $('#viewer')[0]
     });
     renderer.setClearColor(0xffffff, 1.0);
     camera = new THREE.OrthographicCamera(-1.0, +1.0, -1.0, +1.0);
@@ -275,26 +304,13 @@ function initRender(width, height) {
     light = new THREE.AmbientLight(0xFFFFFF, 0.60);
     scene.add(light);
     renderer.render(scene, camera);
-    atom_model = new THREE.Group();
-    lattice_model = new THREE.Group();
-    selector_model = new THREE.Group();
-
-    scene.add(lattice_model);
-    scene.add(atom_model);
-    scene.add(selector_model);
+    atom_group = new THREE.Group();
+    lat_group = new THREE.Group();
 
 
-    // controls = new THREE.OrbitControls(camera, renderer.domElement);
-    // controls.update();
+    scene.add(lat_group);
+    scene.add(atom_group);
 
-    // tick();
-
-    // // 毎フレーム時に実行されるループイベントです
-    // function tick() {
-    //     // レンダリング
-    //     renderer.render(scene, camera);
-    //     requestAnimationFrame(tick);
-    // }
 
 }
 
@@ -336,47 +352,44 @@ $("#atom").text(template_atom_xyz);
 initRender(400, 400);
 
 
-var raycaster = new THREE.Raycaster();
-var mouse = new THREE.Vector2();
 
-$('#viewer').click(function(e){
 
-   mouse.x = ( event.offsetX / 400 ) * 2 - 1;
-    mouse.y = - ( event.offsetY / 400 ) * 2 + 1;
-    
+$('#viewer').click(function (e) {
 
-    raycaster.setFromCamera( mouse, camera );
+    var mouse = new THREE.Vector2(
+        +(event.offsetX / $(this).width()) * 2 - 1,
+        -(event.offsetY / $(this).height()) * 2 + 1
+    );
 
-    var intersects = raycaster.intersectObjects( atom_model.children );
-    selector_model.remove(selector_model.children[0]);
+    raycaster.setFromCamera(mouse, camera);
 
-    
-    if(intersects.length > 0){
+    var intersects = raycaster.intersectObjects(atom_group.children);
+
+    if (intersects.length > 0) {
+        // Remove selector
+        selector_obj.visible = false;
+        $('#atom_xyz div.selected').removeClass('selected');
+
         var i = intersects[0].object.atom_index;
-        var tmp = '';
+        var p = intersects[0].object.position;
 
-        tmp += "Line no: " + (atom_line[i] + 1) + " (atom.xyz)\n";
-        tmp += "Element: " + (atom_type[i]) + "\n";
+        selector_obj.position.copy(p);
+        selector_obj.visible = true;
 
+        label = $('#atom_xyz div.label');
+        $(label[atom_line[i]]).addClass('selected');
+        $('#atom_xyz textarea').scrollTop(
+            $('#atom_xyz div.selected').offsetTop - $('#atom_xyz textarea')[0].offsetTop
+        );
 
-
-        var geometry = new THREE.SphereGeometry(1.00 / scale);
-        var edges = new THREE.EdgesGeometry( geometry );
-        var line = new THREE.LineSegments(edges, lattice_material );
-        line.position.x=(intersects[0].object.position.x);
-        line.position.y=(intersects[0].object.position.y);
-        line.position.z=(intersects[0].object.position.z);
-        
-        selector_model.add(line);
-        renderer.render(scene, camera);
-
-        $("#atom_info").text(tmp);
-
-        select_line($("#atom"), atom_line[i] );
-        $("#viewer").focus();
+        $("#atom_info").text(
+            "Element:" + atom_type[i] + ', Line:' + (atom_line[i] + 1)
+        );
 
 
     }
+
+    renderer.render(scene, camera);
 });
 
 
@@ -388,8 +401,8 @@ $('#run').click(execute);
 
 var rot_state = false;
 
-$('#viewer').mousemove(function(e){
-    if(e.buttons == 1 && rot_state) {
+$('#viewer').mousemove(function (e) {
+    if (e.buttons == 1 && rot_state) {
         ep.y = -(e.clientX - x0) / 400 * Math.PI;
         ep.x = +(e.clientY - y0) / 400 * Math.PI;
         camera.position.copy(p0);
@@ -400,8 +413,8 @@ $('#viewer').mousemove(function(e){
     }
 });
 
-$('#viewer').mousedown(function(e){
-    if(e.buttons == 1) {
+$('#viewer').mousedown(function (e) {
+    if (e.buttons == 1) {
         x0 = e.clientX;
         y0 = e.clientY;
         p0 = camera.position.clone();
@@ -412,35 +425,17 @@ $('#viewer').mousedown(function(e){
 
 
 
-// $("#cam_x").click(function(){
-//     camera.position.set(1, 0, 0);
-//     camera.lookAt(0, 0, 0);
-//     renderer.render(scene, camera);
-// })
-
-// $("#cam_y").click(function(){
-//     camera.position.set(1, 0, 0);
-//     camera.lookAt(0, 0, 0);
-//     renderer.render(scene, camera);
-// })
-
-// $("#cam_z").click(function(){
-//     camera.position.set(1, 0, 0);
-//     camera.lookAt(0, 0, 0);
-//     renderer.render(scene, camera);
-// })
-
 
 function init_editor() {
-    $('div.editor').each(function(i, item){
+    $('div.editor').each(function (i, item) {
         div = $(item).children('div');
         textarea = $(item).children('textarea');
-        for(var j=1; j<=1000; j++) {
-            div.append(  j + "<br/>");
+        for (var j = 1; j <= 1000; j++) {
+            div.append("<div class='label'>" + j + "</div>");
         }
         div.outerHeight(textarea.outerHeight());
 
-        textarea.scroll(function(){
+        textarea.scroll(function () {
             $(this).prev('div').scrollTop($(this).scrollTop());
         })
     });
@@ -448,7 +443,7 @@ function init_editor() {
 }
 
 function resize_editor() {
-    $('div.editor').each(function(i, item){
+    $('div.editor').each(function (i, item) {
         div = $(item).children('div');
         textarea = $(item).children('textarea');
         textarea.outerWidth(
@@ -457,29 +452,10 @@ function resize_editor() {
     });
 }
 
-function select_line(item, i) {
-    icount = 0;
-    ipos_prev = 0;
-    text = item.text();
-    while (0 <= ipos_prev) {
-        ipos = text.indexOf('\n', ipos_prev+1);
-        if (icount == i) {
-            item[0].select();
-
-            item[0].selectionStart = ipos_prev+1;
-            if (ipos_prev <= ipos) {
-                item[0].selectionEnd = ipos+1;
-            } else {
-                item[0].selectionEnd = text.length;
-            }
-        }
-        ipos_prev = ipos;
-        icount ++;
-    }
-}
 
 
-$(window).resize(function(){
+
+$(window).resize(function () {
     resize_editor();
 })
 
