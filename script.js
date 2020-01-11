@@ -266,12 +266,14 @@ function plot_atom() {
     line.position.z -= cz / scale;
     lat_group.add(line);
 
+    
+
     var geometry = new THREE.SphereGeometry(1.00 / scale);
     var edges = new THREE.EdgesGeometry(geometry);
     var line = new THREE.LineSegments(edges, lattice_material);
     selector_obj = line;
     selector_obj.visible = false;
-    scene.add(selector_obj);
+    lat_group.add(selector_obj);
 
 
 
