@@ -8,13 +8,9 @@
     <link rel="stylesheet" href="./lib/css/bootstrap.min.css">
     <link rel="stylesheet" href="./style.css">
 
-    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
-    </script>-->
-    <script src="./lib/js/jquery-3.4.1.min.js "></script>
+    <script src="./lib/js/jquery-3.5.1.min.js "></script>
     <script src="./lib/js/bootstrap.min.js"></script>
     <script src="./lib/js/three.min.js"></script>
-    <!-- <script type="text/javascript" src="./lib/js/OrbitControl.js"></script> -->
 
 
     <script type="text/javascript" src="./colortable.js"></script>
@@ -24,52 +20,71 @@
 
 <body>
 
-    <div class="container">
-
-        <h3> Web RSPACE Viewer [Alpha]</h3>
+    <div class="container-fluid" style=" background-color: darkgoldenrod;">
 
 
-        <p>
-            Source code:
-            <a href="https://github.com/uemoto1/rsview/">http://github.com/uemoto1/rsview</a>
-            by M. Uemoto @ Kobe Univ.
-        </p>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Web RSPACE Viewer</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link" href="#">Link</a>
+        </li>
+        <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Dropdown
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <a class="dropdown-item" href="#">Action</a>
+        <a class="dropdown-item" href="#">Another action</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link disabled" href="#">Disabled</a>
+        </li>
+        </ul>
+
+        <button type="button" class="btn btn-primary" id='run'>Plot crystal structure</button>
+
+        </div>
+    </nav>
 
 
 
 
 
 
-        <div class="row">
+
+        <div class="row" >
 
 
-            <div class="col-sm-6">
+            <div class="col-sm-6 mh-100" id="panel_left" style="background-color: aliceblue; ">
 
-
-
-                <strong> parameters.inp</strong>
-
-                <div class='editor' id='parameters_inp'>
-                    <div class='lineno'></div><textarea id='parameters' rows="12" wrap='off'></textarea>
+                <div class="col-sm-12 w-100 h-50">
+                    <strong> parameters.inp</strong>
+                    <div class='editor' id='parameters_inp'>
+                        <div class='lineno'></div><textarea id='parameters'  wrap='off' ></textarea>
+                    </div>
                 </div>
 
-                <br />
-
-                <strong> atom.xyz</strong>
-
-                <div class='editor' id='atom_xyz'>
-                    <div class='lineno'></div><textarea id='atom' rows="12" wrap='off'></textarea>
+                <div class="col-sm-12 w-100 h-50">
+                    <strong> atom.xyz</strong>
+                    <div class='editor' id='atom_xyz'>
+                        <div class='lineno'></div><textarea id='atom'  wrap='off'></textarea>
+                    </div>
                 </div>
-
-
-
-
-
-
 
             </div>
 
-            <div class="col-sm-6">
+            <div class="col-sm-6 mh-100" id="panel_right" style="background-color:antiquewhite;">
 
                 <p>
 
@@ -80,7 +95,6 @@
 
 
 
-                    <button type="button" class="btn btn-primary" id='run'>Plot crystal structure</button>
                 </p>
 
 
@@ -89,32 +103,19 @@
                     <p id='error_msg'></p>
                 </div>
 
-                <!-- <div class="btn-toolbar" role="toolbar" aria-label="ボタングループのツールバー">
-                    <div class="btn-group" role="group" aria-label="第一グループ">
-
-
-                        <div class="btn-group" role="group" aria-label="基本のボタングループ">
-                            <button type="button" class="btn btn-secondary" id="cam_x">X</button>
-                            <button type="button" class="btn btn-secondary" id="cam_y">Y</button>
-                            <button type="button" class="btn btn-secondary" id="cam_z">Z</button>
-                        </div>
-
-
-                    </div>
-                    <div class="btn-group" role="group" aria-label="第二グループ">
-                        <button type="button" class="btn btn-secondary" id="rot_x">Rot X</button>
-                        <button type="button" class="btn btn-secondary" id="rot_y">Rot Y</button>
-                        <button type="button" class="btn btn-secondary" id="rot_z">Rot Z</button>
-                    </div>
-                </div> -->
 
 
 
-                <canvas id="viewer"></canvas>
+                <canvas id="viewer" style="width:100%;"></canvas>
 
                 <pre id='atom_info'>Click 'Plot crystal structure'</pre>
 
-
+                <p>
+                    Source code:
+                    <a href="https://github.com/uemoto1/rsview/">http://github.com/uemoto1/rsview</a>
+                    by M. Uemoto @ Kobe Univ.
+                </p>
+            
 
             </div>
 
