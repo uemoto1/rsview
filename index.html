@@ -12,7 +12,6 @@
     <script src="./lib/js/bootstrap.min.js"></script>
     <script src="./lib/js/three.min.js"></script>
 
-
     <script type="text/javascript" src="./colortable.js"></script>
 
     <title>Web RSPACE Viewer</title>
@@ -20,81 +19,79 @@
 
 <body>
 
-    <div class="container-fluid" style=" background-color: darkgoldenrod;">
 
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: orange;">
         <a class="navbar-brand" href="#">Web RSPACE Viewer</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-        </li>
-        <li class="nav-item">
-        <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Dropdown
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-        <a class="dropdown-item" href="#">Action</a>
-        <a class="dropdown-item" href="#">Another action</a>
-        <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="#">Something else here</a>
-        </div>
-        </li>
-        <li class="nav-item">
-        <a class="nav-link disabled" href="#">Disabled</a>
-        </li>
-        </ul>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Dropdown
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#">Disabled</a>
+                </li>
+            </ul>
 
-        <button type="button" class="btn btn-primary" id='run'>Plot crystal structure</button>
 
         </div>
     </nav>
 
 
 
+    <div class="container-fluid">
 
 
+        <div class="row">
 
 
-        <div class="row" >
-
-
-            <div class="col-sm-6 mh-100" id="panel_left" style="background-color: aliceblue; ">
-
-                <div class="col-sm-12 w-100 h-50">
-                    <strong> parameters.inp</strong>
-                    <div class='editor' id='parameters_inp'>
-                        <div class='lineno'></div><textarea id='parameters'  wrap='off' ></textarea>
+            <div class="col-sm-6 fillscreen" style="background-color: cornsilk;">
+                <div class="col-sm-12 h-50">
+                    <strong>parameter.inp</strong>
+                    <button type="button" class="btn btn-link">Open file</button>
+                    <button type="button" class="btn btn-link">Save as</button>
+                    <br />
+                    <div class='editor fillbottom w-100' id='parameters_inp'>
+                        <div class='lineno'></div><textarea id='parameters' wrap='off'></textarea>
                     </div>
                 </div>
-
-                <div class="col-sm-12 w-100 h-50">
-                    <strong> atom.xyz</strong>
-                    <div class='editor' id='atom_xyz'>
-                        <div class='lineno'></div><textarea id='atom'  wrap='off'></textarea>
+                <div class="col-sm-12 h-50">
+                    <strong>parameter.inp</strong>
+                    <button type="button" class="btn btn-link">Open file</button>
+                    <button type="button" class="btn btn-link">Save as</button>
+                    <br />
+                    <div class='editor fillbottom w-100' id='atom_xyz'>
+                        <div class='lineno'></div><textarea id='atom' wrap='off'></textarea>
                     </div>
                 </div>
-
             </div>
 
-            <div class="col-sm-6 mh-100" id="panel_right" style="background-color:antiquewhite;">
+            <div class="col-sm-6 fillscreen">
 
                 <p>
-
                     <ul>
                         <li>Write <code>parameters.inp</code> and <code>atom.xyz</code> source in editor and click a
                             button below.</li>
                     </ul>
-
-
-
                 </p>
 
 
@@ -103,19 +100,11 @@
                     <p id='error_msg'></p>
                 </div>
 
+                <button type="button" class="btn btn-primary" id='run'>Plot crystal structure</button>
+
+                <canvas id="viewer" class="fillbottom w-100"></canvas>
 
 
-
-                <canvas id="viewer" style="width:100%;"></canvas>
-
-                <pre id='atom_info'>Click 'Plot crystal structure'</pre>
-
-                <p>
-                    Source code:
-                    <a href="https://github.com/uemoto1/rsview/">http://github.com/uemoto1/rsview</a>
-                    by M. Uemoto @ Kobe Univ.
-                </p>
-            
 
             </div>
 

@@ -2,6 +2,12 @@
 //  Mitsuharu UEMOTO @ Kobe University
 //  Copyright(c) 2019 All rights reserved.
 
+
+
+
+
+
+
 // グローバル変数
 var natom = 0; // 全原子数
 var atom_type = []; // 元素種
@@ -11,9 +17,10 @@ var nperi = 0; // 周期境界条件フラグ
 var xmax = 0; // xmax
 var ymax = 0; // ymax
 var zmax = 0; // zmax
-var ax = 0.0; // 格子定数(ax)
-var ay = 0.0; // 格子定数(ay)
-var ax = 0.0; // 格子定数(az)
+
+var nrepx = 10;
+var nrepy = 10;
+var nrepz = 10;
 
 // 内部状態
 var flag_init = false; // 初期化済みの場合はtrue
@@ -26,10 +33,11 @@ var camera; // カメラ
 var scene; // シーン
 var object; // オブジェクト
 var atom_group; // 原子(球)
-var lat_group; // 格子セル(ワイヤーフレーム)
+var lattice; // 格子セル(ワイヤーフレーム)
+var selector; // セレクタ
 
+// トレース用オブジェクト
 var raycaster = new THREE.Raycaster();
-
 
 // parameters.inpファイルの展開
 function parseParameterInp(code) {
@@ -142,59 +150,7 @@ function parseAtomXYZ(code) {
 
 // 周期性を考慮し、プッロット用原子座標のレプリカを作成する。
 // 原子座標がプロット範囲を超過する場合は表示対象から除外する。
-function calc_point(flg_pbc) {
-    // 格納用変数の初期化
-    var xs = [],
-        ys = [],
-        zs = [],
-        ks = [];
 
-    if (flg_pbc) {
-        var nrx1 = -1;
-        var nrx2 = 1;
-        var nry1 = -1;
-        var nry2 = 1;
-        var nrz1 = -1;
-        var nrz2 = 1;
-        var bx1 = (nrx1 + 0.49) * ax;
-        var by1 = (nry1 + 0.49) * ay;
-        var bz1 = (nrz1 + 0.49) * az;
-        var bx2 = (nrx2 - 0.49) * ax;
-        var by2 = (nry2 - 0.49) * ay;
-        var bz2 = (nrz2 - 0.49) * az;
-    } else {
-        var nrx1 = 0;
-        var nrx2 = 0;
-        var nry1 = 0;
-        var nry2 = 0;
-        var nrz1 = 0;
-        var nrz2 = 0;
-    }
-
-    for (i = 0; i < natom; i++) {
-        for (irx = nrx1; irx <= nrx2; irx++) {
-            x = atom_coor[i].x + ax * irx
-            if (flg_pbc && (x < bx1 || bx2 < x)) continue;
-
-            for (iry = nry1; iry <= nry2; iry++) {
-                y = atom_coor[i].y + ay * iry
-                if (flg_pbc && (y < by1 || by2 < y)) continue;
-
-                for (irz = nrz1; irz <= nrz2; irz++) {
-                    z = atom_coor[i].z + az * irz
-                    if (flg_pbc && (z < bz1 || bz2 < z)) continue;
-
-                    // 座標を追加
-                    ks.push(i);
-                    xs.push(x);
-                    ys.push(y);
-                    zs.push(z);
-                }
-            }
-        }
-    }
-    return [ks, xs, ys, zs];
-}
 
 function show_error_msg(title, msg) {
     $("#error_title").text(title);
@@ -215,10 +171,7 @@ function execute() {
 }
 
 function clear_viewer() {
-    while (atom_group.children.length > 0)
-        atom_group.remove(atom_group.children[0]);
-    while (lat_group.children.length > 0)
-        lat_group.remove(lat_group.children[0]);
+
 }
 
 
@@ -227,56 +180,64 @@ lattice_material = new THREE.LineBasicMaterial({
 });
 
 function plot_atom() {
-    var ks, xs, ys, zs;
-    [ks, xs, ys, zs] = calc_point(nperi == 3);
+    vxmax = xmax;
+    vymax = ymax;
+    vzmax = zmax;
+    
+    scale = Math.max(vxmax, vymax, vzmax);
 
-    // バウンディングボックスの計算
-    x_min = Math.min(...xs);
-    x_max = Math.max(...xs);
-    y_min = Math.min(...ys);
-    y_max = Math.max(...ys);
-    z_min = Math.min(...zs);
-    z_max = Math.max(...zs);
-    cx = (x_min + x_max) * 0.5;
-    sx = (x_max - x_min);
-    cy = (y_min + y_max) * 0.5;
-    sy = (y_max - y_min);
-    cz = (z_min + z_max) * 0.5;
-    sz = (z_max - z_min);
-    scale = Math.max(sx, sy, sz);
+    // 古いオブジェクトの消去
+    while(object.children.length > 0)
+        object.remove(object.children[0]);
 
-    for (var i = 0; i < xs.length; i++) {
-        var geometry = new THREE.SphereGeometry(1.0 / scale);
-        var material = new THREE.MeshLambertMaterial({
-            color: colortable[atom_type[ks[i]]]
-        });
-        var mesh = new THREE.Mesh(geometry, material);
-        mesh.position.x = (xs[i] - cx) / scale;
-        mesh.position.y = (ys[i] - cy) / scale;
-        mesh.position.z = (zs[i] - cz) / scale;
-        mesh.atom_index = ks[i];
-        atom_group.add(mesh);
-    }
-
-    var geometry = new THREE.BoxGeometry(ax / scale, ay / scale, az / scale);
+    // 格子（直方体）の作成
+    var geometry = new THREE.BoxGeometry(2 * xmax / scale, 2 * ymax / scale, 2 * zmax / scale);
     var edges = new THREE.EdgesGeometry(geometry);
     var line = new THREE.LineSegments(edges, lattice_material);
-    line.position.x -= cx / scale;
-    line.position.y -= cy / scale;
-    line.position.z -= cz / scale;
-    lat_group.add(line);
+    lattice = line;
 
-    
+    // 原子（球）の作成
+    atom_group = new THREE.Group();
+    for (i = 0; i < natom; i++) {
+        // 周期境界条件によるレプリカの配置
+        for (ix = -nrepx; ix <= nrepx; ix++) {
+            x = atom_coor[i].x + 2 * xmax * ix;
+            if ((x < -vxmax) || (vxmax < x)) continue;
 
+            for (iy = -nrepy; iy <= nrepy; iy++) {
+                y = atom_coor[i].y + 2 * ymax * iy;
+                if ((y < -vymax) || (vymax < y)) continue;
+
+                for (iz = -nrepz; iz <= nrepz; iz++) {
+                    z = atom_coor[i].z + 2 * zmax * iz;
+                    if ((z < -vzmax) || (vzmax < z)) continue;
+
+                    // 球のメッシュを作成 
+                    var geometry = new THREE.SphereGeometry(1.0 / scale);
+                    var material = new THREE.MeshLambertMaterial({
+                        color: colortable[atom_type[i]]
+                    });
+                    var mesh = new THREE.Mesh(geometry, material);
+                    mesh.position.x = x / scale;
+                    mesh.position.y = y / scale;
+                    mesh.position.z = z / scale;
+                    mesh.atom_index = i;
+                    atom_group.add(mesh);
+                }
+            }
+        }
+    }
+
+    // 原子セレクタ（球）の追加
     var geometry = new THREE.SphereGeometry(1.00 / scale);
     var edges = new THREE.EdgesGeometry(geometry);
     var line = new THREE.LineSegments(edges, lattice_material);
-    selector_obj = line;
-    selector_obj.visible = false;
-    lat_group.add(selector_obj);
+    selector = line;
+    selector.visible = false;
 
-
-
+    object.add(atom_group);
+    object.add(lattice);
+    object.add(selector);
 
     renderer.render(scene, camera);
 }
@@ -289,31 +250,27 @@ function initRender(width, height) {
         canvas: $('#viewer')[0]
     });
     renderer.setClearColor(0xffffff, 1.0);
-    camera = new THREE.OrthographicCamera(-1.0, +1.0, -1.0, +1.0);
-    camera.position.set(-0.1, -0.1, 1);
+    camera = new THREE.OrthographicCamera(-2.0, +2.0, -2.0, +2.0);
+    camera.position.set(-2.0, -2.0, 2.0);
     camera.lookAt(0, 0, 0);
 
 
     scene = new THREE.Scene();
     scene.add(camera);
 
-    // Start the renderer.
+    object = new THREE.Group();
+    scene.add(object)
+
     renderer.setSize(width, height);
-    //
-    light = new THREE.DirectionalLight(0xFFFFFF, 0.40);
-    light.position.set(-1, -1, -1).normalize();
-    scene.add(light);
-    light = new THREE.AmbientLight(0xFFFFFF, 0.60);
-    scene.add(light);
+    
+    light1 = new THREE.DirectionalLight(0xFFFFFF, 0.40);
+    light1.position.set(-2, -2, -2).normalize();
+    scene.add(light1);
+    light2 = new THREE.AmbientLight(0xFFFFFF, 0.60);
+    scene.add(light2);
     renderer.render(scene, camera);
-    atom_group = new THREE.Group();
-    lat_group = new THREE.Group();
 
-
-    scene.add(lat_group);
-    scene.add(atom_group);
-
-
+    
 }
 
 
@@ -358,6 +315,10 @@ initRender(400, 400);
 
 $('#viewer').click(function (e) {
 
+    // Remove selector
+    selector.visible = false;
+
+
     var mouse = new THREE.Vector2(
         +(event.offsetX / $(this).width()) * 2 - 1,
         -(event.offsetY / $(this).height()) * 2 + 1
@@ -368,15 +329,13 @@ $('#viewer').click(function (e) {
     var intersects = raycaster.intersectObjects(atom_group.children);
 
     if (intersects.length > 0) {
-        // Remove selector
-        selector_obj.visible = false;
         $('#atom_xyz div.selected').removeClass('selected');
 
         var i = intersects[0].object.atom_index;
         var p = intersects[0].object.position;
 
-        selector_obj.position.copy(p);
-        selector_obj.visible = true;
+        selector.position.copy(p);
+        selector.visible = true;
 
         label = $('#atom_xyz div.label');
         $(label[atom_line[i]]).addClass('selected');
@@ -427,38 +386,62 @@ $('#viewer').mousedown(function (e) {
 
 
 
+function resize() {
 
-function init_editor() {
+    $(".fillscreen").each(function (i) {
+        h = $(window).innerHeight();
+        t = $(this).offset().top;
+        $(this).outerHeight(h - t);
+    });
+
+    $(".fillbottom").each(function (i) {
+        h = $(this).parent().innerHeight();
+        t = $(this).position().top;
+        $(this).outerHeight(h - t);
+    });
+
+    $("div.editor").each(function (i) {
+        w = $(this).innerWidth();
+        h = $(this).innerHeight();
+        d = $(this).children("div");
+        t = $(this).children("textarea");
+        d.outerHeight(h);
+        t.outerHeight(h);
+        t.outerWidth(w - d.outerWidth());
+    });
+
+
+
+
+    width = $("#viewer").innerWidth();
+    height = $("#viewer").innerHeight();
+    scale = Math.min(width, height);
+    camera.top = -height / scale * 2.0;
+    camera.left = -width / scale * 2.0;
+    camera.right = width / scale * 2.0;
+    camera.bottom = height / scale * 2.0;
+    camera.updateProjectionMatrix();
+
+}
+
+
+$(function () {
+
     $('div.editor').each(function (i, item) {
         div = $(item).children('div');
         textarea = $(item).children('textarea');
         for (var j = 1; j <= 1000; j++) {
             div.append("<div class='label'>" + j + "</div>");
         }
-        div.outerHeight(textarea.outerHeight());
-
         textarea.scroll(function () {
             $(this).prev('div').scrollTop($(this).scrollTop());
         })
     });
-    resize_editor();
-}
 
-function resize_editor() {
-    $('div.editor').each(function (i, item) {
-        div = $(item).children('div');
-        textarea = $(item).children('textarea');
-        textarea.outerWidth(
-            $(item).innerWidth() - div.outerWidth()
-        );
-    });
-}
-
-
+    resize();
+});
 
 
 $(window).resize(function () {
-    resize_editor();
-})
-
-init_editor()
+    resize(); // Resize Objects
+});
