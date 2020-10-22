@@ -251,7 +251,7 @@ function initRender(width, height) {
     });
     renderer.setClearColor(0xffffff, 1.0);
     camera = new THREE.OrthographicCamera(-2.0, +2.0, -2.0, +2.0);
-    camera.position.set(-2.0, -2.0, 2.0);
+    camera.position.set(0, 0, 2);
     camera.lookAt(0, 0, 0);
 
 
