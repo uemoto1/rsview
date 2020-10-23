@@ -21,7 +21,7 @@
 
 
 
-    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: orange;">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <a class="navbar-brand" href="#">Web RSPACE Viewer</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -29,6 +29,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
+                <!--
                 <li class="nav-item active">
                     <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
                 </li>
@@ -50,6 +51,7 @@
                 <li class="nav-item">
                     <a class="nav-link disabled" href="#">Disabled</a>
                 </li>
+            -->
             </ul>
 
 
@@ -64,11 +66,13 @@
         <div class="row">
 
 
-            <div class="col-sm-6 fillscreen" style="background-color: cornsilk;">
+            <div class="col-sm-6 fillscreen">
                 <div class="col-sm-12 h-50">
                     <strong>parameter.inp</strong>
+                    <!--
                     <button type="button" class="btn btn-link">Open file</button>
                     <button type="button" class="btn btn-link">Save as</button>
+                    -->
                     <br />
                     <div class='editor fillbottom w-100' id='parameters_inp'>
                         <div class='lineno'></div><textarea id='parameters' wrap='off'></textarea>
@@ -76,9 +80,10 @@
                 </div>
                 <div class="col-sm-12 h-50">
                     <strong>parameter.inp</strong>
+                    <!--
                     <button type="button" class="btn btn-link">Open file</button>
                     <button type="button" class="btn btn-link">Save as</button>
-                    <br />
+                    --> <br />
                     <div class='editor fillbottom w-100' id='atom_xyz'>
                         <div class='lineno'></div><textarea id='atom' wrap='off'></textarea>
                     </div>

@@ -2,12 +2,6 @@
 //  Mitsuharu UEMOTO @ Kobe University
 //  Copyright(c) 2019 All rights reserved.
 
-
-
-
-
-
-
 // グローバル変数
 var natom = 0; // 全原子数
 var atom_type = []; // 元素種
@@ -32,9 +26,14 @@ var renderer; // レンダラオブジェクト init_rendererで初期化
 var camera; // カメラ
 var scene; // シーン
 var object; // オブジェクト
-var atom_group; // 原子(球)
-var lattice; // 格子セル(ワイヤーフレーム)
-var selector; // セレクタ
+
+var atom3d; // 原子(球)
+var cell3d; // 格子セル(ワイヤーフレーム)
+var select3d; // セレクタ
+
+// オブジェクト回転用クオータニオン
+var quaternion;
+var q_tmp;
 
 // トレース用オブジェクト
 var raycaster = new THREE.Raycaster();
@@ -175,7 +174,7 @@ function clear_viewer() {
 }
 
 
-lattice_material = new THREE.LineBasicMaterial({
+cell3d_material = new THREE.LineBasicMaterial({
     color: 0x000000
 });
 
@@ -193,11 +192,11 @@ function plot_atom() {
     // 格子（直方体）の作成
     var geometry = new THREE.BoxGeometry(2 * xmax / scale, 2 * ymax / scale, 2 * zmax / scale);
     var edges = new THREE.EdgesGeometry(geometry);
-    var line = new THREE.LineSegments(edges, lattice_material);
-    lattice = line;
+    var line = new THREE.LineSegments(edges, cell3d_material);
+    cell3d = line;
 
     // 原子（球）の作成
-    atom_group = new THREE.Group();
+    atom3d = new THREE.Group();
     for (i = 0; i < natom; i++) {
         // 周期境界条件によるレプリカの配置
         for (ix = -nrepx; ix <= nrepx; ix++) {
@@ -222,7 +221,7 @@ function plot_atom() {
                     mesh.position.y = y / scale;
                     mesh.position.z = z / scale;
                     mesh.atom_index = i;
-                    atom_group.add(mesh);
+                    atom3d.add(mesh);
                 }
             }
         }
@@ -231,13 +230,13 @@ function plot_atom() {
     // 原子セレクタ（球）の追加
     var geometry = new THREE.SphereGeometry(1.00 / scale);
     var edges = new THREE.EdgesGeometry(geometry);
-    var line = new THREE.LineSegments(edges, lattice_material);
-    selector = line;
-    selector.visible = false;
+    var line = new THREE.LineSegments(edges, cell3d_material);
+    select3d = line;
+    select3d.visible = false;
 
-    object.add(atom_group);
-    object.add(lattice);
-    object.add(selector);
+    object.add(atom3d);
+    object.add(cell3d);
+    object.add(select3d);
 
     renderer.render(scene, camera);
 }
@@ -254,12 +253,13 @@ function initRender(width, height) {
     camera.position.set(0, 0, 2);
     camera.lookAt(0, 0, 0);
 
-
     scene = new THREE.Scene();
     scene.add(camera);
 
     object = new THREE.Group();
     scene.add(object)
+
+    quaternion = object.quaternion;
 
     renderer.setSize(width, height);
     
@@ -315,9 +315,8 @@ initRender(400, 400);
 
 $('#viewer').click(function (e) {
 
-    // Remove selector
-    selector.visible = false;
 
+    if (flag_rotate) return;
 
     var mouse = new THREE.Vector2(
         +(event.offsetX / $(this).width()) * 2 - 1,
@@ -326,7 +325,7 @@ $('#viewer').click(function (e) {
 
     raycaster.setFromCamera(mouse, camera);
 
-    var intersects = raycaster.intersectObjects(atom_group.children);
+    var intersects = raycaster.intersectObjects(atom3d.children);
 
     if (intersects.length > 0) {
         $('#atom_xyz div.selected').removeClass('selected');
@@ -334,8 +333,8 @@ $('#viewer').click(function (e) {
         var i = intersects[0].object.atom_index;
         var p = intersects[0].object.position;
 
-        selector.position.copy(p);
-        selector.visible = true;
+        select3d.position.copy(p);
+        select3d.visible = true;
 
         label = $('#atom_xyz div.label');
         $(label[atom_line[i]]).addClass('selected');
@@ -360,16 +359,25 @@ $('#run').click(execute);
 // var m0 = new THREE.Vector2();
 // var cp0 = new THREE.Vector3();
 
-var rot_state = false;
+var flag_rotate = false;
 
 $('#viewer').mousemove(function (e) {
-    if (e.buttons == 1 && rot_state) {
-        ep.y = -(e.clientX - x0) / 400 * Math.PI;
-        ep.x = +(e.clientY - y0) / 400 * Math.PI;
-        camera.position.copy(p0);
-        camera.position.applyEuler(ep);
-        camera.lookAt(0, 0, 0);
-        camera.up.set(0, 1, 0);
+    if (e.buttons == 1 && flag_rotate) {
+       // ep.y = -(e.clientX - x0) / 400 * Math.PI;
+       // ep.x = +(e.clientY - y0) / 400 * Math.PI;
+        //camera.position.copy(p0);
+        //camera.position.applyEuler(ep);
+        //camera.lookAt(0, 0, 0);
+        //camera.up.set(0, 1, 0);
+
+        q = new THREE.Quaternion();
+        
+        axis = new THREE.Vector3(0, 1, 0);
+
+
+        q.setFromAxisAngle(axis, (e.clientX - x0) / 400 * Math.PI)
+        quaternion.copy(q_tmp);
+        quaternion.multiply(q)
         renderer.render(scene, camera);
     }
 });
@@ -378,10 +386,17 @@ $('#viewer').mousedown(function (e) {
     if (e.buttons == 1) {
         x0 = e.clientX;
         y0 = e.clientY;
-        p0 = camera.position.clone();
-        ep = new THREE.Euler(0, 0, 0);
-        rot_state = true;
+        //p0 = camera.position.clone();
+        //ep = new THREE.Euler(0, 0, 0);
+        q_tmp = new THREE.Quaternion();
+        q_tmp.copy(quaternion);
+        flag_rotate = true;
     }
+});
+
+$('#viewer').mouseup(function (e) {
+
+        flag_rotate = false;
 });
 
 
@@ -439,6 +454,7 @@ $(function () {
     });
 
     resize();
+    execute();
 });
 
 
