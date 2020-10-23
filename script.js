@@ -12,17 +12,22 @@ var xmax = 0; // xmax
 var ymax = 0; // ymax
 var zmax = 0; // zmax
 
-var nrepx = 10;
-var nrepy = 10;
-var nrepz = 10;
-
 // 内部状態
 var flag_init = false; // 初期化済みの場合はtrue
 var flag_load = false; // 入力ファイル読み込み済みの場合はtrue
 var flag_edit = false; // 入力ファイル編集済みの場合はtrue
+var flag_rot = false;  // ドラッグによる回転中の場合
+var flag_render = false;
+
+// 表示領域サイズ
+var window_width;
+var window_height;
+var viewer_width;
+var viewer_height;
+var viewer_unit;
 
 // 三次元レンダラ関連
-var renderer; // レンダラオブジェクト init_rendererで初期化
+var renderer; // レンダラオブジェクト
 var camera; // カメラ
 var scene; // シーン
 var object; // オブジェクト
@@ -33,10 +38,14 @@ var select3d; // セレクタ
 
 // オブジェクト回転用クオータニオン
 var quaternion;
-var q_tmp;
 
 // トレース用オブジェクト
 var raycaster = new THREE.Raycaster();
+
+var nrepx = 10;
+var nrepy = 10;
+var nrepz = 10;
+
 
 // parameters.inpファイルの展開
 function parseParameterInp(code) {
@@ -100,11 +109,6 @@ function parseParameterInp(code) {
         show_error_msg('Error! parameter.inp', 'zmax  (>0) must required.');
         return -1;
     }
-
-    ax = xmax * 2;
-    ay = ymax * 2;
-    az = zmax * 2;
-
     return 0;
 }
 
@@ -146,11 +150,6 @@ function parseAtomXYZ(code) {
     return 0;
 }
 
-
-// 周期性を考慮し、プッロット用原子座標のレプリカを作成する。
-// 原子座標がプロット範囲を超過する場合は表示対象から除外する。
-
-
 function show_error_msg(title, msg) {
     $("#error_title").text(title);
     $("#error_msg").text(msg);
@@ -158,21 +157,13 @@ function show_error_msg(title, msg) {
 }
 
 
-
 function execute() {
     $("#error").hide();
-    clear_viewer();
-
     // テキストの読み込み
     r = parseParameterInp($('#parameters').val());
     if (0 <= r) r = parseAtomXYZ($('#atom').val());
     if (0 <= r) plot_atom();
 }
-
-function clear_viewer() {
-
-}
-
 
 cell3d_material = new THREE.LineBasicMaterial({
     color: 0x000000
@@ -242,35 +233,8 @@ function plot_atom() {
 }
 
 
-function initRender(width, height) {
-    // ３次元表示画面の初期化
-    // renderer = new THREE.WebGLRenderer({'canvas': $("#viewer")[0]});
-    renderer = new THREE.WebGLRenderer({
-        canvas: $('#viewer')[0]
-    });
-    renderer.setClearColor(0xffffff, 1.0);
-    camera = new THREE.OrthographicCamera(-2.0, +2.0, -2.0, +2.0);
-    camera.position.set(0, 0, 2);
-    camera.lookAt(0, 0, 0);
+function initRender() {
 
-    scene = new THREE.Scene();
-    scene.add(camera);
-
-    object = new THREE.Group();
-    scene.add(object)
-
-    quaternion = object.quaternion;
-
-    renderer.setSize(width, height);
-    
-    light1 = new THREE.DirectionalLight(0xFFFFFF, 0.40);
-    light1.position.set(-2, -2, -2).normalize();
-    scene.add(light1);
-    light2 = new THREE.AmbientLight(0xFFFFFF, 0.60);
-    scene.add(light2);
-    renderer.render(scene, camera);
-
-    
 }
 
 
@@ -363,26 +327,15 @@ var flag_rotate = false;
 
 $('#viewer').mousemove(function (e) {
     if (e.buttons == 1 && flag_rotate) {
-       // ep.y = -(e.clientX - x0) / 400 * Math.PI;
-       // ep.x = +(e.clientY - y0) / 400 * Math.PI;
-        //camera.position.copy(p0);
-        //camera.position.applyEuler(ep);
-        //camera.lookAt(0, 0, 0);
-        //camera.up.set(0, 1, 0);
-
-        
-        w = $("#viewer").width();
-        h = $("#viewer").height();
-        s = (w + h) * 0.5;
+        x1 = e.clientX;
+        y1 = e.clientY;
 
         q = new THREE.Quaternion();
-        v1 = new THREE.Vector3(0, 0, -0.1);
-        v2 = new THREE.Vector3(-(e.clientX-x0)/s, -(e.clientY-y0)/s, -0.1);
+        v1 = new THREE.Vector3(0, 0, 1);
+        v2 = new THREE.Vector3((x1-x0)/viewer_unit, (y1-y0)/viewer_unit, 0.25);
 
-        q.setFromUnitVectors(v1.normalize(), v2.normalize());
-
-        quaternion.copy(q_tmp);
-        quaternion.premultiply(q)
+        q.setFromUnitVectors(v1, v2.normalize());
+        object.quaternion.copy(q.multiply(quaternion));
         renderer.render(scene, camera);
     }
 });
@@ -391,10 +344,8 @@ $('#viewer').mousedown(function (e) {
     if (e.buttons == 1) {
         x0 = e.clientX;
         y0 = e.clientY;
-        //p0 = camera.position.clone();
-        //ep = new THREE.Euler(0, 0, 0);
-        q_tmp = new THREE.Quaternion();
-        q_tmp.copy(quaternion);
+        quaternion = new THREE.Quaternion();
+        quaternion.copy(object.quaternion);
         flag_rotate = true;
     }
 });
@@ -407,8 +358,11 @@ $('#viewer').mouseup(function (e) {
 
 function resize() {
 
+    window_width = $(window).innerWidth();
+    window_height = $(window).innerHeight();
+
     $(".fillscreen").each(function (i) {
-        h = $(window).innerHeight();
+        h = window_height;
         t = $(this).offset().top;
         $(this).outerHeight(h - t);
     });
@@ -429,23 +383,43 @@ function resize() {
         t.outerWidth(w - d.outerWidth());
     });
 
+    viewer_width = $("#viewer").innerWidth();
+    viewer_height = $("#viewer").innerHeight();
+    viewer_unit = Math.min(viewer_width, viewer_height);
 
-
-
-    width = $("#viewer").innerWidth();
-    height = $("#viewer").innerHeight();
-    scale = Math.min(width, height);
-    camera.top = -height / scale * 2.0;
-    camera.left = -width / scale * 2.0;
-    camera.right = width / scale * 2.0;
-    camera.bottom = height / scale * 2.0;
+    camera.top = -  viewer_height / viewer_unit * 2.0;
+    camera.left = - viewer_width / viewer_unit * 2.0;
+    camera.right = + viewer_width / viewer_unit * 2.0;
+    camera.bottom = + viewer_height / viewer_unit * 2.0;
     camera.updateProjectionMatrix();
 
+    renderer.setSize(viewer_width, viewer_height);
+    renderer.render(scene, camera);
 }
 
 
 $(function () {
 
+    // ３次元表示画面の初期化
+    renderer = new THREE.WebGLRenderer({canvas: $('#viewer')[0]});
+    renderer.setClearColor(0xffffff, 1.0);
+    // カメラ作成
+    camera = new THREE.OrthographicCamera(-2.0, +2.0, -2.0, +2.0);
+    camera.position.set(0, 0, 2);
+    camera.lookAt(0, 0, 0);
+    // シーン作成
+    scene = new THREE.Scene();
+    scene.add(camera);
+    // オブジェクト作成
+    object = new THREE.Group();
+    scene.add(object)
+    // ライト作成
+    light1 = new THREE.DirectionalLight(0xFFFFFF, 0.40);
+    light1.position.set(-2, -2, -2).normalize();
+    light2 = new THREE.AmbientLight(0xFFFFFF, 0.60);
+    scene.add(light1);
+    scene.add(light2);
+    // エディタ画面作成
     $('div.editor').each(function (i, item) {
         div = $(item).children('div');
         textarea = $(item).children('textarea');
@@ -456,7 +430,7 @@ $(function () {
             $(this).prev('div').scrollTop($(this).scrollTop());
         })
     });
-
+    // リサイズ
     resize();
     execute();
 });
