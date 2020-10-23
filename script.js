@@ -46,6 +46,8 @@ var nrepx = 10;
 var nrepy = 10;
 var nrepz = 10;
 
+var bohr_angstrom = 0.529177210903
+
 
 // parameters.inpファイルの展開
 function parseParameterInp(code) {
@@ -163,6 +165,7 @@ function execute() {
     r = parseParameterInp($('#parameters').val());
     if (0 <= r) r = parseAtomXYZ($('#atom').val());
     if (0 <= r) plot_atom();
+    if (0 <= r) generate_cif();
 }
 
 cell3d_material = new THREE.LineBasicMaterial({
@@ -205,7 +208,7 @@ function plot_atom() {
                     // 球のメッシュを作成 
                     var geometry = new THREE.SphereGeometry(1.0 / scale);
                     var material = new THREE.MeshLambertMaterial({
-                        color: colortable[atom_type[i]]
+                        color: tbl_color[atom_type[i]]
                     });
                     var mesh = new THREE.Mesh(geometry, material);
                     mesh.position.x = x / scale;
@@ -234,8 +237,11 @@ function plot_atom() {
     // エディタのセレクタ解除
     $('#atom_xyz div.selected').removeClass('selected');
 
-}
+    // ダウンロードを有効化
+    $('#download').removeClass('disabled');
 
+
+}
 
 
 
@@ -264,6 +270,7 @@ template_parameters_inp = `&nml_inp_prm_kukan
     neigmx=32
 /
 `;
+
 
 
 
@@ -393,8 +400,7 @@ function resize() {
 }
 
 
-$(function () {
-
+function init() {
     // ３次元表示画面の初期化
     renderer = new THREE.WebGLRenderer({canvas: $('#viewer')[0]});
     renderer.setClearColor(0xffffff, 1.0);
@@ -428,9 +434,49 @@ $(function () {
     // リサイズ
     resize();
     execute();
-});
+}
 
+$(function () {
+    init();
+});
 
 $(window).resize(function () {
-    resize(); // Resize Objects
+    resize(); 
 });
+
+
+function generate_cif() {
+    tmp = []
+    tmp.push("# generated using wsviewer");
+    tmp.push("# data_");
+    tmp.push("_symmetry_space_group_name_H-M   'P 1'");
+    tmp.push("_cell_length_a " + String(xmax * 2 * bohr_angstrom));
+    tmp.push("_cell_length_b " + String(ymax * 2 * bohr_angstrom));
+    tmp.push("_cell_length_c " + String(zmax * 2 * bohr_angstrom));
+    tmp.push("_cell_angle_alpha 90.0");
+    tmp.push("_cell_angle_beta  90.0");
+    tmp.push("_cell_angle_gamma 90.0");
+    tmp.push("loop_");
+    tmp.push("_atom_site_type_symbol");
+    tmp.push("_atom_site_fract_x");
+    tmp.push("_atom_site_fract_y");
+    tmp.push("_atom_site_fract_z");
+    for(i = 0; i < natom; i++) {
+        r = atom_coor[i];
+        x = String(r.x / xmax * 0.5 + 0.5);
+        y = String(r.y / ymax * 0.5 + 0.5);
+        z = String(r.z / zmax * 0.5 + 0.5);
+        t = tbl_symbol[atom_type[i]];
+        tmp.push([t, x, y, z].join(" "));
+    }
+
+    var content = tmp.join("\n");
+    var blob = new Blob([ content ], { "type" : "text/plain" });
+    if (window.navigator.msSaveBlob) { 
+        window.navigator.msSaveBlob(blob, "test.cif"); 
+        window.navigator.msSaveOrOpenBlob(blob, "test.cif"); 
+    } else {
+        document.getElementById("download").href = window.URL.createObjectURL(blob);
+    }
+}
+

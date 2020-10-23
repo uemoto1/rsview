@@ -12,7 +12,7 @@
     <script src="./lib/js/bootstrap.min.js"></script>
     <script src="./lib/js/three.min.js"></script>
 
-    <script type="text/javascript" src="./colortable.js"></script>
+    <script type="text/javascript" src="./table.js"></script>
 
     <title>Web RSPACE Viewer</title>
 </head>
@@ -94,7 +94,7 @@
 
                 <p>
                     <ul>
-                        <li>Write <code>parameters.inp</code> and <code>atom.xyz</code> source in editor and click a
+                        <li>Write <code>parameters.inp</code> and <code>atom.xyz</code> source in editor and click the blue <code>plot</code>
                             button below.</li>
                     </ul>
                 </p>
@@ -106,6 +106,8 @@
                 </div>
 
                 <button type="button" class="btn btn-primary" id='run'>Plot crystal structure</button>
+
+                <a class="btn btn-outline-secondary disabled" href="#" role="button" id="download" download="export.cif">Download (experimental)</a>
 
                 <canvas id="viewer" class="fillbottom w-100"></canvas>
 
