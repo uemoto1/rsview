@@ -230,12 +230,12 @@ function plot_atom() {
     object.add(select3d);
 
     renderer.render(scene, camera);
+
+    // エディタのセレクタ解除
+    $('#atom_xyz div.selected').removeClass('selected');
+
 }
 
-
-function initRender() {
-
-}
 
 
 
@@ -272,19 +272,14 @@ $("#parameters").text(template_parameters_inp);
 $("#atom").text(template_atom_xyz);
 
 
-initRender(400, 400);
-
-
-
-
 $('#viewer').click(function (e) {
 
-
+    console.log(e.clientX, e.offsetX);
     if (flag_rotate) return;
 
     var mouse = new THREE.Vector2(
-        +(event.offsetX / $(this).width()) * 2 - 1,
-        -(event.offsetY / $(this).height()) * 2 + 1
+        +(e.offsetX / $(this).width()) * 2 - 1,
+        -(e.offsetY / $(this).height()) * 2 + 1
     );
 
     raycaster.setFromCamera(mouse, camera);
