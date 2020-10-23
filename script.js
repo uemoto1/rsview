@@ -370,14 +370,19 @@ $('#viewer').mousemove(function (e) {
         //camera.lookAt(0, 0, 0);
         //camera.up.set(0, 1, 0);
 
-        q = new THREE.Quaternion();
         
-        axis = new THREE.Vector3(0, 1, 0);
+        w = $("#viewer").width();
+        h = $("#viewer").height();
+        s = (w + h) * 0.5;
 
+        q = new THREE.Quaternion();
+        v1 = new THREE.Vector3(0, 0, -0.1);
+        v2 = new THREE.Vector3(-(e.clientX-x0)/s, -(e.clientY-y0)/s, -0.1);
 
-        q.setFromAxisAngle(axis, (e.clientX - x0) / 400 * Math.PI)
+        q.setFromUnitVectors(v1.normalize(), v2.normalize());
+
         quaternion.copy(q_tmp);
-        quaternion.multiply(q)
+        quaternion.premultiply(q)
         renderer.render(scene, camera);
     }
 });
@@ -395,7 +400,6 @@ $('#viewer').mousedown(function (e) {
 });
 
 $('#viewer').mouseup(function (e) {
-
         flag_rotate = false;
 });
 
