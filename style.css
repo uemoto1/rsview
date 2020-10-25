@@ -11,8 +11,8 @@ div.editor div.lineno {
     overflow: hidden;
     margin: 0px;
     border-width: 1px;
-    border-color: lightgray;
-    background-color: lightgray;
+    border-color: darkgray;
+    background-color: darkgray;
     color: dimgray;
     text-align: right;
 }

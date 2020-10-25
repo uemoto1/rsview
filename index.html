@@ -21,7 +21,7 @@
 
 
 
-    <nav class="navbar navbar-expand-lg navbar-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">Web RSPACE Viewer</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,7 @@
         <div class="row">
 
 
-            <div class="col-sm-6 fillscreen">
+            <div class="col-sm-6 fillscreen" style="background-color: lightgray;">
                 <div class="col-sm-12 h-50">
                     <strong>parameter.inp</strong>
                     <!--
@@ -94,7 +94,8 @@
 
                 <p>
                     <ul>
-                        <li>Write <code>parameters.inp</code> and <code>atom.xyz</code> source in editor and click the blue <code>plot</code>
+                        <li>Write <code>parameters.inp</code> and <code>atom.xyz</code> source in editor and click the
+                            blue <code>plot</code>
                             button below.</li>
                     </ul>
                 </p>
@@ -105,29 +106,20 @@
                     <p id='error_msg'></p>
                 </div>
 
+
                 <button type="button" class="btn btn-primary" id='run'>Plot crystal structure</button>
 
-                <a class="btn btn-outline-secondary disabled" href="#" role="button" id="download" download="export.cif">Export (experimental)</a>
-
+                <a class="btn btn-outline-secondary disabled" href="#" role="button" id="download"
+                    download="export.cif">Export (experimental)</a>
+                    <p>
+                     <div>Element:<span id="element_list"></span></div>
+                    </p>
+                     
                 <canvas id="viewer" class="fillbottom w-100"></canvas>
 
-
-
             </div>
-
-
-
         </div>
-
-
     </div>
-
-
-
-
-
-
-
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

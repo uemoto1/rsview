@@ -16,7 +16,7 @@ var zmax = 0; // zmax
 var flag_init = false; // 初期化済みの場合はtrue
 var flag_load = false; // 入力ファイル読み込み済みの場合はtrue
 var flag_edit = false; // 入力ファイル編集済みの場合はtrue
-var flag_rot = false;  // ドラッグによる回転中の場合
+var flag_rot = false; // ドラッグによる回転中の場合
 var flag_render = false;
 
 // 表示領域サイズ
@@ -25,6 +25,7 @@ var window_height;
 var viewer_width;
 var viewer_height;
 var viewer_unit;
+var viewer_zoom = 1.00;
 
 // 三次元レンダラ関連
 var renderer; // レンダラオブジェクト
@@ -46,7 +47,7 @@ var nrepx = 10;
 var nrepy = 10;
 var nrepz = 10;
 
-var bohr_angstrom = 0.529177210903
+var bohr_angstrom = 0.529177210903;
 
 
 // parameters.inpファイルの展開
@@ -160,27 +161,34 @@ function show_error_msg(title, msg) {
 
 
 function execute() {
+    // エディタのセレクタ解除
+    $('#atom_xyz div.selected').removeClass('selected');
     $("#error").hide();
     // テキストの読み込み
-    r = parseParameterInp($('#parameters').val());
-    if (0 <= r) r = parseAtomXYZ($('#atom').val());
-    if (0 <= r) plot_atom();
-    if (0 <= r) generate_cif();
+    parseParameterInp($('#parameters').val());
+    parseAtomXYZ($('#atom').val());
+    generate_cif();
+    plot_structure();
+    generate_element_list();
+    // ダウンロードを有効化
+    $('#download').removeClass('disabled');
+
+    resize();
 }
 
 cell3d_material = new THREE.LineBasicMaterial({
     color: 0x000000
 });
 
-function plot_atom() {
+function plot_structure() {
     vxmax = xmax;
     vymax = ymax;
     vzmax = zmax;
-    
+
     scale = Math.max(vxmax, vymax, vzmax);
 
     // 古いオブジェクトの消去
-    while(object.children.length > 0)
+    while (object.children.length > 0)
         object.remove(object.children[0]);
 
     // 格子（直方体）の作成
@@ -208,7 +216,7 @@ function plot_atom() {
                     // 球のメッシュを作成 
                     var geometry = new THREE.SphereGeometry(1.0 / scale);
                     var material = new THREE.MeshLambertMaterial({
-                        color: tbl_color[atom_type[i]]
+                        color: parseInt(tbl_color[atom_type[i]], 16)
                     });
                     var mesh = new THREE.Mesh(geometry, material);
                     mesh.position.x = x / scale;
@@ -233,13 +241,22 @@ function plot_atom() {
     object.add(select3d);
 
     renderer.render(scene, camera);
+}
 
-    // エディタのセレクタ解除
-    $('#atom_xyz div.selected').removeClass('selected');
 
-    // ダウンロードを有効化
-    $('#download').removeClass('disabled');
-
+function generate_element_list() {
+    var zlist = [];
+    $("#element_list").empty();
+    for (i = 0; i < natom; i++) {
+        t = atom_type[i];
+        if (zlist.indexOf(t) < 0)
+            zlist.push(t);
+    }
+    for (i = 0; i < zlist.length; i++) {
+        c = tbl_color[zlist[i]];
+        s = tbl_symbol[zlist[i]];
+        $("#element_list").append("<span style='margin:4px; padding:16px;background-color:#" + c + ";'>"+s+"</span>");
+    }
 
 }
 
@@ -247,41 +264,15 @@ function plot_atom() {
 
 
 
-template_atom_xyz = `! [x], [y], [z], [atom number], switch [x], [y], [z], [weight], switches [soc], [pp], [na]
--5.130 -5.130 -5.130 14 1 1 1 51408.00 11 1 1a
-+0.000 +0.000 -5.130 14 1 1 1 51408.00 11 1 2a
-+0.000 -5.130 +0.000 14 1 1 1 51408.00 11 1 3a
--5.130 +0.000 +0.000 14 1 1 1 51408.00 11 1 4a
--2.565 -2.565 -2.565 14 1 1 1 51408.00 11 1 5a
-+2.565 +2.565 -2.565 14 1 1 1 51408.00 11 1 6a
-+2.565 -2.565 +2.565 14 1 1 1 51408.00 11 1 7a
--2.565 +2.565 +2.565 14 1 1 1 51408.00 11 1 8a
-`;
-
-template_parameters_inp = `&nml_inp_prm_kukan
-    xmax=5.13
-    ymax=5.13
-    zmax=5.13
-    nperi=3
-    natom=8
-    nxmax=16
-    nymax=16
-    nzmax=16
-    neigmx=32
-/
-`;
 
 
 
 
 
-$("#parameters").text(template_parameters_inp);
-$("#atom").text(template_atom_xyz);
 
 
 $('#viewer').click(function (e) {
 
-    console.log(e.clientX, e.offsetX);
     if (flag_rotate) return;
 
     var mouse = new THREE.Vector2(
@@ -334,7 +325,7 @@ $('#viewer').mousemove(function (e) {
 
         q = new THREE.Quaternion();
         v1 = new THREE.Vector3(0, 0, 1);
-        v2 = new THREE.Vector3((x1-x0)/viewer_unit, (y1-y0)/viewer_unit, 0.25);
+        v2 = new THREE.Vector3((x1 - x0) / viewer_unit, (y1 - y0) / viewer_unit, 0.25);
 
         q.setFromUnitVectors(v1, v2.normalize());
         object.quaternion.copy(q.multiply(quaternion));
@@ -353,7 +344,7 @@ $('#viewer').mousedown(function (e) {
 });
 
 $('#viewer').mouseup(function (e) {
-        flag_rotate = false;
+    flag_rotate = false;
 });
 
 
@@ -389,10 +380,10 @@ function resize() {
     viewer_height = $("#viewer").innerHeight();
     viewer_unit = Math.min(viewer_width, viewer_height);
 
-    camera.top = -  viewer_height / viewer_unit * 2.0;
-    camera.left = - viewer_width / viewer_unit * 2.0;
-    camera.right = + viewer_width / viewer_unit * 2.0;
-    camera.bottom = + viewer_height / viewer_unit * 2.0;
+    camera.top = - 2 * viewer_height / (viewer_unit * viewer_zoom);
+    camera.left = - 2 * viewer_width / (viewer_unit * viewer_zoom);
+    camera.right = + 2 * viewer_width / (viewer_unit * viewer_zoom);
+    camera.bottom = + 2 * viewer_height / (viewer_unit * viewer_zoom);
     camera.updateProjectionMatrix();
 
     renderer.setSize(viewer_width, viewer_height);
@@ -402,7 +393,9 @@ function resize() {
 
 function init() {
     // ３次元表示画面の初期化
-    renderer = new THREE.WebGLRenderer({canvas: $('#viewer')[0]});
+    renderer = new THREE.WebGLRenderer({
+        canvas: $('#viewer')[0]
+    });
     renderer.setClearColor(0xffffff, 1.0);
     // カメラ作成
     camera = new THREE.OrthographicCamera(-2.0, +2.0, -2.0, +2.0);
@@ -420,6 +413,8 @@ function init() {
     light2 = new THREE.AmbientLight(0xFFFFFF, 0.60);
     scene.add(light1);
     scene.add(light2);
+    // フォッグを有効化
+    scene.fog = new THREE.Fog(0xFFFFFF, 0, 7);
     // エディタ画面作成
     $('div.editor').each(function (i, item) {
         div = $(item).children('div');
@@ -431,8 +426,11 @@ function init() {
             $(this).prev('div').scrollTop($(this).scrollTop());
         })
     });
+    // テンプレート挿入
+    $("#parameters").text(template_parameters_inp);
+    $("#atom").text(template_atom_xyz);
+
     // リサイズ
-    resize();
     execute();
 }
 
@@ -441,7 +439,7 @@ $(function () {
 });
 
 $(window).resize(function () {
-    resize(); 
+    resize();
 });
 
 
@@ -461,7 +459,7 @@ function generate_cif() {
     tmp.push("_atom_site_fract_x");
     tmp.push("_atom_site_fract_y");
     tmp.push("_atom_site_fract_z");
-    for(i = 0; i < natom; i++) {
+    for (i = 0; i < natom; i++) {
         r = atom_coor[i];
         x = String(r.x / xmax * 0.5 + 0.5);
         y = String(r.y / ymax * 0.5 + 0.5);
@@ -471,12 +469,13 @@ function generate_cif() {
     }
 
     var content = tmp.join("\n");
-    var blob = new Blob([ content ], { "type" : "text/plain" });
-    if (window.navigator.msSaveBlob) { 
-        window.navigator.msSaveBlob(blob, "test.cif"); 
-        window.navigator.msSaveOrOpenBlob(blob, "test.cif"); 
+    var blob = new Blob([content], {
+        "type": "text/plain"
+    });
+    if (window.navigator.msSaveBlob) {
+        window.navigator.msSaveBlob(blob, "test.cif");
+        window.navigator.msSaveOrOpenBlob(blob, "test.cif");
     } else {
         document.getElementById("download").href = window.URL.createObjectURL(blob);
     }
 }
-
