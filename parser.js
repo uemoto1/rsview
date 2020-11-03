@@ -102,9 +102,9 @@ function parseAtom(code) {
 
         tmp = line_tmp.split(/\s+/);
         if (tmp.length >= 4)
-            atom.push({'x': ffloat(tmp[0]), 'y': ffloat(tmp[1]), 'z': ffloat(tmp[2]), 'k': parseInt(tmp[3])});
+            atom.push({'x': ffloat(tmp[0]), 'y': ffloat(tmp[1]), 'z': ffloat(tmp[2]), 'k': parseInt(tmp[3]), 'line': i+1});
         else
-            errlog.push({'line': i+1, 'msg': 'Syntax error!' + line_tmp});
+            errlog.push({'line': i+1, 'msg': 'Syntax error!'});
     }
     return [atom, errlog];
 }
@@ -175,7 +175,7 @@ function checkParam(param, atom) {
         } else {
             var natom = parseInt(param.nml_inp_prm_kukan.natom.val)
             if (! (natom == atom.length)) {
-                errlog.push({'line': param.nml_inp_prm_kukan.zmax.line, 'msg': 'number mismatch between natom and atom.xyz!'});
+                errlog.push({'line': param.nml_inp_prm_kukan.natom.line, 'msg': 'number mismatch between natom and atom.xyz!'});
             }
         }
     }
@@ -191,6 +191,7 @@ function checkAtom(param, atom) {
     xmax = ffloat(param.nml_inp_prm_kukan.xmax.val);
     ymax = ffloat(param.nml_inp_prm_kukan.ymax.val);
     zmax = ffloat(param.nml_inp_prm_kukan.zmax.val);
+    natom = parseInt(param.nml_inp_prm_kukan.natom.val);
     for (var i = 0; i < natom; i++) {
         for (var j = 0; j < i; j++) {
             for (var irx = -1; irx <= 1; irx++) {
@@ -202,8 +203,8 @@ function checkAtom(param, atom) {
                         d = Math.sqrt(dx * dx + dy * dy + dz * dz);
                         if (d < dlim) {
                             errlog.push({
-                                'line': i+1,
-                                msg: 'almost same position with line ' + (atom[j].line + 1) + " !"
+                                'line': atom[i].line,
+                                msg: 'almost same position with line ' + atom[j].line + " !"
                             });
                         }
                     }

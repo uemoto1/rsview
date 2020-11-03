@@ -52,6 +52,10 @@ var nrepz = 10;
 
 var bohr_angstrom = 0.529177210903;
 
+function showErrorMsg(name, errlog) {
+
+
+}
 
 // parameters.inpファイルの展開
 function parse(parameters_inp, atom_xyz) {
@@ -64,45 +68,63 @@ function parse(parameters_inp, atom_xyz) {
     atom_coor = [];
     atom_type = [];
 
-    [param, errlog_nml] = parseNamelist(parameters_inp);
-    if (errlog_nml.length > 0) return;
+    while (true) {
+        [param, errlog_nml] = parseNamelist(parameters_inp);
+        if (errlog_nml.length > 0) break;
 
-    [atom, errlog_atom] = parseAtom(atom_xyz);
-    if (errlog_atom.length > 0) return;
+        [atom, errlog_atom] = parseAtom(atom_xyz);
+        if (errlog_atom.length > 0) break;
 
-    errlog_chk_param = checkParam(param, atom);
-    if (errlog_chk_param.length > 0) return;
+        errlog_nml = errlog_nml.concat(checkParam(param, atom));
+        if (errlog_nml.length > 0) break;
 
-    errlog_chk_atom = checkAtom(param, atom);
-    if (errlog_chk_atom.length > 0) return;
+        errlog_atom = errlog_atom.concat(checkAtom(param, atom));
+        if (errlog_atom.length > 0) break;
 
-    natom = parseInt(param.nml_inp_prm_kukan.natom.val);
-    nxmax = parseInt(param.nml_inp_prm_kukan.nxmax.val);
-    nymax = parseInt(param.nml_inp_prm_kukan.nymax.val);
-    nzmaz = parseInt(param.nml_inp_prm_kukan.nzmax.val);
-    xmax = ffloat(param.nml_inp_prm_kukan.xmax.val);
-    ymax = ffloat(param.nml_inp_prm_kukan.ymax.val);
-    zmax = ffloat(param.nml_inp_prm_kukan.zmax.val);
+        natom = parseInt(param.nml_inp_prm_kukan.natom.val);
+        nxmax = parseInt(param.nml_inp_prm_kukan.nxmax.val);
+        nymax = parseInt(param.nml_inp_prm_kukan.nymax.val);
+        nzmaz = parseInt(param.nml_inp_prm_kukan.nzmax.val);
+        xmax = ffloat(param.nml_inp_prm_kukan.xmax.val);
+        ymax = ffloat(param.nml_inp_prm_kukan.ymax.val);
+        zmax = ffloat(param.nml_inp_prm_kukan.zmax.val);
 
-    for (var i = 0; i < natom; i++) {
-        atom_line.push(atom[i].line);
-        atom_coor.push(new THREE.Vector3(atom[i].x, atom[i].y, atom[i].z));
-        atom_type.push(atom[i].k);
+        for (var i = 0; i < natom; i++) {
+            atom_line.push(atom[i].line);
+            atom_coor.push(new THREE.Vector3(atom[i].x, atom[i].y, atom[i].z));
+            atom_type.push(atom[i].k);
+        }
+        return 0;
     }
+
+    errmsg = [];
+    for (var i = 0; i < errlog_nml.length; i++) {
+        errmsg.push("<li>parameters.inp: line " + errlog_nml[i].line + ": " + errlog_nml[i].msg + "</li>");
+        $('#parameters_inp div.label:eq(' + (errlog_nml[i].line-1) + ")").addClass('error');
+    }
+    for (var i = 0; i < errlog_atom.length; i++) {
+        errmsg.push("<li>atom.xyz: line " + errlog_atom[i].line + ": " + errlog_atom[i].msg + "</li>");
+        $('#atom_xyz div.label:eq(' + (errlog_atom[i].line-1) + ")").addClass('error');
+    }
+
+    console.log(errmsg.join("\n"));
+
+    $("#errmsg").empty();
+    $("#errmsg").html(errmsg.join("\n"));
+    $("#errmsgModal").modal("show");
 
     return 0;
 }
 
 function execute() {
     // エディタのセレクタ解除
-    $('#atom_xyz div.selected').removeClass('selected');
+    $('#parameters_inp div').removeClass('selected');
+    $('#parameters_inp div').removeClass('error');
+    $('#atom_xyz div').removeClass('selected');
+    $('#atom_xyz div').removeClass('error');
     $("#error").hide();
     // テキストの読み込み
-    errmsg = []
     parse($('#parameters_inp textarea').val(), $('#atom_xyz textarea').val());
-    if (errmsg.length > 0) return;
-    //parseAtomXYZ($('#atom_xyz textarea').val());
-    if (errmsg.length > 0) return;
     generate_cif();
     plot_structure();
     generate_element_list();

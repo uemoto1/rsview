@@ -27,6 +27,11 @@ div.editor div.lineno div.selected {
     color: black;
 }
 
+div.editor div.lineno div.error {
+    background-color: red;
+    color: white;
+}
+
 div.editor textarea {
     margin: 0px;
     padding-left: 4px;
