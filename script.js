@@ -43,130 +43,88 @@ var quaternion;
 // トレース用オブジェクト
 var raycaster = new THREE.Raycaster();
 
+// エラー警告
+var errmsg = [];
+
 var nrepx = 10;
 var nrepy = 10;
 var nrepz = 10;
 
 var bohr_angstrom = 0.529177210903;
 
+function showErrorMsg(name, errlog) {
 
-// parameters.inpファイルの展開
-function parseParameterInp(code) {
-    // グローバル変数の初期化
-    natom = 0;
-    xmax = 0;
-    ymax = 0;
-    zmax = 0;
-    natom = 0;
-    ax = 0.0;
-    ay = 0.0;
-    az = 0.0;
-    // parameters.inpを一行ごとに読み込み
-    line = code.split(/\r?\n/);
-    for (var i = 0; i < line.length; i++) {
-        // コメントを削除
-        tmp = line[i].split(/!/)[0].trim();
-        if (tmp == '') continue;
-        if (tmp == '&nml_inp_prm_kukan') continue;
-        if (tmp == '/') continue;
-        // 代入文とマッチ
-        result = tmp.match(/(\S+)\s*=\s*(\S+)/);
-        if (result) {
-            switch (result[1]) {
-                case 'xmax':
-                    xmax = parseFloat(result[2].replace(/dD/, 'e'));
-                    break;
-                case 'ymax':
-                    ymax = parseFloat(result[2].replace(/dD/, 'e'));
-                    break;
-                case 'zmax':
-                    zmax = parseFloat(result[2].replace(/dD/, 'e'));
-                    break;
-                case 'nperi':
-                    nperi = parseInt(result[2]);
-                    break;
-                case 'natom':
-                    natom = parseInt(result[2]);
-                    break;
-            }
-            continue;
-        }
-        // いずれの文法にもマッチしないケース
-        show_error_msg("Syntax error in parameter.inp:" + (i + 1) + ":", line[i]);
-        return -1
-    }
 
-    if (!natom > 0) {
-        show_error_msg('Error! parameter.inp', 'natom (>0) must required..');
-        return -1;
-    }
-    if (!xmax > 0.0) {
-        show_error_msg('Error! parameter.inp', 'xmax  (>0) must required.');
-        return -1;
-    }
-    if (!ymax > 0.0) {
-        show_error_msg('Error! parameter.inp', 'ymax  (>0) must required.');
-        return -1;
-    }
-    if (!zmax > 0.0) {
-        show_error_msg('Error! parameter.inp', 'zmax  (>0) must required.');
-        return -1;
-    }
-    return 0;
 }
 
-// 入力ファイルの展開
-function parseAtomXYZ(code) {
-    // グローバル変数の初期化
+// parameters.inpファイルの展開
+function parse(parameters_inp, atom_xyz) {
+    natom = 0;
+    xmax = 1.0;
+    ymax = 1.0;
+    zmax = 1.0;
+
     atom_line = [];
     atom_coor = [];
     atom_type = [];
 
-    // 一行ごとに読み込む
-    line = code.split(/\r?\n/);
-    for (var i = 0; i < line.length; i++) {
-        // Bravais matrixまで来たら終了
-        if (line[i].match(/Bravais matrix/)) break;
-        // コメントを無視
-        tmp = line[i].split(/!/)[0].trim()
-        // 空行を無視
-        if (tmp.length == 0) continue;
-        // 空白で分割
-        buf = tmp.split(/\s+/);
-        if (buf.length < 4) {
-            show_error_msg("Syntax error in line " + (i + 1) + ":", line[i]);
-            return -1;
-        } else { // tmp.length >= 4
-            x = parseFloat(buf[0].replace(/d|D/, 'e'));
-            y = parseFloat(buf[1].replace(/d|D/, 'e'));
-            z = parseFloat(buf[2].replace(/d|D/, 'e'));
-            t = parseInt(buf[3]);
+    while (true) {
+        [param, errlog_nml] = parseNamelist(parameters_inp);
+        if (errlog_nml.length > 0) break;
 
-            if (isNaN(x) || isNaN(y) || isNaN(z) || isNaN(t))
-                show_error_msg("Invalid value in line " + (i + 1) + ":", line[i]);
+        [atom, errlog_atom] = parseAtom(atom_xyz);
+        if (errlog_atom.length > 0) break;
 
-            atom_coor.push(new THREE.Vector3(x, y, z));
-            atom_line.push(i);
-            atom_type.push(t);
+        errlog_nml = errlog_nml.concat(checkParam(param, atom));
+        if (errlog_nml.length > 0) break;
+
+        errlog_atom = errlog_atom.concat(checkAtom(param, atom));
+        if (errlog_atom.length > 0) break;
+
+        natom = parseInt(param.nml_inp_prm_kukan.natom.val);
+        nxmax = parseInt(param.nml_inp_prm_kukan.nxmax.val);
+        nymax = parseInt(param.nml_inp_prm_kukan.nymax.val);
+        nzmaz = parseInt(param.nml_inp_prm_kukan.nzmax.val);
+        xmax = ffloat(param.nml_inp_prm_kukan.xmax.val);
+        ymax = ffloat(param.nml_inp_prm_kukan.ymax.val);
+        zmax = ffloat(param.nml_inp_prm_kukan.zmax.val);
+
+        for (var i = 0; i < natom; i++) {
+            atom_line.push(atom[i].line);
+            atom_coor.push(new THREE.Vector3(atom[i].x, atom[i].y, atom[i].z));
+            atom_type.push(atom[i].k);
         }
+        return 0;
     }
+
+    errmsg = [];
+    for (var i = 0; i < errlog_nml.length; i++) {
+        errmsg.push("<li>parameters.inp: line " + errlog_nml[i].line + ": " + errlog_nml[i].msg + "</li>");
+        $('#parameters_inp div.label:eq(' + (errlog_nml[i].line-1) + ")").addClass('error');
+    }
+    for (var i = 0; i < errlog_atom.length; i++) {
+        errmsg.push("<li>atom.xyz: line " + errlog_atom[i].line + ": " + errlog_atom[i].msg + "</li>");
+        $('#atom_xyz div.label:eq(' + (errlog_atom[i].line-1) + ")").addClass('error');
+    }
+
+    console.log(errmsg.join("\n"));
+
+    $("#errmsg").empty();
+    $("#errmsg").html(errmsg.join("\n"));
+    $("#errmsgModal").modal("show");
+
     return 0;
 }
 
-function show_error_msg(title, msg) {
-    $("#error_title").text(title);
-    $("#error_msg").text(msg);
-    $("#error").show();
-}
-
-
 function execute() {
     // エディタのセレクタ解除
-    $('#atom_xyz div.selected').removeClass('selected');
+    $('#parameters_inp div').removeClass('selected');
+    $('#parameters_inp div').removeClass('error');
+    $('#atom_xyz div').removeClass('selected');
+    $('#atom_xyz div').removeClass('error');
     $("#error").hide();
     // テキストの読み込み
-    parseParameterInp($('#parameters').val());
-    parseAtomXYZ($('#atom').val());
+    parse($('#parameters_inp textarea').val(), $('#atom_xyz textarea').val());
     generate_cif();
     plot_structure();
     generate_element_list();
@@ -427,8 +385,8 @@ function init() {
         })
     });
     // テンプレート挿入
-    $("#parameters").text(template_parameters_inp);
-    $("#atom").text(template_atom_xyz);
+    $("#parameters_inp textarea").text(template_parameters_inp);
+    $("#atom_xyz textarea").text(template_atom_xyz);
 
     // リサイズ
     execute();

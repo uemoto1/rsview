@@ -12,7 +12,6 @@
     <script src="./lib/js/bootstrap.min.js"></script>
     <script src="./lib/js/three.min.js"></script>
 
-    <script type="text/javascript" src="./table.js?v=20201025"></script>
 
     <title>Web RSPACE Viewer</title>
 </head>
@@ -68,7 +67,7 @@
 
             <div class="col-sm-6 fillscreen" style="background-color: lightgray;">
                 <div class="col-sm-12 h-50">
-                    <strong>parameter.inp</strong>
+                    <strong>parameters.inp</strong>
                     <!--
                     <button type="button" class="btn btn-link">Open file</button>
                     <button type="button" class="btn btn-link">Save as</button>
@@ -122,8 +121,30 @@
         </div>
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="errmsgModal" tabindex="-1" role="dialog" aria-labelledby="errmsgTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="errmsgTitle">Error</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+            <ul id="errmsg"></ul>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script type="text/javascript" src="./table.js?v=20201025"></script>
+    <script type="text/javascript" src="./parser.js?v=20201025"></script>
     <script type="text/javascript" src="./script.js?v=20201025"></script>
 
 </body>
