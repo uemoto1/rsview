@@ -312,12 +312,12 @@ function resize() {
     window_width = $(window).innerWidth();
     window_height = $(window).innerHeight();
 
-    $(".fillscreen").each(function (i) {
-        h = window_height;
-        t = $(this).offset().top;
-        $(this).outerHeight(h - t);
-    });
+    nav_height = $("nav").outerHeight();
+    footer_height = $("#footer").outerHeight();
 
+    $("#panelLeft").outerHeight(window_height - nav_height - footer_height);
+    $("#panelRight").outerHeight(window_height - nav_height - footer_height);
+    
     $(".fillbottom").each(function (i) {
         h = $(this).parent().innerHeight();
         t = $(this).position().top;
