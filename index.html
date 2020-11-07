@@ -64,8 +64,7 @@
 
         <div class="row">
 
-
-            <div class="col-sm-6 fillscreen" style="background-color: lightgray;">
+            <div class="col-sm-6" id="panelLeft" style="background-color: lightgray;">
                 <div class="col-sm-12 h-50">
                     <strong>parameters.inp</strong>
                     <!--
@@ -89,11 +88,10 @@
                 </div>
             </div>
 
-            <div class="col-sm-6 fillscreen">
+            <div class="col-sm-6" id="panelRight">
 
                 <p>
                     <ul>
-                        <li>Source code: <a href="https://github.com/uemoto1/rsview/">https://github.com/uemoto1/rsview/</a> by M. Uemoto @ Kobe Univ.</li>
                         <li>Write <code>parameters.inp</code> and <code>atom.xyz</code> source in editor and click the
                             blue <code>plot</code>
                             button below.</li>
@@ -118,8 +116,18 @@
                 <canvas id="viewer" class="fillbottom w-100"></canvas>
 
             </div>
+            <div class="col-sm-12 w-100" id="footer" style="background-color: dimgray; color:white;">
+                <small> 
+                    Source code: <a href="https://github.com/uemoto1/rsview/">https://github.com/uemoto1/rsview/</a> 
+                    by M. Uemoto @ Kobe Univ.
+                </small>
+            </div>
+
         </div>
+
+
     </div>
+
 
     <!-- Modal -->
     <div class="modal fade" id="errmsgModal" tabindex="-1" role="dialog" aria-labelledby="errmsgTitle" aria-hidden="true">
@@ -143,9 +151,9 @@
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script type="text/javascript" src="./table.js?v=20201025"></script>
-    <script type="text/javascript" src="./parser.js?v=20201025"></script>
-    <script type="text/javascript" src="./script.js?v=20201025"></script>
+    <script type="text/javascript" src="./table.js?v=20201104"></script>
+    <script type="text/javascript" src="./parser.js?v=20201104"></script>
+    <script type="text/javascript" src="./script.js?v=20201104"></script>
 
 </body>
 
