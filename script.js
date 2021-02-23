@@ -18,6 +18,7 @@ var flag_load = false; // 入力ファイル読み込み済みの場合はtrue
 var flag_edit = false; // 入力ファイル編集済みの場合はtrue
 var flag_rot = false; // ドラッグによる回転中の場合
 var flag_render = false;
+var flag_change = true; // テキストボックスの内容が変更された場合
 
 // 表示領域サイズ
 var window_width;
@@ -130,7 +131,8 @@ function execute() {
     generate_element_list();
     // ダウンロードを有効化
     $('#download').removeClass('disabled');
-
+    // 変更済みフラグを切る
+    flag_change = false;
     resize();
 }
 
@@ -213,13 +215,39 @@ function generate_element_list() {
     for (i = 0; i < zlist.length; i++) {
         c = tbl_color[zlist[i]];
         s = tbl_symbol[zlist[i]];
-        $("#element_list").append("<span style='margin:4px; padding:16px;background-color:#" + c + ";'>"+s+"</span>");
+        $("#element_list").append("<span class='rounded-pill' style='margin:4px; padding:16px;background-color:#" + c + ";'>"+s+"</span>");
     }
 
 }
 
 
+function notify_replot() {
+    if (flag_change == false) {
+        // ボタンの説明を挿入
+        $('#run').popover({
+            "title": "You modified input data!",
+            "content":"Click 'Plot structure' button to update.",
+            "placement":"bottom",
+        });
+        $('#run').popover("show");
+        $("#run").removeClass("btn-secondary");
+        $("#run").addClass("btn-primary");
+        flag_change = true;
+    }
+}
 
+ // 半角英数の入力を検知
+$('textarea').keypress(function() {
+    notify_replot();
+    console.log("HHH");
+});
+
+// deleteキーとbackspaceキーの入力を検知
+$('textarea').keyup(function(e) {
+    if (e.keyCode == 46 || e.keyCode == 8){
+        notify_replot();
+    }
+});
 
 
 
@@ -268,7 +296,12 @@ $('#viewer').click(function (e) {
 });
 
 
-$('#run').click(execute);
+$('#run').click(function(e){
+    $('#run').popover("dispose");
+    $('#run').removeClass("btn-primary");
+    $('#run').addClass("btn-secondary");
+    execute();
+});
 
 
 // var m0 = new THREE.Vector2();
@@ -387,6 +420,13 @@ function init() {
     // テンプレート挿入
     $("#parameters_inp textarea").text(template_parameters_inp);
     $("#atom_xyz textarea").text(template_atom_xyz);
+    // ボタンの説明を挿入
+    $('#run').popover({
+        "title": "Welcome to Web RSPACE view!",
+        "content":"Write parameters.inp and atom.xyz in editor and click 'Plot structure' button.",
+        "placement":"bottom",
+    });
+    $('#run').popover("show");
 
     // リサイズ
     execute();
