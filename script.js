@@ -69,6 +69,8 @@ function parse(parameters_inp, atom_xyz) {
     atom_coor = [];
     atom_type = [];
 
+    errmsg = [];
+
     while (true) {
         [param, errlog_nml] = parseNamelist(parameters_inp);
         if (errlog_nml.length > 0) break;
@@ -98,17 +100,15 @@ function parse(parameters_inp, atom_xyz) {
         return 0;
     }
 
-    errmsg = [];
+
     for (var i = 0; i < errlog_nml.length; i++) {
         errmsg.push("<li>parameters.inp: line " + errlog_nml[i].line + ": " + errlog_nml[i].msg + "</li>");
-        $('#parameters_inp div.label:eq(' + (errlog_nml[i].line-1) + ")").addClass('error');
+        $('#parameters_inp div.label:eq(' + (errlog_nml[i].line - 1) + ")").addClass('error');
     }
     for (var i = 0; i < errlog_atom.length; i++) {
         errmsg.push("<li>atom.xyz: line " + errlog_atom[i].line + ": " + errlog_atom[i].msg + "</li>");
-        $('#atom_xyz div.label:eq(' + (errlog_atom[i].line-1) + ")").addClass('error');
+        $('#atom_xyz div.label:eq(' + (errlog_atom[i].line - 1) + ")").addClass('error');
     }
-
-    console.log(errmsg.join("\n"));
 
     $("#errmsg").empty();
     $("#errmsg").html(errmsg.join("\n"));
@@ -118,6 +118,8 @@ function parse(parameters_inp, atom_xyz) {
 }
 
 function execute() {
+    // 変更済みフラグを切る
+    flag_change = false;
     // エディタのセレクタ解除
     $('#parameters_inp div').removeClass('selected');
     $('#parameters_inp div').removeClass('error');
@@ -126,13 +128,18 @@ function execute() {
     $("#error").hide();
     // テキストの読み込み
     parse($('#parameters_inp textarea').val(), $('#atom_xyz textarea').val());
-    generate_cif();
     plot_structure();
     generate_element_list();
-    // ダウンロードを有効化
-    $('#download').removeClass('disabled');
-    // 変更済みフラグを切る
-    flag_change = false;
+
+    if (errmsg.length == 0) {
+        generate_cif();
+        // ボタン表示を変更
+        $("#run").removeClass().addClass("btn btn-outline-primary");
+        $('#download').removeClass('disabled');
+    } else {
+        $("#run").removeClass().addClass("btn btn-outline-danger");
+        $('#download').addClass('disbled');
+    }
     resize();
 }
 
@@ -215,41 +222,43 @@ function generate_element_list() {
     for (i = 0; i < zlist.length; i++) {
         c = tbl_color[zlist[i]];
         s = tbl_symbol[zlist[i]];
-        $("#element_list").append("<span class='rounded-pill' style='margin:4px; padding:16px;background-color:#" + c + ";'>"+s+"</span>");
+        $("#element_list").append("<span class='rounded-pill' style='margin:4px; padding:16px;background-color:#" + c + ";'>" + s + "</span>");
     }
 
 }
 
 
-function notify_replot() {
+function notify_change() {
     if (flag_change == false) {
         // ボタンの説明を挿入
         $('#run').popover({
             "title": "You modified input data!",
-            "content":"Click 'Plot structure' button to update.",
-            "placement":"bottom",
+            "content": "Click 'Plot structure' button to update.",
+            "placement": "bottom",
         });
         $('#run').popover("show");
-        $("#run").removeClass("btn-secondary");
-        $("#run").addClass("btn-primary");
+        $("#run").removeClass().addClass("btn btn-primary");
+        $("#download").addClass("disabled");
         flag_change = true;
     }
 }
 
- // 半角英数の入力を検知
-$('textarea').keypress(function() {
-    notify_replot();
-    console.log("HHH");
+// 半角英数の入力を検知
+$('textarea').keypress(function () {
+    notify_change();
 });
 
 // deleteキーとbackspaceキーの入力を検知
-$('textarea').keyup(function(e) {
-    if (e.keyCode == 46 || e.keyCode == 8){
-        notify_replot();
+$('textarea').keyup(function (e) {
+    if (e.keyCode == 46 || e.keyCode == 8) {
+        notify_change();
     }
 });
 
-
+// クリップボードからの貼り付けを検知
+$('textarea').on('paste', function (e) {
+    notify_change();
+});
 
 
 
@@ -282,7 +291,7 @@ $('#viewer').click(function (e) {
         label = $('#atom_xyz div.label');
         $(label[atom_line[i] - 1]).addClass('selected');
         $('#atom_xyz textarea').scrollTop(
-            $('#atom_xyz div.selected').offsetTop - $('#atom_xyz textarea')[0].offsetTop
+            $('#atom_xyz div.selected')[0].offsetTop - $('#atom_xyz textarea')[0].offsetTop
         );
 
         $("#atom_info").text(
@@ -296,10 +305,8 @@ $('#viewer').click(function (e) {
 });
 
 
-$('#run').click(function(e){
+$('#run').click(function (e) {
     $('#run').popover("dispose");
-    $('#run').removeClass("btn-primary");
-    $('#run').addClass("btn-secondary");
     execute();
 });
 
@@ -338,6 +345,27 @@ $('#viewer').mouseup(function (e) {
     flag_rotate = false;
 });
 
+$('.zoom_option').click(function (e) {
+    viewer_zoom = parseFloat($(this).data("scale"));
+    $("#zoom_scale").text("Zoom: " + Math.round(viewer_zoom * 100) + " %");
+    resize();
+});
+
+$('#zoom_minus').click(function (e) {
+    viewer_zoom = Math.max(0.5, viewer_zoom - 0.1)
+    $("#zoom_scale").text("Zoom: " + Math.round(viewer_zoom * 100) + " %");
+    resize();
+});
+
+$('#zoom_plus').click(function (e) {
+    viewer_zoom = Math.min(2.5, viewer_zoom + 0.1)
+    $("#zoom_scale").text("Zoom: " + Math.round(viewer_zoom * 100) + " %");
+    resize();
+});
+
+
+
+
 
 
 function resize() {
@@ -350,7 +378,7 @@ function resize() {
 
     $("#panelLeft").outerHeight(window_height - nav_height - footer_height);
     $("#panelRight").outerHeight(window_height - nav_height - footer_height);
-    
+
     $(".fillbottom").each(function (i) {
         h = $(this).parent().innerHeight();
         t = $(this).position().top;
@@ -371,10 +399,10 @@ function resize() {
     viewer_height = $("#viewer").innerHeight();
     viewer_unit = Math.min(viewer_width, viewer_height);
 
-    camera.top = - 2 * viewer_height / (viewer_unit * viewer_zoom);
-    camera.left = - 2 * viewer_width / (viewer_unit * viewer_zoom);
-    camera.right = + 2 * viewer_width / (viewer_unit * viewer_zoom);
-    camera.bottom = + 2 * viewer_height / (viewer_unit * viewer_zoom);
+    camera.top = -2 * viewer_height / (viewer_unit * viewer_zoom);
+    camera.left = -2 * viewer_width / (viewer_unit * viewer_zoom);
+    camera.right = +2 * viewer_width / (viewer_unit * viewer_zoom);
+    camera.bottom = +2 * viewer_height / (viewer_unit * viewer_zoom);
     camera.updateProjectionMatrix();
 
     renderer.setSize(viewer_width, viewer_height);
@@ -420,16 +448,16 @@ function init() {
     // テンプレート挿入
     $("#parameters_inp textarea").text(template_parameters_inp);
     $("#atom_xyz textarea").text(template_atom_xyz);
+    // 計算結果を表示
+    execute();
     // ボタンの説明を挿入
     $('#run').popover({
         "title": "Welcome to Web RSPACE view!",
-        "content":"Write parameters.inp and atom.xyz in editor and click 'Plot structure' button.",
-        "placement":"bottom",
+        "content": "Write parameters.inp and atom.xyz in editor and click 'Plot structure' button.",
+        "placement": "bottom",
     });
     $('#run').popover("show");
-
-    // リサイズ
-    execute();
+    $('#run').removeClass().addClass("btn btn-primary")
 }
 
 $(function () {

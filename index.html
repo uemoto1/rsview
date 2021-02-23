@@ -22,22 +22,17 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">Web RSPACE Viewer</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
+        <ul class="navbar-nav mr-auto">
 
-                <li class="nav-item">
-                    <a class="nav-link" href="https://github.com/uemoto1/rsview/">GitHub</a>
-                </li>
+            <li class="nav-item">
+                <a class="nav-link" href="https://github.com/uemoto1/rsview/">About</a>
+            </li>
 
-                <li class="nav-item">
-                </li>
+            <li class="nav-item">
+            </li>
 
 
-                <!--
+            <!--
                 <li class="nav-item active">
                     <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
                 </li>
@@ -63,19 +58,14 @@
                     <a class="nav-link disabled" href="#">Disabled</a>
                 </li>
             -->
-            </ul>
+        </ul>
 
-            <form class="form-inline">
-                <a class="btn btn-secondary"  href="#" id="download"
-                download="export.cif">Export CIF</a>
+        <form class="form-inline">
+            <button type="button" class="btn btn-primary" id='run'>Plot structure</button>
+            <span style="width:10px;"> </span>
+            <a class="btn btn-secondary" href="#" id="download" download="export.cif">Export CIF</a>
+        </form>
 
-                <span style="width:4px;"></span>
-
-
-                <button type="button" class="btn btn-primary" id='run'>Plot structure</button>
-            </form>
-
-        </div>
 
 
     </nav>
@@ -113,24 +103,46 @@
 
             <div class="col-sm-6" id="panelRight">
 
+                <p>
+                    <!-- <form> -->
 
-                <div class="col-sm-12">
-                    <label for="zoom">Zoom</label>
-                    <input type="range" id="zoom" name="zoom" 
-                           min="1.0" max="3.0" value="1.0" step="0.1">
+                    <div class="btn-group" role="group" aria-label="Basic example">
+
+                        <div class="btn-group" role="group">
+                            <button id="zoom_scale" type="button" class="btn btn-secondary dropdown-toggle"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Zoom: 100 %
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="zoom_scale">
+                                <a class="dropdown-item zoom_option" data-scale="0.5" href="#">50 %</a>
+                                <a class="dropdown-item zoom_option" data-scale="1.0" href="#">100 %</a>
+                                <a class="dropdown-item zoom_option" data-scale="1.5" href="#">150 %</a>
+                                <a class="dropdown-item zoom_option" data-scale="2.0" href="#">200 %</a>
+                                <a class="dropdown-item zoom_option" data-scale="2.5" href="#">250 %</a>
+                            </div>
                         </div>
 
-                <p>
-                    <div>Element:<span id="element_list"></span></div>
+                        <button class="btn btn-outline-secondary" id="zoom_minus">-</button>
+                        <button class="btn btn-outline-secondary" id="zoom_plus">+</button>
+
+                    </div>
+                    <div class="btn-group" role="group">
+
+                    </div>
+                    <!-- </form> -->
                 </p>
 
-                    
+                <hr />
+
+                <p><span id="element_list"></span></p>
+
                 <canvas id="viewer" class="fillbottom w-100"></canvas>
 
             </div>
             <div class="col-sm-12 w-100" id="footer" style="background-color: dimgray; color:white;">
-                <small> 
-                    Source code: <a href="https://github.com/uemoto1/rsview/" style="color:white;">https://github.com/uemoto1/rsview/</a> 
+                <small>
+                    Source code: <a href="https://github.com/uemoto1/rsview/"
+                        style="color:white;">https://github.com/uemoto1/rsview/</a>
                     by M. Uemoto @ Kobe Univ.
                 </small>
             </div>
@@ -142,22 +154,23 @@
 
 
     <!-- Modal -->
-    <div class="modal fade" id="errmsgModal" tabindex="-1" role="dialog" aria-labelledby="errmsgTitle" aria-hidden="true">
+    <div class="modal fade" id="errmsgModal" tabindex="-1" role="dialog" aria-labelledby="errmsgTitle"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title" id="errmsgTitle">Error</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="errmsgTitle">Error</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <ul id="errmsg"></ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
             </div>
-            <div class="modal-body">
-            <ul id="errmsg"></ul>
-            </div>
-            <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
         </div>
     </div>
 
