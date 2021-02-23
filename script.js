@@ -252,13 +252,13 @@ $('#viewer').click(function (e) {
         select3d.visible = true;
 
         label = $('#atom_xyz div.label');
-        $(label[atom_line[i]]).addClass('selected');
+        $(label[atom_line[i] - 1]).addClass('selected');
         $('#atom_xyz textarea').scrollTop(
             $('#atom_xyz div.selected').offsetTop - $('#atom_xyz textarea')[0].offsetTop
         );
 
         $("#atom_info").text(
-            "Element:" + atom_type[i] + ', Line:' + (atom_line[i] + 1)
+            "Element:" + atom_type[i] + ', Line:' + (atom_line[i])
         );
 
 
