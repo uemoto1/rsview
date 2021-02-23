@@ -93,6 +93,8 @@ function parseAtom(code) {
     var errlog = [];
     for (i = 0; i < line.length; i++) {
         line_tmp = line[i]
+        // Meglect bravais lattice section
+        if (line_tmp.match(/Bravais/)) break
         // Exclude comments:
         line_tmp = line_tmp.replace(/!.*$/, '');
         // Exclude indent and spaces:
