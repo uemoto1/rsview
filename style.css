@@ -2,7 +2,7 @@
 
 .editor {
     width: 100%;
-    font-family: "Courier New", Courier, Monaco, monospace;
+    font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace; 
     font-size: medium;
 }
 
@@ -34,7 +34,7 @@ div.editor div.lineno div.error {
 
 div.editor textarea {
     margin: 0px;
-    padding-left: 4px;
+    padding-left: 5px;
     border-width: 1px;
     border-color: lightgray;
     background-color: white;
