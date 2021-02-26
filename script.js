@@ -33,13 +33,14 @@ var renderer; // レンダラオブジェクト
 var camera; // カメラ
 var scene; // シーン
 var object; // オブジェクト
+var axis; // 座標軸オブジェクト
 
 var atom3d; // 原子(球)
 var cell3d; // 格子セル(ワイヤーフレーム)
 var select3d; // セレクタ
 
 // オブジェクト回転用クオータニオン
-var quaternion;
+var quaternion = new THREE.Quaternion(0.9840098829174856, 0.009242544937229168, 0.1509512203796048, 0.09408961021125717);
 
 // トレース用オブジェクト
 var raycaster = new THREE.Raycaster();
@@ -186,9 +187,10 @@ function plot_structure() {
                         color: parseInt(tbl_color[atom_type[i]], 16)
                     });
                     var mesh = new THREE.Mesh(geometry, material);
+                    // NOTE: exchange y and z to replace left handed system (data) to right handed system (display)!
                     mesh.position.x = x / scale;
-                    mesh.position.y = y / scale;
-                    mesh.position.z = z / scale;
+                    mesh.position.y = z / scale;
+                    mesh.position.z = y / scale;
                     mesh.atom_index = i;
                     atom3d.add(mesh);
                 }
@@ -327,6 +329,7 @@ $('#viewer').mousemove(function (e) {
 
         q.setFromUnitVectors(v1, v2.normalize());
         object.quaternion.copy(q.multiply(quaternion));
+        axis.quaternion.copy(object.quaternion);
         renderer.render(scene, camera);
     }
 });
@@ -425,7 +428,13 @@ function init() {
     scene.add(camera);
     // オブジェクト作成
     object = new THREE.Group();
-    scene.add(object)
+    object.quaternion.copy(quaternion);
+    scene.add(object);
+    // 座標軸ヘルパー作成
+    axis = new THREE.AxisHelper(0.50);
+    axis.position.set(-1.5, -1.5, 1.5);
+    axis.quaternion.copy(quaternion);
+    scene.add(axis);
     // ライト作成
     light1 = new THREE.DirectionalLight(0xFFFFFF, 0.40);
     light1.position.set(-2, -2, -2).normalize();
