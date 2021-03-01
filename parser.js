@@ -2,6 +2,14 @@
 //  Mitsuharu UEMOTO @ Kobe University
 //  Copyright(c) 2019 All rights reserved.
 
+function isFloat(str) {
+    return /^\s*[+-]?(\d+|\d*\.\d+)([eEdD][+-]?\d+)?$/.test(str)
+}
+
+function isInteger(str) {
+    return /\s*(+|-)?\d+\s*)/.test(str);
+}
+
 function ffloat(str) {
     return parseFloat(str.replace(/D|d/, 'e'));
 }
