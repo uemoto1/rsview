@@ -2,12 +2,12 @@
 //  Mitsuharu UEMOTO @ Kobe University
 //  Copyright(c) 2019 All rights reserved.
 
-function isFloat(str) {
+function isReal(str) {
     return /^\s*[+-]?(\d+|\d*\.\d+)([eEdD][+-]?\d+)?$/.test(str)
 }
 
 function isInteger(str) {
-    return /\s*(+|-)?\d+\s*)/.test(str);
+    return /^\s*[+-]?\d+\s*$/.test(str);
 }
 
 function ffloat(str) {
@@ -121,6 +121,16 @@ function parseAtom(code) {
 
 
 
+
+
+
+
+
+
+
+
+
+
 function checkParam(param, atom) {
     const hlim = 1.0;   // 刻み幅警告レベル
     const alim = 1.0;   // セルサイズ警告レベル
@@ -131,6 +141,25 @@ function checkParam(param, atom) {
     if (! ('nml_inp_prm_kukan' in param)) {
         errlog.push({'msg': '&nml_inp_prm_kukan is not defined!'});
     } else {
+
+        for (key in param.nml_inp_prm_kukan) {
+            if (key in tbl_vartype) {
+                switch (tbl_vartype[key.toLowerCase()].type) {
+                    case 'int':
+                        if (! isInteger(param.nml_inp_prm_kukan[key].val))
+                            errlog.push({'line': param.nml_inp_prm_kukan[key].line, 'msg': 'invalid integer!'});
+                        break;
+                    case 'real':
+                        if (! isReal(param.nml_inp_prm_kukan[key].val))
+                            errlog.push({'line': param.nml_inp_prm_kukan[key].line, 'msg': 'invalid real number!'});
+                        break;
+                    }
+            } else {
+                if (0 < param.nml_inp_prm_kukan[key].line)
+                errlog.push({'line': param.nml_inp_prm_kukan[key].line, 'msg': 'unknown parameter!'});
+            }
+        }
+
         // Rule #2: existence and value of xmax
         if (! ('xmax' in param.nml_inp_prm_kukan)) {
             errlog.push({'msg': 'xmax is not defined!'})

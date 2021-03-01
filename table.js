@@ -315,7 +315,7 @@ tbl_vartype = {
     'npre': {'type': 'int'},
     'nevhist': {'type': 'real'},
     'northo': {'type': 'real'},
-    'lveffout': {'type': 'real'},
+    'lveffout': {'type': 'other'},
     'nso': {'type': 'int'},
     'socang': {'type': 'other'},
     'eps': {'type': 'real'},
