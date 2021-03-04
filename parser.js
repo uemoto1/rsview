@@ -142,71 +142,80 @@ function checkParam(param, atom) {
         errlog.push({'msg': '&nml_inp_prm_kukan is not defined!'});
     } else {
 
+        // Rule: type of variables
         for (key in param.nml_inp_prm_kukan) {
             if (key in tbl_vartype) {
                 switch (tbl_vartype[key.toLowerCase()].type) {
                     case 'int':
                         if (! isInteger(param.nml_inp_prm_kukan[key].val))
-                            errlog.push({'line': param.nml_inp_prm_kukan[key].line, 'msg': 'invalid integer!'});
+                            errlog.push({'line': param.nml_inp_prm_kukan[key].line, 'msg': 'invalid integer format!'});
                         break;
                     case 'real':
                         if (! isReal(param.nml_inp_prm_kukan[key].val))
-                            errlog.push({'line': param.nml_inp_prm_kukan[key].line, 'msg': 'invalid real number!'});
+                            errlog.push({'line': param.nml_inp_prm_kukan[key].line, 'msg': 'invalid real number format!'});
                         break;
                     }
             } else {
                 if (0 < param.nml_inp_prm_kukan[key].line)
-                errlog.push({'line': param.nml_inp_prm_kukan[key].line, 'msg': 'unknown parameter!'});
+                errlog.push({'line': param.nml_inp_prm_kukan[key].line, 'msg': 'invalid keyword!'});
             }
         }
+        // Rule: kpoint condition
+        
 
         // Rule #2: existence and value of xmax
         if (! ('xmax' in param.nml_inp_prm_kukan)) {
             errlog.push({'msg': 'xmax is not defined!'})
+            xmax = 0.0;
         } else {
-            var xmax = ffloat(param.nml_inp_prm_kukan.xmax.val)
+            xmax = ffloat(param.nml_inp_prm_kukan.xmax.val)
             if (! (xmax > alim))
                 errlog.push({'line': param.nml_inp_prm_kukan.xmax.line, 'msg': 'xmax is too small'});
         }
         // Rule #3: existence and value of ymax
         if (! ('ymax' in param.nml_inp_prm_kukan)) {
             errlog.push({'msg': 'ymax is not defined!'})
+            ymax = 0.0;
         } else {
-            var ymax = ffloat(param.nml_inp_prm_kukan.ymax.val)
+            ymax = ffloat(param.nml_inp_prm_kukan.ymax.val)
             if (! (ymax > alim))
                 errlog.push({'line': param.nml_inp_prm_kukan.ymax.line, 'msg': 'ymax is too small'});
         }
         // Rule #4: existence and value of zmax
         if (! ('zmax' in param.nml_inp_prm_kukan)) {
             errlog.push({'msg': 'zmax is not defined!'})
+            zmax = 0.0;
         } else {
-            var zmax = ffloat(param.nml_inp_prm_kukan.zmax.val)
+            zmax = ffloat(param.nml_inp_prm_kukan.zmax.val)
             if (! (zmax > alim))
                 errlog.push({'line': param.nml_inp_prm_kukan.zmax.line, 'msg': 'zmax is too small'});
         }
         // Rule #5: existence and value of nxmax
         if (! ('nxmax' in param.nml_inp_prm_kukan)) {
             errlog.push({'msg': 'nxmax is not defined!'})
-        } else {
-            var nxmax = parseInt(param.nml_inp_prm_kukan.nxmax.val)
+            nxmax = 0.0;
+        } else if (alim < xmax) {
+            nxmax = parseInt(param.nml_inp_prm_kukan.nxmax.val)
             if (! (xmax / nxmax < hlim))
-                errlog.push({'line': param.nml_inp_prm_kukan.nxmax.line, 'msg': 'nxmax is too small for typical calculation!'});
+                errlog.push({'line': param.nml_inp_prm_kukan.nxmax.line, 'msg': 'nxmax is too small for present xmax!'});
         }
         // Rule #6: existence and value of nxmax
         if (! ('nymax' in param.nml_inp_prm_kukan)) {
             errlog.push({'msg': 'nymax is not defined!'})
-        } else {
-            var nymax = parseInt(param.nml_inp_prm_kukan.nymax.val)
+            nymax = 0.0;
+        } else if (alim < ymax) {
+            nymax = parseInt(param.nml_inp_prm_kukan.nymax.val)
             if (! (ymax / nymax < hlim))
-                errlog.push({'line': param.nml_inp_prm_kukan.nymax.line, 'msg': 'nymax is too small for typical calculation!'});
+                errlog.push({'line': param.nml_inp_prm_kukan.nymax.line, 'msg': 'nymax is too small for present ymax!'});
         }
         // Rule #7: existence and value of nxmax
         if (! ('nzmax' in param.nml_inp_prm_kukan)) {
             errlog.push({'msg': 'nzmax is not defined!'})
-        } else {
-            var nzmax = parseInt(param.nml_inp_prm_kukan.nzmax.val)
+            nzmax = 0.0;
+        } else if (alim < zmax) {
+            nzmax = parseInt(param.nml_inp_prm_kukan.nzmax.val)
             if (! (zmax / nzmax < hlim))
-                errlog.push({'line': param.nml_inp_prm_kukan.nzmax.line, 'msg': 'nzmax is too small for typical calculation!'});
+                errlog.push({'line': param.nml_inp_prm_kukan.nzmax.line, 'msg': 'nzmax is too small for present zmax!'});
         }
         // Rule #8: existence and value of natom
         if (! ('natom' in param.nml_inp_prm_kukan)) {
@@ -217,6 +226,7 @@ function checkParam(param, atom) {
                 errlog.push({'line': param.nml_inp_prm_kukan.natom.line, 'msg': 'number mismatch between natom and atom.xyz!'});
             }
         }
+        
     }
     return errlog;
 }
