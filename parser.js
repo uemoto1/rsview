@@ -223,6 +223,44 @@ function checkParam(param, atom) {
                 errlog.push({'line': param.nml_inp_prm_kukan.natom.line, 'msg': 'number mismatch between natom and atom.xyz!'});
             }
         }
+        // Rule #9: value of skpx, skpy, skpz
+        if ('skpx' in param.nml_inp_prm_kukan) {
+            for (ik in param.nml_inp_prm_kukan.skpx) {
+                if (! isReal(param.nml_inp_prm_kukan.skpx[ik].val))
+                    errlog.push({
+                        'msg': 'invalid real number format of skpx(' + ik + ')', 
+                        'line': param.nml_inp_prm_kukan.skpx[ik].line
+                    });
+            }
+        }
+        if ('skpy' in param.nml_inp_prm_kukan) {
+            for (ik in param.nml_inp_prm_kukan.skpy) {
+                if (! isReal(param.nml_inp_prm_kukan.skpy[ik].val))
+                    errlog.push({
+                        'msg': 'invalid real number format of skpy(' + ik + ')', 
+                        'line': param.nml_inp_prm_kukan.skpy[ik].line
+                    });
+            }
+        }
+        if ('skpz' in param.nml_inp_prm_kukan) {
+            for (ik in param.nml_inp_prm_kukan.skpz) {
+                if (! isReal(param.nml_inp_prm_kukan.skpz[ik].val))
+                    errlog.push({
+                        'msg': 'invalid real number format of skpz(' + ik + ')', 
+                        'line': param.nml_inp_prm_kukan.skpz[ik].line
+                    });
+            }
+        }
+        if ('nwkp' in param.nml_inp_prm_kukan) {
+            for (ik in param.nml_inp_prm_kukan.nwkp) {
+                if (! isInteger(param.nml_inp_prm_kukan.nwkp[ik].val))
+                    errlog.push({
+                        'msg': 'invalid integer format of nwkp(' + ik + ')', 
+                        'line': param.nml_inp_prm_kukan.nwkp[ik].line
+                    });
+            }
+        }
+
         
         numkx = 'numkx' in param.nml_inp_prm_kukan ? parseInt(param.nml_inp_prm_kukan.numkx.val) : 0
         numky = 'numky' in param.nml_inp_prm_kukan ? parseInt(param.nml_inp_prm_kukan.numky.val) : 0
@@ -238,16 +276,9 @@ function checkParam(param, atom) {
                 errlog.push({'msg': 'skpx is not defined but nk > 1!'});
             } else {
                 for (ik = 1; ik <= nk; ik++) {
-                    console.log(param.nml_inp_prm_kukan.skpx);
                     if (! (ik in param.nml_inp_prm_kukan.skpx)) {
                         errlog.push({'msg': 'skpx(' + ik + ') is required!'});
-                    } else {
-                        if (! isReal(param.nml_inp_prm_kukan.skpx[ik].val)) {
-                            errlog.push({
-                                'msg': 'invalid real number skpx(' + ik + ')', 
-                                'line': param.nml_inp_prm_kukan.skpx[ik].line
-                            });
-                        }
+                        break;
                     }
                 }
             }
@@ -256,9 +287,9 @@ function checkParam(param, atom) {
                 errlog.push({'msg': 'skpy is not defined but nk > 1!'});
             } else {
                 for (ik = 1; ik <= nk; ik++) {
-                    console.log(param.nml_inp_prm_kukan.skpy);
                     if (! (ik in param.nml_inp_prm_kukan.skpy)) {
                         errlog.push({'msg': 'skpy(' + ik + ') is required!'});
+                        break;
                     }
                 }
             }
@@ -267,9 +298,9 @@ function checkParam(param, atom) {
                 errlog.push({'msg': 'skpz is not defined but nk > 1!'});
             } else {
                 for (ik = 1; ik <= nk; ik++) {
-                    console.log(param.nml_inp_prm_kukan.skpz);
                     if (! (ik in param.nml_inp_prm_kukan.skpz)) {
                         errlog.push({'msg': 'skpz(' + ik + ') is required!'});
+                        break;
                     }
                 }
             }
@@ -278,9 +309,9 @@ function checkParam(param, atom) {
                 errlog.push({'msg': 'nwkp is not defined but nk > 1!'});
             } else {
                 for (ik = 1; ik <= nk; ik++) {
-                    console.log(param.nml_inp_prm_kukan.nwkp);
                     if (! (ik in param.nml_inp_prm_kukan.nwkp)) {
                         errlog.push({'msg': 'nwkp(' + ik + ') is not found'});
+                        break;
                     }
                 }
             }
