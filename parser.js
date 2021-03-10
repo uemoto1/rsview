@@ -262,9 +262,9 @@ function checkParam(param, atom) {
         }
 
         
-        numkx = 'numkx' in param.nml_inp_prm_kukan ? parseInt(param.nml_inp_prm_kukan.numkx.val) : 0
-        numky = 'numky' in param.nml_inp_prm_kukan ? parseInt(param.nml_inp_prm_kukan.numky.val) : 0
-        numkz = 'numkz' in param.nml_inp_prm_kukan ? parseInt(param.nml_inp_prm_kukan.numkz.val) : 0
+        numkx = 'numkx' in param.nml_inp_prm_kukan ? parseInt(param.nml_inp_prm_kukan.numkx.val) : 1
+        numky = 'numky' in param.nml_inp_prm_kukan ? parseInt(param.nml_inp_prm_kukan.numky.val) : 1
+        numkz = 'numkz' in param.nml_inp_prm_kukan ? parseInt(param.nml_inp_prm_kukan.numkz.val) : 1
         nk = numkx * numky * numkz;
 
         if (! (nk >= 1)) 
