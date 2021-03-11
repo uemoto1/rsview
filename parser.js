@@ -35,7 +35,7 @@ function parseNamelist(code) {
         r = /&(\w+)/.exec(line_tmp);
         if (r) {
             if (flag_group == true)
-                errlog.push({'line': i, 'msg': 'Previous group is not closed!'});
+                errlog.push({'line': i + 1 - 1, 'msg': 'Group is not closed!'});
             group = r[1].toLowerCase();
             flag_group = true;
             param[group] = {'line': i+1};
@@ -45,7 +45,7 @@ function parseNamelist(code) {
         // Group end
         if (line_tmp == '/') {
             if (flag_group != true)
-                errlog.push({'line': i, 'msg': 'Group is not opened!'});
+                errlog.push({'line': i + 1, 'msg': 'Group is not opened!'});
             flag_group = false;
             continue;
         }
@@ -80,7 +80,7 @@ function parseNamelist(code) {
                 index_e = parseInt(r[3]);
                 tmp = r[4].split(/\s*,\s*/);
                 if (tmp.length != (index_e - index_s + 1)) {
-                    errlog.push({'line': i, 'msg': 'Array length mismatch!'});
+                    errlog.push({'line': i+1, 'msg': 'Array length mismatch!'});
                     continue;
                 }
                 for (var j = 0; j <= index_e - index_s; j++)
@@ -89,7 +89,7 @@ function parseNamelist(code) {
             }
         }
 
-        errlog.push({'line': i, 'msg': 'Syntax error!'});
+        errlog.push({'line': i+1, 'msg': 'Syntax error!'});
     }
     return [param, errlog];
 }
