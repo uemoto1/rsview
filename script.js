@@ -157,20 +157,32 @@ bond_material = new THREE.MeshLambertMaterial({
     color: 0xcccccc
 });
 
-function prepare_cylinder_geometry(r, v1, v2, e) {
-    gx = (v1.x + v2.x) * 0.5;
-    gy = (v1.y + v2.y) * 0.5;
-    gz = (v1.z + v2.z) * 0.5;
-    dx = (v2.x - v1.x);
-    dy = (v2.y - v1.y);
-    dz = (v2.z - v1.z);
-    d = v1.distanceTo(v2) - 2*e;
-    geometry = new THREE.CylinderGeometry(r, r, d, 4);
-    s = Math.sign(dx);
-    geometry.rotateZ(-Math.atan2(s*dx, s*dy));
-    geometry.rotateY(-Math.atan2(s*dz, s*dx));
-    geometry.translate(gx, gy, gz);
-    return geometry;
+function prepare_cylinder_mesh(r, v1, v2, rr, material) {
+    // gx = (v1.x + v2.x) * 0.5;
+    // gy = (v1.y + v2.y) * 0.5;
+    // gz = (v1.z + v2.z) * 0.5;
+    // dx = (v2.x - v1.x);
+    // dy = (v2.y - v1.y);
+    // dz = (v2.z - v1.z);
+    // d = v1.distanceTo(v2) - 2*e;
+    // geometry = new THREE.CylinderGeometry(r, r, d, 4);
+    // s = Math.sign(dx);
+    // geometry.rotateZ(-Math.atan2(s*dx, s*dy));
+    // geometry.rotateY(-Math.atan2(s*dz, s*dx));
+    // geometry.translate(gx, gy, gz);
+    var d = new THREE.Vector3()
+    var g = new THREE.Vector3()
+    var q = new THREE.Quaternion();
+    var y = new THREE.Vector3(0, 1, 0);
+    d.subVectors(v2, v1)
+    g.addVectors(v1, v2).multiplyScalar(0.5)
+    var geometry = new THREE.CylinderGeometry(r, r, d.length()-2*rr, 4);
+    var mesh = new THREE.Mesh(geometry, material);
+    q.setFromUnitVectors(y, d.normalize())
+    mesh.applyQuaternion(q)
+    mesh.position.set(g.x, g.y, g.z)
+    console.log(g,mesh.rotation)
+    return mesh;
 }
 
 function plot_structure() {
@@ -231,12 +243,12 @@ function plot_structure() {
             rj = group_atom.children[j].position;
             d = ri.distanceTo(rj) * scale;
             if (d < d_bond) {
-                geometry = prepare_cylinder_geometry(0.1/scale, ri, rj, 1.0/scale);
-                var mesh = new THREE.Mesh(geometry, bond_material);
+                mesh = prepare_cylinder_mesh(0.1/scale, ri, rj, 1.0/scale, bond_material);
                 group_bond.add(mesh);
             }
         }
     }
+
     
 
     // 原子セレクタ（球）の追加
