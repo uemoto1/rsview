@@ -78,7 +78,7 @@
         <div class="row">
 
             <div class="col-sm-6" id="panelLeft" style="background-color: lightgray;">
-                <div class="col-sm-12 h-50">
+                <div class="col-sm-12 fillhalf">
                     <strong>parameters.inp</strong>
                     <!--
                     <button type="button" class="btn btn-link">Open file</button>
@@ -89,7 +89,7 @@
                         <div class='lineno'></div><textarea id='parameters' wrap='off'></textarea>
                     </div>
                 </div>
-                <div class="col-sm-12 h-50">
+                <div class="col-sm-12 fillbottom">
                     <strong>atom.xyz</strong>
                     <!--
                     <button type="button" class="btn btn-link">Open file</button>
@@ -102,32 +102,35 @@
             </div>
 
             <div class="col-sm-6" id="panelRight">
+                    <div class="input-group">
+                    <span class="input-group-text">Cell units:</span>
+                    <select class="form-select" aria-label="Default select example" id="supecell_x">
+                        <option selected value="1">nx=1</option>
+                        <option value="2">nx=2</option>
+                        <option value="3">nx=3</option>
+                    </select>
+                    <select class="form-select" aria-label="Default select example" id="supecell_y">
+                        <option selected value="1">ny=1</option>
+                        <option value="2">ny=2</option>
+                        <option value="3">ny=3</option>
+                    </select>
+                    <select class="form-select" aria-label="Default select example" id="supecell_z">
+                        <option selected value="1">nz=1</option>
+                        <option value="2">nz=2</option>
+                        <option value="3">nz=3</option>
+                    </select>
 
-                <label for="supecell_x" class="form-label"><b>Cell units:</b></label>
-                <select class="form-select" aria-label="Default select example" id="supecell_x">
-                    <option selected value="1">x=1</option>
-                    <option value="2">x=2</option>
-                    <option value="3">x=3</option>
-                </select>
-                <select class="form-select" aria-label="Default select example" id="supecell_y">
-                    <option selected value="1">y=1</option>
-                    <option value="2">y=2</option>
-                    <option value="3">y=3</option>
-                </select>
-                <select class="form-select" aria-label="Default select example" id="supecell_z">
-                    <option selected value="1">z=1</option>
-                    <option value="2">z=2</option>
-                    <option value="3">z=3</option>
-                </select>
+                    <span class="input-group-text">Bond:</span>
+                    <select class="form-select" aria-label="Default select example" id="bond_max">
+                        <option value="0.0">Disable</option>
+                        <option value="2.0">2.0 Å</option>
+                        <option value="2.5">2.5 Å</option>
+                        <option value="3.0">3.0 Å</option>
+                        <option selected value="3.5">3.5 Å</option>
+                    </select>
+                </div>
+                <hr/>
 
-                <label for="bond_max" class="form-label"><b>Bond:</b></label>
-                <select class="form-select" aria-label="Default select example" id="bond_max">
-                    <option value="0.0">Disable</option>
-                    <option value="2.0">2.0 A</option>
-                    <option value="2.5">2.5 A</option>
-                    <option value="3.0">3.0 A</option>
-                    <option selected value="3.5">3.5 A</option>
-                </select>
 
                         
                 <div class="row">
@@ -139,12 +142,12 @@
                     </div>
                     <div class="col-sm-6" style="padding: 8px;">
                         <label for="zoom" class="form-label"><b>Zoom:</b></label>
-                        <input type="range" class="form-range" id="zoom" min="0.20" max="2.5" value="1.0" step="0.1">
                         <div class="btn-group btn-group-sm" role="group" >
-                            <button type="button" class="btn btn-secondary" id="zoom_in">+</button>
                             <button type="button" class="btn btn-secondary" id="zoom_out">-</button>
+                            <button type="button" class="btn btn-secondary" id="zoom_in">+</button>
                             <button type="button" class="btn btn-secondary" id="zoom_reset">Reset</button>
                         </div>
+                        <input type="range" class="form-range" id="zoom" min="0.20" max="2.5" value="1.0" step="0.1">
                     </div>
                 </div>
 

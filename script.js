@@ -158,18 +158,6 @@ bond_material = new THREE.MeshLambertMaterial({
 });
 
 function prepare_cylinder_mesh(r, v1, v2, rr, material) {
-    // gx = (v1.x + v2.x) * 0.5;
-    // gy = (v1.y + v2.y) * 0.5;
-    // gz = (v1.z + v2.z) * 0.5;
-    // dx = (v2.x - v1.x);
-    // dy = (v2.y - v1.y);
-    // dz = (v2.z - v1.z);
-    // d = v1.distanceTo(v2) - 2*e;
-    // geometry = new THREE.CylinderGeometry(r, r, d, 4);
-    // s = Math.sign(dx);
-    // geometry.rotateZ(-Math.atan2(s*dx, s*dy));
-    // geometry.rotateY(-Math.atan2(s*dz, s*dx));
-    // geometry.translate(gx, gy, gz);
     var d = new THREE.Vector3()
     var g = new THREE.Vector3()
     var q = new THREE.Quaternion();
@@ -181,7 +169,6 @@ function prepare_cylinder_mesh(r, v1, v2, rr, material) {
     q.setFromUnitVectors(y, d.normalize())
     mesh.applyQuaternion(q)
     mesh.position.set(g.x, g.y, g.z)
-    console.log(g,mesh.rotation)
     return mesh;
 }
 
@@ -449,11 +436,19 @@ function resize() {
     $("#panelLeft").outerHeight(window_height - nav_height - footer_height);
     $("#panelRight").outerHeight(window_height - nav_height - footer_height);
 
+
+    $(".fillhalf").each(function (i) {
+        h = $(this).parent().innerHeight();
+        $(this).outerHeight(h*0.5);
+    });
+
     $(".fillbottom").each(function (i) {
         h = $(this).parent().innerHeight();
+        tp = $(this).parent().position().top;
         t = $(this).position().top;
-        $(this).outerHeight(h - t);
+        $(this).outerHeight(h - (t-tp));
     });
+
 
     $("div.editor").each(function (i) {
         w = $(this).innerWidth();
