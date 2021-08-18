@@ -91,6 +91,11 @@ function parseNamelist(code) {
 
         errlog.push({'line': i+1, 'msg': 'Syntax error!'});
     }
+
+    if (flag_group == true) {
+        errlog.push({'line': i, 'msg': 'Group is not closed, "/" is required!'});
+    }
+
     return [param, errlog];
 }
 
