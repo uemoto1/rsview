@@ -103,54 +103,51 @@
 
             <div class="col-sm-6" id="panelRight">
 
-                <div class="col-sm" style="padding: 8px;">
-                    <label for="zoom" class="form-label"><b>Zoom:</b></label>
-                    <input type="range" class="form-range" id="zoom" min="0.20" max="2.5" value="1.0" step="0.1">
-                    <div class="btn-group btn-group-sm" role="group" >
-                        <button type="button" class="btn btn-secondary" id="zoom_in">+</button>
-                        <button type="button" class="btn btn-secondary" id="zoom_out">-</button>
-                        <button type="button" class="btn btn-secondary" id="zoom_reset">Reset</button>
+                <label for="supecell_x" class="form-label"><b>Cell units:</b></label>
+                <select class="form-select" aria-label="Default select example" id="supecell_x">
+                    <option selected value="1">x=1</option>
+                    <option value="2">x=2</option>
+                    <option value="3">x=3</option>
+                </select>
+                <select class="form-select" aria-label="Default select example" id="supecell_y">
+                    <option selected value="1">y=1</option>
+                    <option value="2">y=2</option>
+                    <option value="3">y=3</option>
+                </select>
+                <select class="form-select" aria-label="Default select example" id="supecell_z">
+                    <option selected value="1">z=1</option>
+                    <option value="2">z=2</option>
+                    <option value="3">z=3</option>
+                </select>
+
+                <label for="bond_max" class="form-label"><b>Bond:</b></label>
+                <select class="form-select" aria-label="Default select example" id="bond_max">
+                    <option value="0.0">Disable</option>
+                    <option value="2.0">2.0 A</option>
+                    <option value="2.5">2.5 A</option>
+                    <option value="3.0">3.0 A</option>
+                    <option selected value="3.5">3.5 A</option>
+                </select>
+
+                        
+                <div class="row">
+                    <div class="col-sm-6" style="padding: 8px;">
+                        <span style="color:red;">X</span>
+                        <span style="color:blue;">Y</span>
+                        <span style="color:green;">Z</span>
+                        <span id="element_list"></span>
+                    </div>
+                    <div class="col-sm-6" style="padding: 8px;">
+                        <label for="zoom" class="form-label"><b>Zoom:</b></label>
+                        <input type="range" class="form-range" id="zoom" min="0.20" max="2.5" value="1.0" step="0.1">
+                        <div class="btn-group btn-group-sm" role="group" >
+                            <button type="button" class="btn btn-secondary" id="zoom_in">+</button>
+                            <button type="button" class="btn btn-secondary" id="zoom_out">-</button>
+                            <button type="button" class="btn btn-secondary" id="zoom_reset">Reset</button>
+                        </div>
                     </div>
                 </div>
-                <div class="col-sm" style="padding: 8px;">
-                    <label for="supecell_x" class="form-label"><b>Cell units:</b></label>
-                    <select class="form-select" aria-label="Default select example" id="supecell_x">
-                        <option selected value="1">x=1</option>
-                        <option value="2">x=2</option>
-                        <option value="3">x=3</option>
-                    </select>
-                    <select class="form-select" aria-label="Default select example" id="supecell_y">
-                        <option selected value="1">y=1</option>
-                        <option value="2">y=2</option>
-                        <option value="3">y=3</option>
-                    </select>
-                    <select class="form-select" aria-label="Default select example" id="supecell_z">
-                        <option selected value="1">z=1</option>
-                        <option value="2">z=2</option>
-                        <option value="3">z=3</option>
-                    </select>
-                </div>
-                <div class="col-sm" style="padding: 8px;">
-                    <label for="bond_max" class="form-label"><b>Bond:</b></label>
-                    <select class="form-select" aria-label="Default select example" id="bond_max">
-                        <option value="0.0">Disable</option>
-                        <option value="2.0">2.0 A</option>
-                        <option value="2.5">2.5 A</option>
-                        <option value="3.0">3.0 A</option>
-                        <option selected value="3.5">3.5 A</option>
-                    </select>
-                </div>
 
-                <hr/>
-                    
-                <p>
-                    <span style="color:red;">X</span>
-                    <span style="color:blue;">Y</span>
-                    <span style="color:green;">Z</span>
-                </p>
-                <p>
-                    <span id="element_list"></span>
-                </p>
                 <canvas id="viewer" class="fillbottom w-100"></canvas>
 
             </div>
