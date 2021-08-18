@@ -103,39 +103,40 @@
 
             <div class="col-sm-6" id="panelRight">
 
-                <p>
-                    <!-- <form> -->
-
-                    <div class="btn-group" role="group" aria-label="Basic example">
-
-                        <div class="btn-group" role="group">
-                            <button id="zoom_scale" type="button" class="btn btn-secondary dropdown-toggle"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Zoom: 100 %
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="zoom_scale">
-                                <a class="dropdown-item zoom_option" data-scale="0.5" href="#">50 %</a>
-                                <a class="dropdown-item zoom_option" data-scale="1.0" href="#">100 %</a>
-                                <a class="dropdown-item zoom_option" data-scale="1.5" href="#">150 %</a>
-                                <a class="dropdown-item zoom_option" data-scale="2.0" href="#">200 %</a>
-                                <a class="dropdown-item zoom_option" data-scale="2.5" href="#">250 %</a>
-                            </div>
-                        </div>
-
-                        <button class="btn btn-outline-secondary" id="zoom_minus">-</button>
-                        <button class="btn btn-outline-secondary" id="zoom_plus">+</button>
-
+                <div class="col-sm-6"  style="padding: 8px;">
+                    <label for="zoom" class="form-label"><b>Zoom:</b></label>
+                    <input type="range" class="form-range" id="zoom" min="0.20" max="2.5" value="1.0" step="0.1">
+                    <div class="btn-group btn-group-sm" role="group" >
+                        <button type="button" class="btn btn-secondary" id="zoom_in">+</button>
+                        <button type="button" class="btn btn-secondary" id="zoom_out">-</button>
+                        <button type="button" class="btn btn-secondary" id="zoom_reset">Reset</button>
                     </div>
-                    <div class="btn-group" role="group">
+                </div>
+                <div class="col-sm-6"  style="padding: 8px;">
+                    <label for="supecell_x" class="form-label"><b>Cell units:</b></label>
+                    <select class="form-select" aria-label="Default select example" id="supecell_x">
+                        <option selected value="1">x=1</option>
+                        <option value="2">x=2</option>
+                        <option value="3">x=3</option>
+                    </select>
+                    <select class="form-select" aria-label="Default select example" id="supecell_y">
+                        <option selected value="1">y=1</option>
+                        <option value="2">y=2</option>
+                        <option value="3">y=3</option>
+                    </select>
+                    <select class="form-select" aria-label="Default select example" id="supecell_z">
+                        <option selected value="1">z=1</option>
+                        <option value="2">z=2</option>
+                        <option value="3">z=3</option>
+                    </select>
+                </div>
 
-                    </div>
-                    <!-- </form> -->
-                </p>
-
+                <hr/>
+                    
                 <p>
-                <span style="color:red;">X</span>
-                <span style="color:blue;">Y</span>
-                <span style="color:green;">Z</span>
+                    <span style="color:red;">X</span>
+                    <span style="color:blue;">Y</span>
+                    <span style="color:green;">Z</span>
                 </p>
                 <p>
                     <span id="element_list"></span>

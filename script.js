@@ -15,9 +15,7 @@ var zmax = 0; // zmax
 // 内部状態
 var flag_init = false; // 初期化済みの場合はtrue
 var flag_load = false; // 入力ファイル読み込み済みの場合はtrue
-var flag_edit = false; // 入力ファイル編集済みの場合はtrue
-var flag_rot = false; // ドラッグによる回転中の場合
-var flag_render = false;
+var flag_drag = false; // ドラッグによる回転中の場合
 var flag_change = true; // テキストボックスの内容が変更された場合
 
 // 表示領域サイズ
@@ -35,7 +33,7 @@ var scene; // シーン
 var object; // オブジェクト
 var axis; // 座標軸オブジェクト
 
-var atom3d; // 原子(球)
+var group_atom; // 原子(球)
 var cell3d; // 格子セル(ワイヤーフレーム)
 var select3d; // セレクタ
 
@@ -53,6 +51,10 @@ var nrepy = 10;
 var nrepz = 10;
 
 var bohr_angstrom = 0.529177210903;
+
+var nxcell = 1;
+var nycell = 1;
+var nzcell = 1;
 
 function showErrorMsg(name, errlog) {
 
@@ -149,9 +151,9 @@ cell3d_material = new THREE.LineBasicMaterial({
 });
 
 function plot_structure() {
-    vxmax = xmax;
-    vymax = ymax;
-    vzmax = zmax;
+    vxmax = xmax * nxcell;
+    vymax = ymax * nycell;
+    vzmax = zmax * nzcell;
 
     scale = Math.max(vxmax, vymax, vzmax);
 
@@ -166,7 +168,7 @@ function plot_structure() {
     cell3d = line;
 
     // 原子（球）の作成
-    atom3d = new THREE.Group();
+    group_atom = new THREE.Group();
     for (i = 0; i < natom; i++) {
         // 周期境界条件によるレプリカの配置
         for (ix = -nrepx; ix <= nrepx; ix++) {
@@ -192,11 +194,13 @@ function plot_structure() {
                     mesh.position.y = z / scale;
                     mesh.position.z = y / scale;
                     mesh.atom_index = i;
-                    atom3d.add(mesh);
+                    group_atom.add(mesh);
                 }
             }
         }
     }
+
+    
 
     // 原子セレクタ（球）の追加
     var geometry = new THREE.SphereGeometry(1.00 / scale);
@@ -205,7 +209,7 @@ function plot_structure() {
     select3d = line;
     select3d.visible = false;
 
-    object.add(atom3d);
+    object.add(group_atom);
     object.add(cell3d);
     object.add(select3d);
 
@@ -270,7 +274,7 @@ $('textarea').on('paste', function (e) {
 
 $('#viewer').click(function (e) {
 
-    if (flag_rotate) return;
+    if (flag_drag) return;
 
     var mouse = new THREE.Vector2(
         +(e.offsetX / $(this).width()) * 2 - 1,
@@ -279,7 +283,7 @@ $('#viewer').click(function (e) {
 
     raycaster.setFromCamera(mouse, camera);
 
-    var intersects = raycaster.intersectObjects(atom3d.children);
+    var intersects = raycaster.intersectObjects(group_atom.children);
 
     if (intersects.length > 0) {
         $('#atom_xyz div.selected').removeClass('selected');
@@ -306,20 +310,13 @@ $('#viewer').click(function (e) {
     renderer.render(scene, camera);
 });
 
-
 $('#run').click(function (e) {
     $('#run').popover("dispose");
     execute();
 });
 
-
-// var m0 = new THREE.Vector2();
-// var cp0 = new THREE.Vector3();
-
-var flag_rotate = false;
-
 $('#viewer').mousemove(function (e) {
-    if (e.buttons == 1 && flag_rotate) {
+    if (e.buttons == 1 && flag_drag) {
         x1 = e.clientX;
         y1 = e.clientY;
 
@@ -340,30 +337,47 @@ $('#viewer').mousedown(function (e) {
         y0 = e.clientY;
         quaternion = new THREE.Quaternion();
         quaternion.copy(object.quaternion);
-        flag_rotate = true;
+        flag_drag = true;
     }
 });
 
 $('#viewer').mouseup(function (e) {
-    flag_rotate = false;
+    flag_drag = false;
 });
 
-$('.zoom_option').click(function (e) {
-    viewer_zoom = parseFloat($(this).data("scale"));
-    $("#zoom_scale").text("Zoom: " + Math.round(viewer_zoom * 100) + " %");
+$('#zoom').change(function (e) {
+    viewer_zoom = parseFloat($(this).val());
     resize();
 });
 
-$('#zoom_minus').click(function (e) {
-    viewer_zoom = Math.max(0.5, viewer_zoom - 0.1)
-    $("#zoom_scale").text("Zoom: " + Math.round(viewer_zoom * 100) + " %");
+$('#zoom_in').click(function (e) {
+    if (viewer_zoom < 2.5) {
+        viewer_zoom += 0.1;
+        $('#zoom').val(viewer_zoom);
+        resize();
+    }
+});
+
+$('#zoom_out').click(function (e) {
+    if (viewer_zoom > 0.2) {
+        viewer_zoom -= 0.1;
+        $('#zoom').val(viewer_zoom);
+        resize();
+    }
+});
+
+$('#zoom_reset').click(function (e) {
+    viewer_zoom = 1.0;
+    $('#zoom').val(viewer_zoom);
     resize();
 });
 
-$('#zoom_plus').click(function (e) {
-    viewer_zoom = Math.min(2.5, viewer_zoom + 0.1)
-    $("#zoom_scale").text("Zoom: " + Math.round(viewer_zoom * 100) + " %");
-    resize();
+
+$('#supecell_x,#supecell_y,#supecell_z').change(function (e) {
+    nxcell = parseInt($('#supecell_x').val());
+    nycell = parseInt($('#supecell_y').val());
+    nzcell = parseInt($('#supecell_z').val());
+    plot_structure();
 });
 
 
@@ -460,6 +474,7 @@ function init() {
     // 計算結果を表示
     execute();
     // ボタンの説明を挿入
+    /*
     $('#run').popover({
         "title": "Welcome to Web RSPACE view!",
         "content": "Write parameters.inp and atom.xyz in editor and click 'Plot structure' button.",
@@ -467,6 +482,7 @@ function init() {
     });
     $('#run').popover("show");
     $('#run').removeClass().addClass("btn btn-primary")
+    */
 }
 
 $(function () {
