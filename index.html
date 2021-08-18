@@ -20,51 +20,21 @@
 
 
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">Web RSPACE Viewer</a>
-        <ul class="navbar-nav mr-auto">
-
-            <li class="nav-item">
-                <a class="nav-link" href="https://github.com/uemoto1/rsview/">About this</a>
-            </li>
-
-            <li class="nav-item">
-            </li>
-
-
-            <!--
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                </li>
+    <nav class="navbar navbar-dark" style="background-color: indigo;">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Web RSPACE Viewer</a>
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
+                    <a class="nav-link" href="https://github.com/uemoto1/rsview/">About this</a>
                 </li>
-
-
-                
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Dropdown
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled" href="#">Disabled</a>
-                </li>
-            -->
-        </ul>
-
-        <form class="form-inline">
-            <button type="button" class="btn btn-primary" id='run'>Plot structure</button>
-            <span style="width:10px;"> </span>
-            <a class="btn btn-secondary" href="#" id="download" download="export.cif">Export CIF</a>
-        </form>
+            </ul>
+            
+            <form class="d-flex">
+                <button type="button" class="btn btn-primary" id='run'>Plot structure</button>
+                <span style="width:10px;"> </span>
+                <a class="btn btn-secondary" href="#" id="download" download="export.cif">Export CIF</a>
+            </form>
+        </div>
 
 
 
@@ -102,7 +72,9 @@
             </div>
 
             <div class="col-sm-6" id="panelRight">
-                    <div class="input-group">
+                <hr/>
+
+                 <div class="input-group">
                     <span class="input-group-text">Cell units:</span>
                     <select class="form-select" aria-label="Default select example" id="supecell_x">
                         <option selected value="1">nx=1</option>
@@ -129,8 +101,8 @@
                         <option selected value="3.5">3.5 Å</option>
                     </select>
                 </div>
-                <hr/>
 
+                <hr/>
 
                         
                 <div class="row">
