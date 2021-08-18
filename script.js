@@ -34,6 +34,7 @@ var object; // オブジェクト
 var axis; // 座標軸オブジェクト
 
 var group_atom; // 原子(球)
+var group_bond; // 結合(円柱)
 var cell3d; // 格子セル(ワイヤーフレーム)
 var select3d; // セレクタ
 
@@ -55,6 +56,8 @@ var bohr_angstrom = 0.529177210903;
 var nxcell = 1;
 var nycell = 1;
 var nzcell = 1;
+
+var d_bond = 3.5 / bohr_angstrom;
 
 function showErrorMsg(name, errlog) {
 
@@ -150,6 +153,26 @@ cell3d_material = new THREE.LineBasicMaterial({
     color: 0x000000
 });
 
+bond_material = new THREE.MeshLambertMaterial({
+    color: 0xcccccc
+});
+
+function prepare_cylinder_geometry(r, v1, v2, e) {
+    gx = (v1.x + v2.x) * 0.5;
+    gy = (v1.y + v2.y) * 0.5;
+    gz = (v1.z + v2.z) * 0.5;
+    dx = (v2.x - v1.x);
+    dy = (v2.y - v1.y);
+    dz = (v2.z - v1.z);
+    d = v1.distanceTo(v2) - 2*e;
+    geometry = new THREE.CylinderGeometry(r, r, d, 4);
+    s = Math.sign(dx);
+    geometry.rotateZ(-Math.atan2(s*dx, s*dy));
+    geometry.rotateY(-Math.atan2(s*dz, s*dx));
+    geometry.translate(gx, gy, gz);
+    return geometry;
+}
+
 function plot_structure() {
     vxmax = xmax * nxcell;
     vymax = ymax * nycell;
@@ -200,6 +223,20 @@ function plot_structure() {
         }
     }
 
+
+    group_bond = new THREE.Group();
+    for (var i = 0; i < group_atom.children.length; i++) {
+        ri = group_atom.children[i].position;
+        for (var j = 0; j < i; j++) {
+            rj = group_atom.children[j].position;
+            d = ri.distanceTo(rj) * scale;
+            if (d < d_bond) {
+                geometry = prepare_cylinder_geometry(0.1/scale, ri, rj, 1.0/scale);
+                var mesh = new THREE.Mesh(geometry, bond_material);
+                group_bond.add(mesh);
+            }
+        }
+    }
     
 
     // 原子セレクタ（球）の追加
@@ -209,6 +246,7 @@ function plot_structure() {
     select3d = line;
     select3d.visible = false;
 
+    object.add(group_bond);
     object.add(group_atom);
     object.add(cell3d);
     object.add(select3d);
@@ -372,7 +410,6 @@ $('#zoom_reset').click(function (e) {
     resize();
 });
 
-
 $('#supecell_x,#supecell_y,#supecell_z').change(function (e) {
     nxcell = parseInt($('#supecell_x').val());
     nycell = parseInt($('#supecell_y').val());
@@ -380,6 +417,10 @@ $('#supecell_x,#supecell_y,#supecell_z').change(function (e) {
     plot_structure();
 });
 
+$('#bond_max').change(function (e) {
+    d_bond = parseFloat($(this).val()) / bohr_angstrom;
+    plot_structure();
+});
 
 
 
