@@ -72,56 +72,82 @@
             </div>
 
             <div class="col-sm-6" id="panelRight">
-                <hr/>
+                <div class="row" style="background-color: lightgray; padding-bottom: 8px;">
+                    <strong>View:</strong>
+                    <div class="col-auto">
+                        <div class="input-group">
+                            <span class="input-group-text">x</span>
+                            <select class="form-select" aria-label="Default select example" id="supecell_x">
+                                <option selected value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                            <span class="input-group-text">y</span>
+                            <select class="form-select" aria-label="Default select example" id="supecell_y">
+                                <option selected value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                            <span class="input-group-text">z</span>
+                            <select class="form-select" aria-label="Default select example" id="supecell_z">
+                                <option selected value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </div>
+                    </div>
 
-                 <div class="input-group">
-                    <span class="input-group-text">Cell units:</span>
-                    <select class="form-select" aria-label="Default select example" id="supecell_x">
-                        <option selected value="1">nx=1</option>
-                        <option value="2">nx=2</option>
-                        <option value="3">nx=3</option>
-                    </select>
-                    <select class="form-select" aria-label="Default select example" id="supecell_y">
-                        <option selected value="1">ny=1</option>
-                        <option value="2">ny=2</option>
-                        <option value="3">ny=3</option>
-                    </select>
-                    <select class="form-select" aria-label="Default select example" id="supecell_z">
-                        <option selected value="1">nz=1</option>
-                        <option value="2">nz=2</option>
-                        <option value="3">nz=3</option>
-                    </select>
 
-                    <span class="input-group-text">Bond:</span>
-                    <select class="form-select" aria-label="Default select example" id="bond_max">
-                        <option value="0.0">Disable</option>
-                        <option value="2.0">2.0 Å</option>
-                        <option value="2.5">2.5 Å</option>
-                        <option value="3.0">3.0 Å</option>
-                        <option selected value="3.5">3.5 Å</option>
-                    </select>
+
+                    <div class="col-auto">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="view_dir" data-bs-toggle="dropdown" aria-expanded="false">
+                            Direction
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="view_dir">
+                            <li><a class="dropdown-item" href="#">Top view (xy)</a></li>
+                            <li><a class="dropdown-item" href="#">Front view (xz)</a></li>
+                            <li><a class="dropdown-item" href="#">Side view (yz)</a></li>
+                            <li><a class="dropdown-item" href="#">Default</a></li>
+                            </ul>
+                        </div>             
+                    </div>
+
+                    <div class="col-auto">
+                        <div class="form-check form-check-inline form-switch" style="margin:8px;">
+                            <input class="form-check-input" type="checkbox" id="chk_bond" checked>
+                            <label class="form-check-label" for="chk_bond">Bond</label>
+                        </div>
+                    </div>
+
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-outline-secondary" id="show_detail">Detail</button>
+                    </div>
+
+
+
                 </div>
+                <div class="row" style="background-color: white;">
 
-                <hr/>
 
-                        
-                <div class="row">
-                    <div class="col-sm-6" style="padding: 8px;">
+                    <div class="col-auto"  >
+                        <div style="padding:16px;">
                         <span style="color:red;">X</span>
                         <span style="color:blue;">Y</span>
                         <span style="color:green;">Z</span>
                         <span id="element_list"></span>
-                    </div>
-                    <div class="col-sm-6" style="padding: 8px;">
-                        <label for="zoom" class="form-label"><b>Zoom:</b></label>
-                        <div class="btn-group btn-group-sm" role="group" >
-                            <button type="button" class="btn btn-secondary" id="zoom_out">-</button>
-                            <button type="button" class="btn btn-secondary" id="zoom_in">+</button>
-                            <button type="button" class="btn btn-secondary" id="zoom_reset">Reset</button>
                         </div>
-                        <input type="range" class="form-range" id="zoom" min="0.20" max="2.5" value="1.0" step="0.1">
                     </div>
+
+
+                    <div class="col-sm-4">
+                            <strong>Zoom</strong>
+                            <button type="button" class="btn btn-link" id="zoom_reset">Reset</button><br/>
+                            <input type="range" class="form-range" id="zoom" min="0.20" max="2.5" value="1.0" step="0.1">
+                    </div>
+                
                 </div>
+
 
                 <canvas id="viewer" class="fillbottom w-100"></canvas>
 
@@ -141,25 +167,24 @@
 
 
     <!-- Modal -->
-    <div class="modal fade" id="errmsgModal" tabindex="-1" role="dialog" aria-labelledby="errmsgTitle"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="errmsgTitle">Error</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <ul id="errmsg"></ul>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
+    <div class="modal" tabindex="-1" id="errmsgModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Error</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <div class="modal-body">
+                <ul id="errmsg"></ul>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
         </div>
-    </div>
+      </div>
+
+      
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
