@@ -24,9 +24,9 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Web RSPACE Viewer</a>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a class="nav-link" href="#">Setting</a>
-                </li>
+                </li> -->
                 <li class="nav-item">
                     <a class="nav-link" href="https://github.com/uemoto1/rsview/">About</a>
                 </li>
@@ -60,10 +60,10 @@
             <div class="col-sm-6" id="panelLeft" style="background-color: lightgray;">
                 <div class="row" style="padding-top:8px;">
 
-                    <div class="col-auto">
+                    <!-- <div class="col-auto">
                         <button type="button" class="btn btn-secondary" id='open'>Open</button>
                         <button type="button" class="btn btn-secondary" id='save'>Save</button>
-                    </div>
+                    </div> -->
                     <div class="col-auto">
                         <button type="button" class="btn btn-primary" id='run'>Plot structure</button>
                         <a class="btn btn-secondary" href="#" id="download" download="export.cif">Export CIF</a>    
@@ -123,20 +123,20 @@
                             Direction
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="view_dir">
-                            <li><a class="dropdown-item" href="#">Top view (xy)</a></li>
-                            <li><a class="dropdown-item" href="#">Front view (xz)</a></li>
-                            <li><a class="dropdown-item" href="#">Side view (yz)</a></li>
-                            <li><a class="dropdown-item" href="#">Default</a></li>
+                            <li><a class="dropdown-item" href="#" id="dir_xy">Top view (xy)</a></li>
+                            <li><a class="dropdown-item" href="#" id="dir_xz">Front view (xz)</a></li>
+                            <li><a class="dropdown-item" href="#" id="dir_yz">Side view (yz)</a></li>
+                            <li><a class="dropdown-item" href="#" id="dir_0">Default</a></li>
                             </ul>
                         </div>             
                     </div>
 
-                    <div class="col-auto" style="margin:4px;">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="chk_Cell" checked>
-                            <label class="form-check-label" for="chk_Cell">Cell</label>
+                    <div class="col-auto" style="padding:12px;">
+                        <div class="form-check form-check-inline form-switch">
+                            <input class="form-check-input" type="checkbox" id="chk_axis" checked>
+                            <label class="form-check-label" for="chk_axis">Axis</label>
                         </div>
-                        <div class="form-check form-switch">
+                        <div class="form-check form-check-inline form-switch">
                             <input class="form-check-input" type="checkbox" id="chk_bond" checked>
                             <label class="form-check-label" for="chk_bond">Bond</label>
                         </div>
@@ -150,8 +150,8 @@
                     <div class="col-auto"  >
                         <div style="padding:16px;">
                         <span style="color:red;">X</span>
-                        <span style="color:blue;">Y</span>
-                        <span style="color:green;">Z</span>
+                        <span style="color:green;">Y</span>
+                        <span style="color:blue;">Z</span>
                         <span id="element_list"></span>
                         </div>
                     </div>

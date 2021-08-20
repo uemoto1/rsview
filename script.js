@@ -38,10 +38,15 @@ var group_bond; // 結合(円柱)
 var cell3d; // 格子セル(ワイヤーフレーム)
 var select3d; // セレクタ
 
+
+var qdir_0 = new THREE.Quaternion(0.80, 0.27 , 0.20, -0.50);
+var qdir_xy = new THREE.Quaternion(1.00, 0.00, 0.00, 0.00);
+var qdir_yz = new THREE.Quaternion(0.50, 0.50, 0.50, -0.50);
+var qdir_xz = new THREE.Quaternion(0.70, 0.00, 0.00, -0.70);
+
 // オブジェクト回転用クオータニオン
-var quaternion = new THREE.Quaternion(0.9840098829174856, 0.009242544937229168, 0.1509512203796048, 0.09408961021125717);
-/* xz Quaternion(0.9840098829174856, 0.009242544937229168, 0.1509512203796048, 0.09408961021125717); */
-/* xz Quaternion(0.9840098829174856, 0.009242544937229168, 0.1509512203796048, 0.09408961021125717); */
+var quaternion = qdir_0.normalize();
+
 // トレース用オブジェクト
 var raycaster = new THREE.Raycaster();
 
@@ -214,8 +219,8 @@ function plot_structure() {
                     var mesh = new THREE.Mesh(geometry, material);
                     // NOTE: exchange y and z to replace left handed system (data) to right handed system (display)!
                     mesh.position.x = x / scale;
-                    mesh.position.y = z / scale;
-                    mesh.position.z = y / scale;
+                    mesh.position.y = y / scale;
+                    mesh.position.z = -z / scale;
                     mesh.atom_index = i;
                     group_atom.add(mesh);
                 }
@@ -494,8 +499,15 @@ function init() {
     object.quaternion.copy(quaternion);
     scene.add(object);
     // 座標軸ヘルパー作成
-    axis = new THREE.AxisHelper(0.50);
-    axis.position.set(-1.5, -1.5, 1.5);
+    // axis = new THREE.AxisHelper(0.50);
+    axis = new THREE.Group();
+    var ah = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0,0,0 ), 0.5, 0xff0000, 0.2, 0.2 );
+    axis.add(ah);
+    var ah = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0,0,0 ), 0.5, 0xff00, 0.2, 0.2  );
+    axis.add(ah);
+    var ah = new THREE.ArrowHelper(new THREE.Vector3(0, 0, -1), new THREE.Vector3(0,0,0 ), 0.5, 0xff, 0.2, 0.2  );
+    axis.add(ah);
+    axis.position.set(-1.25, -1.25, 1.25);
     axis.quaternion.copy(quaternion);
     scene.add(axis);
     // ライト作成
@@ -542,6 +554,35 @@ $(window).resize(function () {
     resize();
 });
 
+$("#dir_0").click(function() {
+    object.quaternion.copy(qdir_0.normalize());
+    axis.quaternion.copy(object.quaternion);
+    renderer.render(scene, camera);
+});
+$("#dir_xy").click(function() {
+    object.quaternion.copy(qdir_xy.normalize());
+    axis.quaternion.copy(object.quaternion);
+    renderer.render(scene, camera);
+});
+$("#dir_yz").click(function() {
+    object.quaternion.copy(qdir_yz.normalize());
+    axis.quaternion.copy(object.quaternion);
+    renderer.render(scene, camera);
+});
+$("#dir_xz").click(function() {
+    object.quaternion.copy(qdir_xz.normalize());
+    axis.quaternion.copy(object.quaternion);
+    renderer.render(scene, camera);
+});
+$("#chk_bond").change(function() {
+    group_bond.visible = $(this).prop("checked");
+    renderer.render(scene, camera);
+})
+$("#chk_axis").change(function() {
+    axis.visible = $(this).prop("checked");
+    cell3d.visible = $(this).prop("checked");
+    renderer.render(scene, camera);
+})
 
 function generate_cif() {
     tmp = []
@@ -579,3 +620,4 @@ function generate_cif() {
         document.getElementById("download").href = window.URL.createObjectURL(blob);
     }
 }
+
