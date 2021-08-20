@@ -276,9 +276,9 @@ function notify_change() {
     if (flag_change == false) {
         // ボタンの説明を挿入
         $('#run').popover({
-            "title": "You modified input data!",
-            "content": "Click 'Plot structure' button to update.",
-            "placement": "bottom",
+            //"title": "Change detected",
+            "content": "Click here to update 3D figure.",
+            "placement": "right",
         });
         $('#run').popover("show");
         $("#run").removeClass().addClass("btn btn-primary");

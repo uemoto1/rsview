@@ -28,12 +28,7 @@
                     <a class="nav-link" href="https://github.com/uemoto1/rsview/">About this</a>
                 </li>
             </ul>
-            
-            <form class="d-flex">
-                <button type="button" class="btn btn-primary" id='run'>Plot structure</button>
-                <span style="width:10px;"> </span>
-                <a class="btn btn-secondary" href="#" id="download" download="export.cif">Export CIF</a>
-            </form>
+
         </div>
 
 
@@ -48,6 +43,18 @@
         <div class="row">
 
             <div class="col-sm-6" id="panelLeft" style="background-color: lightgray;">
+                <div class="row" style="padding-top:8px;">
+
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-secondary" id='open'>Open</button>
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-secondary" id='save'>Save</button>
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-primary" id='run'>Plot structure</button>
+                    </div>
+                    </div>
                 <div class="col-sm-12 fillhalf">
                     <strong>parameters.inp</strong>
                     <!--
@@ -123,7 +130,10 @@
                     <div class="col-auto">
                         <button type="button" class="btn btn-outline-secondary" id="show_detail">Detail</button>
                     </div>
-
+                    
+                    <div class="col-auto">
+                        <a class="btn btn-secondary" href="#" id="download" download="export.cif">Export CIF</a>    
+                    </div>
 
 
                 </div>
