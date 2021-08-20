@@ -277,7 +277,7 @@ function notify_change() {
         // ボタンの説明を挿入
         $('#run').popover({
             //"title": "Change detected",
-            "content": "Click here to update 3D figure.",
+            "content": "Click here to update 3D model.",
             "placement": "right",
         });
         $('#run').popover("show");

@@ -20,14 +20,29 @@
 
 
 
-    <nav class="navbar navbar-dark" style="background-color: indigo;">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: indigo;">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Web RSPACE Viewer</a>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="https://github.com/uemoto1/rsview/">About this</a>
+                    <a class="nav-link" href="#">Setting</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://github.com/uemoto1/rsview/">About</a>
+                </li>
+
+                <!-- <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        About
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li><a class="dropdown-item" href="https://github.com/uemoto1/rsview/">GitHub repository</a></li>
+                        <li><a class="dropdown-item" href="http://www2.kobe-u.ac.jp/~tomoono/index.html">Ono group</a></li>
+                    </ul>
+                </li> -->
             </ul>
+
+            <button type="button" class="btn btn-secondary" id='Setting'>Setting</button>
 
         </div>
 
@@ -47,14 +62,13 @@
 
                     <div class="col-auto">
                         <button type="button" class="btn btn-secondary" id='open'>Open</button>
-                    </div>
-                    <div class="col-auto">
                         <button type="button" class="btn btn-secondary" id='save'>Save</button>
                     </div>
                     <div class="col-auto">
                         <button type="button" class="btn btn-primary" id='run'>Plot structure</button>
+                        <a class="btn btn-secondary" href="#" id="download" download="export.cif">Export CIF</a>    
                     </div>
-                    </div>
+                </div>
                 <div class="col-sm-12 fillhalf">
                     <strong>parameters.inp</strong>
                     <!--
@@ -79,9 +93,8 @@
             </div>
 
             <div class="col-sm-6" id="panelRight">
-                <div class="row" style="background-color: lightgray; padding-bottom: 8px;">
-                    <strong>View:</strong>
-                    <div class="col-auto">
+                <div class="row" style="background-color: lightgray;">
+                    <div class="col-auto" style="margin:4px;">
                         <div class="input-group">
                             <span class="input-group-text">x</span>
                             <select class="form-select" aria-label="Default select example" id="supecell_x">
@@ -104,9 +117,7 @@
                         </div>
                     </div>
 
-
-
-                    <div class="col-auto">
+                    <div class="col-auto" style="margin:4px;">
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="view_dir" data-bs-toggle="dropdown" aria-expanded="false">
                             Direction
@@ -120,22 +131,18 @@
                         </div>             
                     </div>
 
-                    <div class="col-auto">
-                        <div class="form-check form-check-inline form-switch" style="margin:8px;">
+                    <div class="col-auto" style="margin:4px;">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="chk_Cell" checked>
+                            <label class="form-check-label" for="chk_Cell">Cell</label>
+                        </div>
+                        <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="chk_bond" checked>
                             <label class="form-check-label" for="chk_bond">Bond</label>
                         </div>
                     </div>
-
-                    <div class="col-auto">
-                        <button type="button" class="btn btn-outline-secondary" id="show_detail">Detail</button>
-                    </div>
                     
-                    <div class="col-auto">
-                        <a class="btn btn-secondary" href="#" id="download" download="export.cif">Export CIF</a>    
-                    </div>
-
-
+                    
                 </div>
                 <div class="row" style="background-color: white;">
 
@@ -152,7 +159,7 @@
 
                     <div class="col-sm-4">
                             <strong>Zoom</strong>
-                            <button type="button" class="btn btn-link" id="zoom_reset">Reset</button><br/>
+                            <a href="#"id="zoom_reset">Reset</a><br/>
                             <input type="range" class="form-range" id="zoom" min="0.20" max="2.5" value="1.0" step="0.1">
                     </div>
                 
