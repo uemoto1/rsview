@@ -2,7 +2,6 @@ console.log("Hello World");
 canvas = document.getElementById("target");
 
 plotter = new AtomPlot(canvas);
-plotter.init();
 plotter.vec_a1.x = 10.26;
 plotter.vec_a2.y = 10.26;
 plotter.vec_a3.z = 10.26;

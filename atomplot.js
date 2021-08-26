@@ -4,59 +4,62 @@ class AtomPlot {
         // グローバル変数
         // 描画先オブジェクト
         this.canvas = canvas;
-        // 格子ベクトル（初期値）
-        this.vec_a1 = new THREE.Vector3();
-        this.vec_a2 = new THREE.Vector3();
-        this.vec_a3 = new THREE.Vector3();
-        this.ncell1 = 1
-        this.ncell2 = 1
-        this.ncell3 = 1
-        this.pbc1 = true; // 境界条件
-        this.pbc2 = true;
-        this.pbc3 = true;
-        // 原子座標関連変数
-        this.atom_data = [];
+        // 格子関連変数
+        this.vec_a1 = new THREE.Vector3(); // 並進ベクトル
+        this.vec_a2 = new THREE.Vector3(); // 並進ベクトル
+        this.vec_a3 = new THREE.Vector3(); // 並進ベクトル
+        this.ncell1 = 1 // 反復
+        this.ncell2 = 1 // 反復
+        this.ncell3 = 1 // 反復
+        this.pbc1 = true; // 周期境界条件
+        this.pbc2 = true; // 周期境界条件 
+        this.pbc3 = true; // 周期境界条件
+        this.atom_data = []; // 原子座標関連変数
         this.atom_select = -1; // 選択された原子
         // プライベート変数
         // THREE.js レンダラー関連
         this.renderer = new THREE.WebGLRenderer({"canvas": this.canvas});
         this.camera = new THREE.OrthographicCamera();
         this.scene = new THREE.Scene();
-        this.model = new THREE.Group();
-        this.axes = new THREE.Group();
-        // オブジェクト
-        this.axis = new THREE.Group(); // 軸
+        // 三次元オブジェクト
+        this.axes = new THREE.Group(); // 軸オブジェクト
+        this.model = new THREE.Group(); // 原子＋セル＋結合（表示モデル全体）
         this.atom = new THREE.Group(); // 原子
         this.cell = new THREE.Group(); // セル
         this.bond = new THREE.Group(); // 結合
-        // オブジェクト回転関連
+        // オブジェクト回転関連（一時変数）
         this.qtmp = new THREE.Quaternion();
         this.xtmp = 0.0;
         this.ytmp = 0.0;
-        // 基本ベクトル
+        // 単位ベクトル
         this.ex = new THREE.Vector3(1, 0, 0);
         this.ey = new THREE.Vector3(0, 1, 0);
         this.ez = new THREE.Vector3(0, 0, 1);
-        // フラグ
-        this.flag_init = false;
-        this.flag_drag = false;
-    }
+        this.e0 = new THREE.Vector3(0, 0, 0);
+        // マテリアル
+        this.line_material = new THREE.LineBasicMaterial({color: 0x000000});
+        this.bond_material = new THREE.MeshLambertMaterial({color: 0xaaaaaa});
         
-
-    init() {
+        // レンダラの初期設定
         // 背景色
         this.renderer.setClearColor(0xffffff, 1.0);
         // カメラ
-        this.camera.position.set(0, 0, 2);
+        this.camera.position.set(0, 0, 1);
         this.camera.lookAt(0, 0, 0);
         this.camera.zoom = 1;
         // オブジェクト
         this.model.add(this.atom);
         this.model.add(this.cell);
         this.model.add(this.bond);
+        // セレクタ
+        const geometry_selector = new THREE.SphereGeometry(1.01, 8, 8);
+        const edge_selector = new THREE.EdgesGeometry(geometry_selector);
+        this.selector = new THREE.LineSegments(edge_selector, this.line_material);
+        this.selector.visible = false;
+        this.model.add(this.selector);
         // 照明
-        var light_a = new THREE.AmbientLight(0xFFFFFF, 0.60);
-        var light_d = new THREE.DirectionalLight(0xFFFFFF, 0.40);
+        const light_a = new THREE.AmbientLight(0xFFFFFF, 0.60);
+        const light_d = new THREE.DirectionalLight(0xFFFFFF, 0.40);
         light_d.position.set(1, 1, 1);
         // シーン作成
         this.scene.add(light_a);
@@ -67,6 +70,7 @@ class AtomPlot {
         this.scene.fog = new THREE.Fog(0xFFFFFF, 0, 5);
         // フラグ
         this.flag_init = true;
+        this.flag_drag = false;
     }
 
 
@@ -102,6 +106,7 @@ class AtomPlot {
         this.atom.clear();
         this.bond.clear();
         this.cell.clear();
+        this.selector.visible = false;
         // 座標軸作図
         this.axes.add(this.create_axes_object());
         this.axes.position.set(-0.75, 0.75, 0.75);
@@ -110,7 +115,7 @@ class AtomPlot {
         const o2 = origin_center ? 0 : -0.5*n2;
         const o3 = origin_center ? 0 : -0.5*n3;
         // 原子球の配置
-        const atom_geometry = new THREE.SphereGeometry(1.0);
+        const atom_geometry = new THREE.SphereGeometry(1.0, 8, 8);
         const m1 = this.pbc1 ? 9 : 0;
         const m2 = this.pbc2 ? 9 : 0;
         const m3 = this.pbc3 ? 9 : 0;
@@ -147,8 +152,7 @@ class AtomPlot {
                 }
             }
         }
-        // 結合軸配置
-        const bond_material = new THREE.MeshLambertMaterial({color: 0xaaaaaa});
+        // 結合軸の作成
         for(var i=0; i<this.atom.children.length; i++) {
             const ri = this.atom.children[i].position;
             for(var j=0; j<i; j++) {
@@ -161,14 +165,13 @@ class AtomPlot {
                 var g = new THREE.Vector3();
                 g.addVectors(ri, rj).multiplyScalar(0.5);
                 const geometry = new THREE.CylinderGeometry(0.1, 0.1, d.length()-2, 8);
-                const cylinder = new THREE.Mesh(geometry, bond_material);
+                const cylinder = new THREE.Mesh(geometry, this.bond_material);
                 cylinder.position.copy(g)
                 cylinder.quaternion.setFromUnitVectors(this.ey, d.normalize());
                 this.bond.add(cylinder);
             }
         }
         // 格子の作成        
-        const line_material = new THREE.LineBasicMaterial({color: 0x000000});
         const vdir = [a1, a2, a3]
         for(var i=0; i<3; i++) {
             const vi = vdir[i];
@@ -183,11 +186,12 @@ class AtomPlot {
                     p1.addScaledVector(vj1, j1-0.5);
                     p1.addScaledVector(vj2, j2-0.5);
                     p1.addScaledVector(vi, -0.5);
-                    p2.copy(p1);
-                    p2.add(vi);
-                    var geometry = new THREE.BufferGeometry().setFromPoints( [p1, p2] );
-                    var line = new THREE.Line( geometry, line_material );
-                    this.cell.add( line );
+                    p2.addScaledVector(vj1, j1-0.5);
+                    p2.addScaledVector(vj2, j2-0.5);
+                    p2.addScaledVector(vi, +0.5);
+                    const line_geometry = new THREE.BufferGeometry().setFromPoints( [p1, p2] );
+                    const line = new THREE.Line(line_geometry, this.line_material );
+                    this.cell.add(line);
                 }
             }
         }
