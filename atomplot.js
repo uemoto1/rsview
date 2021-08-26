@@ -44,7 +44,7 @@ class AtomPlot {
         // 背景色
         this.renderer.setClearColor(0xffffff, 1.0);
         // カメラ
-        this.camera.position.set(0, 0, 1);
+        this.camera.position.set(0, 0, 3);
         this.camera.lookAt(0, 0, 0);
         this.camera.zoom = 1;
         // オブジェクト
@@ -67,7 +67,7 @@ class AtomPlot {
         this.scene.add(this.model);
         this.scene.add(this.axes);
         // フォッグ
-        this.scene.fog = new THREE.Fog(0xFFFFFF, 0, 5);
+        this.scene.fog = new THREE.Fog(0xFFFFFF, 3, 5);
         // フラグ
         this.flag_init = true;
         this.flag_drag = false;
