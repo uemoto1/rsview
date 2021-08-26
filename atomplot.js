@@ -8,9 +8,9 @@ class AtomPlot {
         this.vec_a1 = new THREE.Vector3();
         this.vec_a2 = new THREE.Vector3();
         this.vec_a3 = new THREE.Vector3();
-        this.n1 = 1
-        this.n2 = 1
-        this.n3 = 1
+        this.ncell1 = 1
+        this.ncell2 = 1
+        this.ncell3 = 1
         this.pbc1 = true; // 境界条件
         this.pbc2 = true;
         this.pbc3 = true;
@@ -91,9 +91,9 @@ class AtomPlot {
 
     plot(origin_center=true) {
         // ローカル変数
-        const n1 = this.n1;
-        const n2 = this.n2;
-        const n3 = this.n3;
+        const n1 = this.ncell1;
+        const n2 = this.ncell2;
+        const n3 = this.ncell3;
         const a1 = this.vec_a1;
         const a2 = this.vec_a2;
         const a3 = this.vec_a3;
@@ -148,7 +148,7 @@ class AtomPlot {
             }
         }
         // 結合軸配置
-        const bond_material = new THREE.MeshLambertMaterial({color: 0xdddddd});
+        const bond_material = new THREE.MeshLambertMaterial({color: 0xaaaaaa});
         for(var i=0; i<this.atom.children.length; i++) {
             const ri = this.atom.children[i].position;
             for(var j=0; j<i; j++) {
@@ -160,7 +160,7 @@ class AtomPlot {
                 // g := (ri + rj) / 2
                 var g = new THREE.Vector3();
                 g.addVectors(ri, rj).multiplyScalar(0.5);
-                const geometry = new THREE.CylinderGeometry(0.2, 0.2, d.length()-2, 8);
+                const geometry = new THREE.CylinderGeometry(0.1, 0.1, d.length()-2, 8);
                 const cylinder = new THREE.Mesh(geometry, bond_material);
                 cylinder.position.copy(g)
                 cylinder.quaternion.setFromUnitVectors(this.ey, d.normalize());
@@ -234,8 +234,8 @@ class AtomPlot {
 
     create_arrow_object(material, r1, r2, h1, h2) {
         var arrow = new THREE.Group();
-        var cylinder = new THREE.Mesh(new THREE.CylinderGeometry(r1, r1, h1, 4), material);
-        var cone = new THREE.Mesh(new THREE.ConeGeometry(r2, h2, 4), material);
+        var cylinder = new THREE.Mesh(new THREE.CylinderGeometry(r1, r1, h1, 8), material);
+        var cone = new THREE.Mesh(new THREE.ConeGeometry(r2, h2, 8), material);
         cylinder.translateY(0.5 * h1);
         cone.translateY(h1 + 0.5 * h2);
         arrow.add(cylinder);
@@ -267,6 +267,21 @@ class AtomPlot {
     }
 };
 
+const atom_symbol_table = {
+    1: 'H', 2: 'He', 3: 'Li', 4: 'Be', 5: 'B', 6: 'C', 7: 'N', 8: 'O', 9: 'F', 10: 'Ne',
+    11: 'Na', 12: 'Mg', 13: 'Al', 14: 'Si', 15: 'P', 16: 'S', 17: 'Cl', 18: 'Ar', 19: 'K', 20: 'Ca',
+    21: 'Sc', 22: 'Ti', 23: 'V', 24: 'Cr', 25: 'Mn', 26: 'Fe', 27: 'Co', 28: 'Ni', 29: 'Cu', 30: 'Zn',
+    31: 'Ga', 32: 'Ge', 33: 'As', 34: 'Se', 35: 'Br', 36: 'Kr', 37: 'Rb', 38: 'Sr', 39: 'Y', 40: 'Zr',
+    41: 'Nb', 42: 'Mo', 43: 'Tc', 44: 'Ru', 45: 'Rh', 46: 'Pd', 47: 'Ag', 48: 'Cd', 49: 'In', 50: 'Sn',
+    51: 'Sb', 52: 'Te', 53: 'I', 54: 'Xe', 55: 'Cs', 56: 'Ba', 57: 'La', 58: 'Ce', 59: 'Pr', 60: 'Nd',
+    61: 'Pm', 62: 'Sm', 63: 'Eu', 64: 'Gd', 65: 'Tb', 66: 'Dy', 67: 'Ho', 68: 'Er', 69: 'Tm', 70: 'Yb',
+    71: 'Lu', 72: 'Hf', 73: 'Ta', 74: 'W', 75: 'Re', 76: 'Os', 77: 'Ir', 78: 'Pt', 79: 'Au', 80: 'Hg',
+    81: 'Tl', 82: 'Pb', 83: 'Bi', 84: 'Po', 85: 'At', 86: 'Rn', 87: 'Fr', 88: 'Ra', 89: 'Ac', 90: 'Th',
+    91: 'Pa', 92: 'U', 93: 'Np', 94: 'Pu', 95: 'Am', 96: 'Cm', 97: 'Bk', 98: 'Cf', 99: 'Es', 100: 'Fm',
+    101: 'Md', 102: 'No', 103: 'Lr', 104: 'Rf', 105: 'Db', 106: 'Sg', 107: 'Bh', 108: 'Hs', 109: 'Mt', 110: 'Ds',
+    111: 'Rg', 112: 'Cn', 113: 'Nh', 114: 'Fl', 115: 'Mc', 116: 'Lv', 117: 'Ts', 118: 'Og'
+};
+
 const atom_color_table = {
     1: 'ffffff', 2: 'd9ffff', 3: 'cc80ff', 4: 'c2ff00', 5: 'ffb5b5',
     6: '909090', 7: '3050f8', 8: 'ff0d0d', 9: '90e050', 10: 'b3e3f5',
@@ -294,123 +309,3 @@ const atom_color_table = {
     116: 'eb0026', 117: 'eb0026', 118: 'eb0026',    
 };
 
-atom_symbol_table = {
-    1: 'H',
-    2: 'He',
-    3: 'Li',
-    4: 'Be',
-    5: 'B',
-    6: 'C',
-    7: 'N',
-    8: 'O',
-    9: 'F',
-    10: 'Ne',
-    11: 'Na',
-    12: 'Mg',
-    13: 'Al',
-    14: 'Si',
-    15: 'P',
-    16: 'S',
-    17: 'Cl',
-    18: 'Ar',
-    19: 'K',
-    20: 'Ca',
-    21: 'Sc',
-    22: 'Ti',
-    23: 'V',
-    24: 'Cr',
-    25: 'Mn',
-    26: 'Fe',
-    27: 'Co',
-    28: 'Ni',
-    29: 'Cu',
-    30: 'Zn',
-    31: 'Ga',
-    32: 'Ge',
-    33: 'As',
-    34: 'Se',
-    35: 'Br',
-    36: 'Kr',
-    37: 'Rb',
-    38: 'Sr',
-    39: 'Y',
-    40: 'Zr',
-    41: 'Nb',
-    42: 'Mo',
-    43: 'Tc',
-    44: 'Ru',
-    45: 'Rh',
-    46: 'Pd',
-    47: 'Ag',
-    48: 'Cd',
-    49: 'In',
-    50: 'Sn',
-    51: 'Sb',
-    52: 'Te',
-    53: 'I',
-    54: 'Xe',
-    55: 'Cs',
-    56: 'Ba',
-    57: 'La',
-    58: 'Ce',
-    59: 'Pr',
-    60: 'Nd',
-    61: 'Pm',
-    62: 'Sm',
-    63: 'Eu',
-    64: 'Gd',
-    65: 'Tb',
-    66: 'Dy',
-    67: 'Ho',
-    68: 'Er',
-    69: 'Tm',
-    70: 'Yb',
-    71: 'Lu',
-    72: 'Hf',
-    73: 'Ta',
-    74: 'W',
-    75: 'Re',
-    76: 'Os',
-    77: 'Ir',
-    78: 'Pt',
-    79: 'Au',
-    80: 'Hg',
-    81: 'Tl',
-    82: 'Pb',
-    83: 'Bi',
-    84: 'Po',
-    85: 'At',
-    86: 'Rn',
-    87: 'Fr',
-    88: 'Ra',
-    89: 'Ac',
-    90: 'Th',
-    91: 'Pa',
-    92: 'U',
-    93: 'Np',
-    94: 'Pu',
-    95: 'Am',
-    96: 'Cm',
-    97: 'Bk',
-    98: 'Cf',
-    99: 'Es',
-    100: 'Fm',
-    101: 'Md',
-    102: 'No',
-    103: 'Lr',
-    104: 'Rf',
-    105: 'Db',
-    106: 'Sg',
-    107: 'Bh',
-    108: 'Hs',
-    109: 'Mt',
-    110: 'Ds',
-    111: 'Rg',
-    112: 'Cn',
-    113: 'Nh',
-    114: 'Fl',
-    115: 'Mc',
-    116: 'Lv',
-    117: 'Ts',
-    118: 'Og'
-};
