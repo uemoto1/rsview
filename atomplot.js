@@ -27,6 +27,8 @@ class AtomPlot {
         this.atom = new THREE.Group(); // 原子
         this.cell = new THREE.Group(); // セル
         this.bond = new THREE.Group(); // 結合
+        // トレーサー
+        this.raycaster = new THREE.Raycaster();
         // オブジェクト回転関連（一時変数）
         this.qtmp = new THREE.Quaternion();
         this.xtmp = 0.0;
@@ -68,9 +70,22 @@ class AtomPlot {
         this.scene.add(this.axes);
         // フォッグ
         this.scene.fog = new THREE.Fog(0xFFFFFF, 3, 5);
-        // フラグ
-        this.flag_init = true;
+
+        // マウス操作イベント
         this.flag_drag = false;
+        // ドラッグ開始
+        this.canvas.addEventListener('mousedown', (e)=>{
+            this.drag_start(e.offsetX, e.offsetY);
+        });
+        // ドラッグ中
+        this.canvas.addEventListener('mousemove', (e)=>{
+            if (e.buttons > 0) this.drag(e.offsetX, e.offsetY);
+        });
+        // ドラッグ終了またはオブジェクト選択
+        this.canvas.addEventListener('mouseup', (e)=>{
+            if (!this.flag_drag) this.select(e.offsetX, e.offsetY);
+        })
+
     }
 
 
@@ -106,8 +121,10 @@ class AtomPlot {
         this.atom.clear();
         this.bond.clear();
         this.cell.clear();
+        // セレクタを解除
+        this.selected_index = -1;
         this.selector.visible = false;
-        // 座標軸作図
+        // 座標軸描画
         this.axes.add(this.create_axes_object());
         this.axes.position.set(-0.75, 0.75, 0.75);
         // 基準位置計算
@@ -143,10 +160,7 @@ class AtomPlot {
                         const material = new THREE.MeshLambertMaterial({color: color});
                         var sphere = new THREE.Mesh(atom_geometry, material);
                         sphere.position.copy(r);
-                        sphere.i = i;
-                        sphere.j1 = j1;
-                        sphere.j2 = j2;
-                        sphere.j3 = j3;
+                        sphere.tag = {"i": i, "j1": j1, "j2": j2, "j3": j3};
                         this.atom.add(sphere);
                     }
                 }
@@ -208,15 +222,18 @@ class AtomPlot {
 
 
     drag_start(x, y) {
+        this.flag_drag = false;
         this.xtmp = x;
         this.ytmp = y;
         this.qtmp.copy(this.model.quaternion);
-        this.flag_drag = true;
     }
 
     drag(x, y) {
-        if (this.flag_drag) {
-            // 移動距離を計算
+        // 移動距離を計算
+        if (Math.abs(x - this.xtmp) < 5 && Math.abs(y - this.ytmp) < 5) {
+            this.flag_drag = false;
+        } else {
+            this.flag_drag = true;
             const dx = +(x - this.xtmp) / this.unit;
             const dy = -(y - this.ytmp) / this.unit;
             var d = new THREE.Vector3(dx, dy, 0.50);
@@ -232,11 +249,36 @@ class AtomPlot {
         }
     }
 
-    drag_end() {
-        this.flag_drag = false;
+    select(x, y) {
+        const vx = +(x - this.width * 0.5) / this.unit;
+        const vy = -(y - this.height * 0.5) / this.unit;
+        const v = new THREE.Vector2(vx, vy);
+        this.raycaster.setFromCamera(v, this.camera);
+        var intersects = this.raycaster.intersectObjects(this.atom.children);
+        if (intersects.length > 0) {
+            this.selected_index = intersects[0].object.tag.i;
+            this.selector.position.copy(intersects[0].object.position);
+            this.selector.visible = true;
+        } else {
+            this.selected_index = -1;
+            this.selector.visible = false;
+        }
+        this.redraw(resize=false);
     }
+    
 
     create_arrow_object(material, r1, r2, h1, h2) {
+        var arrow = new THREE.Group();
+        var cylinder = new THREE.Mesh(new THREE.CylinderGeometry(r1, r1, h1, 8), material);
+        var cone = new THREE.Mesh(new THREE.ConeGeometry(r2, h2, 8), material);
+        cylinder.translateY(0.5 * h1);
+        cone.translateY(h1 + 0.5 * h2);
+        arrow.add(cylinder);
+        arrow.add(cone);
+        return arrow;
+    }
+
+    create_arrow_object2(material, r1, r2, v1, v2, a=0.25) {
         var arrow = new THREE.Group();
         var cylinder = new THREE.Mesh(new THREE.CylinderGeometry(r1, r1, h1, 8), material);
         var cone = new THREE.Mesh(new THREE.ConeGeometry(r2, h2, 8), material);

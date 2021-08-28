@@ -43,16 +43,21 @@ function resize() {
 }
 window.onresize = resize;
 
-canvas.onmousedown = function(e) {
-    plotter.drag_start(e.clientX, e.clientY);
-}
+// canvas.onmousedown = function(e) {
+//     tmpX = e.offsetX;
+//     tmpY = e.offsetY;
+//     plotter.drag_start(e.offsetX, e.offsetY);
+// }
 
-canvas.onmousemove = function(e) {
-    if (e.buttons > 0) {
-        plotter.drag(e.clientX, e.clientY);
-    }
-}
+// canvas.onmousemove = function(e) {
+//     if (e.buttons > 0) {
+//         plotter.drag(e.offsetX, e.offsetY);
+//     }
+// }
 
-canvas.onmouseup = function(e) {
-    plotter.drag_end();
-}
+// canvas.onmouseup = function(e) {
+//     if (tmpX == e.offsetX && tmpY == e.offsetY) {
+//         plotter.select(tmpX, tmpY);
+//     }
+// }
+
