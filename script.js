@@ -190,7 +190,7 @@ function plot_structure() {
         object.remove(object.children[0]);
 
     // 格子（直方体）の作成
-    var geometry = new THREE.BoxGeometry(2 * xmax / scale, 2 * zmax / scale, 2 * ymax / scale);
+    var geometry = new THREE.BoxGeometry(2 * xmax / scale, 2 * ymax / scale, 2 * zmax / scale);
     var edges = new THREE.EdgesGeometry(geometry);
     var line = new THREE.LineSegments(edges, cell3d_material);
     cell3d = line;
