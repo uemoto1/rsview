@@ -1,5 +1,8 @@
 console.log("Hello World");
 canvas = document.getElementById("target");
+panelLeft = document.getElementById("panelLeft");
+panelRight = document.getElementById("panelRight");
+textInput = document.getElementById("textInput");
 
 cv = new CrystalViewer(canvas);
 cv.vec_a1.x = 3.2162899971 / 0.529;
@@ -11,7 +14,6 @@ cv.vec_a2.z = 0.0000000000 / 0.529;
 cv.vec_a3.x = 0.0000000000 / 0.529;
 cv.vec_a3.y = 0.0000000000 / 0.529;
 cv.vec_a3.z = 5.2399621010 / 0.529;
-
 
 cv.ncell1 = 1;
 cv.ncell2 = 1;
@@ -39,25 +41,27 @@ cv.atom_data = [
 cv.plot();
 
 function resize() {
+    canvas.style.width = panelRight.clientWidth;
+    canvas.style.height = panelRight.clientHeight;
     cv.redraw();
 }
 window.onresize = resize;
 
-// canvas.onmousedown = function(e) {
-//     tmpX = e.offsetX;
-//     tmpY = e.offsetY;
-//     cv.drag_start(e.offsetX, e.offsetY);
-// }
+canvas.onmousedown = function(e) {
+    tmpX = e.offsetX;
+    tmpY = e.offsetY;
+    cv.drag_start(e.offsetX, e.offsetY);
+}
 
-// canvas.onmousemove = function(e) {
-//     if (e.buttons > 0) {
-//         cv.drag(e.offsetX, e.offsetY);
-//     }
-// }
+canvas.onmousemove = function(e) {
+    if (e.buttons > 0) {
+        cv.drag(e.offsetX, e.offsetY);
+    }
+}
 
-// canvas.onmouseup = function(e) {
-//     if (tmpX == e.offsetX && tmpY == e.offsetY) {
-//         cv.select(tmpX, tmpY);
-//     }
-// }
+canvas.onmouseup = function(e) {
+    if (tmpX == e.offsetX && tmpY == e.offsetY) {
+        cv.select(tmpX, tmpY);
+    }
+}
 
