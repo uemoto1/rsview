@@ -1,4 +1,5 @@
-class AtomPlot {
+// 原子構造描画クラス
+class CrystalViewer {
 
     constructor(canvas) {
         // グローバル変数
