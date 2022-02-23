@@ -63,7 +63,7 @@ var nxcell = 1;
 var nycell = 1;
 var nzcell = 1;
 
-var d_bond = 3.5 / bohr_angstrom;
+var d_bond = 4.5;
 
 function showErrorMsg(name, errlog) {
 
@@ -170,7 +170,7 @@ function prepare_cylinder_mesh(r, v1, v2, rr, material) {
     var y = new THREE.Vector3(0, 1, 0);
     d.subVectors(v2, v1)
     g.addVectors(v1, v2).multiplyScalar(0.5)
-    var geometry = new THREE.CylinderGeometry(r, r, d.length()-2*rr, 4);
+    var geometry = new THREE.CylinderGeometry(r, r, d.length()-2*rr, 8);
     var mesh = new THREE.Mesh(geometry, material);
     q.setFromUnitVectors(y, d.normalize())
     mesh.applyQuaternion(q)
@@ -212,7 +212,7 @@ function plot_structure() {
                     if ((z < -vzmax) || (vzmax < z)) continue;
 
                     // 球のメッシュを作成 
-                    var geometry = new THREE.SphereGeometry(1.0 / scale);
+                    var geometry = new THREE.SphereGeometry(1.0 / scale, 8, 8);
                     var material = new THREE.MeshLambertMaterial({
                         color: parseInt(tbl_color[atom_type[i]], 16)
                     });
@@ -236,7 +236,7 @@ function plot_structure() {
             rj = group_atom.children[j].position;
             d = ri.distanceTo(rj) * scale;
             if (d < d_bond) {
-                mesh = prepare_cylinder_mesh(0.1/scale, ri, rj, 1.0/scale, bond_material);
+                mesh = prepare_cylinder_mesh(0.125/scale, ri, rj, 1.0/scale, bond_material);
                 group_bond.add(mesh);
             }
         }
@@ -245,7 +245,7 @@ function plot_structure() {
     
 
     // 原子セレクタ（球）の追加
-    var geometry = new THREE.SphereGeometry(1.00 / scale);
+    var geometry = new THREE.SphereGeometry(1.00 / scale, 8, 8);
     var edges = new THREE.EdgesGeometry(geometry);
     var line = new THREE.LineSegments(edges, cell3d_material);
     select3d = line;
@@ -422,8 +422,8 @@ $('#supecell_x,#supecell_y,#supecell_z').change(function (e) {
     plot_structure();
 });
 
-$('#bond_max').change(function (e) {
-    d_bond = parseFloat($(this).val()) / bohr_angstrom;
+$('#bond').change(function (e) {
+    d_bond = parseFloat($(this).val());
     plot_structure();
 });
 
@@ -574,10 +574,6 @@ $("#dir_xz").click(function() {
     axis.quaternion.copy(object.quaternion);
     renderer.render(scene, camera);
 });
-$("#chk_bond").change(function() {
-    group_bond.visible = $(this).prop("checked");
-    renderer.render(scene, camera);
-})
 $("#chk_axis").change(function() {
     axis.visible = $(this).prop("checked");
     cell3d.visible = $(this).prop("checked");
