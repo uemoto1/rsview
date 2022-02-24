@@ -5,12 +5,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv=”Cache-Control” content=”no-cache”>
-    <link rel="stylesheet" href="./lib/css/bootstrap.min.css?v=20210820">
+    <link rel="stylesheet" href="./lib/bootstrap/5.0.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="./style.css">
 
-    <script src="./lib/js/jquery-3.5.1.min.js?v=20220222"></script>
-    <script src="./lib/js/bootstrap.bundle.min.js?v=20220222"></script>
-    <script src="./lib/js/three.min.js?v=20220222"></script>
+    <script src="./lib/jquery/jquery-3.6.0.min.js"></script>
+    <script src="./lib/bootstrap/5.0.2/js/bootstrap.bundle.min.js"></script>
+    <script src="./lib/three/r141/three.min.js"></script>
 
 
     <title>Web RSPACE Viewer</title>
@@ -40,13 +40,18 @@
                         <li><a class="dropdown-item" href="http://www2.kobe-u.ac.jp/~tomoono/index.html">Ono group</a></li>
                     </ul>
                 </li> -->
+
+                <li class="nav-item dropdown">
+                   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Help
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" data-bs-toggle="modal"href="#helpModal"   >Input parameters</a></li>
+                    <li><a class="dropdown-item" data-bs-toggle="modal" href="#helpElements" >Element table</a></li>
+                  </ul>
+                </li>
             </ul>
-
-
         </div>
-
-
-
     </nav>
 
 
@@ -204,31 +209,245 @@
     </div>
 
 
-    <!-- Modal -->
-    <div class="modal" tabindex="-1" id="errmsgModal">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Error</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <ul id="errmsg"></ul>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div>
+<!-- Modal -->
+<div class="modal" tabindex="-1" id="errmsgModal">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title">Error</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+<ul id="errmsg"></ul>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+</div>
+</div>
+</div>
+</div>
 
+
+<!-- Modal -->
+<div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="helpModalLabel">Input parameters</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+<table>
+<tr>
+<th scope="col">Name</th>
+<th scope="col">Default</th>
+<th scope="col">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr><th scope="row">ndisp</th><td>66</td><td>outputfile (6: display, other: output.dat)</td></tr>
+<tr><th scope="row">catmfn</th><td>'atom.xyz'</td><td>filename of atomic coordinate</td></tr>
+<tr><th scope="row">nprocx</th><td>1</td><td># of processes (x)</td></tr>
+<tr><th scope="row">nprocy</th><td>1</td><td># of processes (y)</td></tr>
+<tr><th scope="row">nprocz</th><td>1</td><td># of processes (z)</td></tr>
+<tr><th scope="row">nprock</th><td>1</td><td># of processes (k)</td></tr>
+<tr><th scope="row">xmax</th><td>?</td><td>length of supercell (x in bohr, total length is 2*xmax)</td></tr>
+<tr><th scope="row">ymax</th><td>?</td><td>length of supercell (y in bohr, total length is 2*ymax)</td></tr>
+<tr><th scope="row">zmax</th><td>?</td><td>length of supercell (z in bohr, total length is 2*zmax)</td></tr>
+<tr><th scope="row">nxmax</th><td>?</td><td># of grid points (x, total number is 2*nxmax)</td></tr>
+<tr><th scope="row">nymax</th><td>?</td><td># of grid points (y, total number is 2*nymax)</td></tr>
+<tr><th scope="row">nzmax</th><td>?</td><td># of grid points (z, total number is 2*nzmax)</td></tr>
+<tr><th scope="row">npxmax</th><td>-1</td><td># of grid points in augmented sphere in (x, total number is 2*npxmax)</td></tr>
+<tr><th scope="row">npymax</th><td>-1</td><td>(if one of them is less than zero, they are automatically determined.)</td></tr>
+<tr><th scope="row">nsym</th><td>0</td><td>symmetric operation. 0: non, 1: BCC, 2: FCC, 3: DIA, 4: HCP</td></tr>
+<tr><th scope="row">neigmx</th><td>?</td><td># of states per k point</td></tr>
+<tr><th scope="row">natom</th><td>?</td><td># of atoms</td></tr>
+<tr><th scope="row">num_atcell</th><td>-1</td><td># of atoms per sub-domain (if less than 0, it corresponds to natom)</td></tr>
+<tr><th scope="row">num_ppcell</th><td>-1</td><td># of non-localparts of p.p. per sub-domain on coarse grid (if less than 0, it corresponds to natom)</td></tr>
+<tr><th scope="row">num_ppcell_d</th><td>-1</td><td># of non-localparts of p.p. per sub-domain on dense grid (if less than 0, it corresponds to natom)</td></tr>
+<tr><th scope="row">nperi</th><td>3</td><td>switchs for periodic boundary conditions (0; isolated, 3; periodic)</td></tr>
+<tr><th scope="row">npopshow</th><td>0</td><td>switchs for display of atomic population (0;noshow 1;show)</td></tr>
+<tr><th scope="row">numkx</th><td>1</td><td># of sampling k points (x)</td></tr>
+<tr><th scope="row">numky</th><td>1</td><td># of sampling k points (y)</td></tr>
+<tr><th scope="row">numkz</th><td>1</td><td># of sampling k points (z)</td></tr>
+<tr><th scope="row">ksym</th><td>0</td><td>symmetry of kpoints</td></tr>
+<tr><th scope="row">kband</th><td>0</td><td>swich to output band map data. 0: not output, 1: output</td></tr>
+<tr><th scope="row">skpx(1)</th><td>0.0d0</td><td>kx</td></tr>
+<tr><th scope="row">skpy(1)</th><td>0.0d0</td><td>ky</td></tr>
+<tr><th scope="row">skpz(1)</th><td>0.0d0</td><td>kz</td></tr>
+<tr><th scope="row">nwkp(1)</th><td>1</td><td>weight for the point</td></tr>
+<tr><th scope="row">cexco</th><td>'vwn'</td><td>type of exchange correlation functional vwn,pz,pbe,pw91</td></tr>
+<tr><th scope="row">nspv</th><td>1</td><td>spin (1; degenerate, 2; free_collinear, 4; free_noncollinear)</td></tr>
+<tr><th scope="row">epsvh</th><td>1.0d-12</td><td>criteria of the convergency for CG (P. eq.)</td></tr>
+<tr><th scope="row">epssd</th><td>1.0d-6</td><td>criteria of the convergency for CG (KS eq.)</td></tr>
+<tr><th scope="row">ratio_diis</th><td>0.3d0</td><td>criteria of the convergency for DIIS (KS eq.)</td></tr>
+<tr><th scope="row">eps_scf</th><td>1.0d-6</td><td>criteria of the convergency for SCF</td></tr>
+<tr><th scope="row">ncgmin</th><td>1</td><td>min. # of its. for CG (P. eq.)</td></tr>
+<tr><th scope="row">ncgmax</th><td>800</td><td>max. # of its. for CG (P. eq.)</td></tr>
+<tr><th scope="row">ncgres</th><td>801</td><td>restart for CG (P. eq.):N (1/N its.)</td></tr>
+<tr><th scope="row">nprecon_cg</th><td>1</td><td>switch for preconditioning CG (KS eq.) (0;no 1;yes)</td></tr>
+<tr><th scope="row">nprecon_diis</th><td>0</td><td>switch for preconditioning  DIIS (KS eq.) (0;no 1;yes)</td></tr>
+<tr><th scope="row">nsdmax</th><td>4</td><td>max. # of its. for CG (KS eq.)</td></tr>
+<tr><th scope="row">nkscg</th><td>1</td><td>switch for CG (KS eq.) (0;no 1;yes)</td></tr>
+<tr><th scope="row">ndiismax</th><td>4</td><td>max. # of its. for DIIS (KS eq.)</td></tr>
+<tr><th scope="row">ncgscf</th><td>200</td><td>min. # of SCF its. using CG before DIIS</td></tr>
+<tr><th scope="row">nretcg</th><td>2000</td><td>retry of CG:N (1/N scf)</td></tr>
+<tr><th scope="row">nrrz</th><td>1</td><td>rayleigh-ritz or orthogonalization of WFs in the case of DIIS:N (1/N scf)</td></tr>
+<tr><th scope="row">nchange</th><td>1</td><td>re-order eigenstates:N (1/N scf)</td></tr>
+<tr><th scope="row">eta</th><td>0.2d0</td><td>mixing ratio of charge density</td></tr>
+<tr><th scope="row">looplimit</th><td>1000</td><td>max. # of its. for SCF</td></tr>
+<tr><th scope="row">nbrydn</th><td>20</td><td># of steps for Broyden mixing</td></tr>
+<tr><th scope="row">etamag(1)</th><td>0.5d0</td><td>mixing ratio for magnetic moment</td></tr>
+<tr><th scope="row">etamag(2)</th><td>2.0d0</td><td>increment factor for mixing of magnetic moment</td></tr>
+<tr><th scope="row">tmstep</th><td>0.0d0</td><td>time step of Str. Opt. (a.u.)</td></tr>
+<tr><th scope="row">nmd_start</th><td>0</td><td>its. # of SO</td></tr>
+<tr><th scope="row">nmd_end</th><td>1</td><td>its. # of SO (nmd_end-nmd_start is the total # of it. of SO)</td></tr>
+<tr><th scope="row">ngdiis</th><td>1</td><td># of steps for GDIIS</td></tr>
+<tr><th scope="row">sconst</th><td>0.0d0</td><td>spring constant for NEB</td></tr>
+<tr><th scope="row">biasx</th><td>0.0d0</td><td>electric field in x (a.u.)</td></tr>
+<tr><th scope="row">biasy</th><td>0.0d0</td><td>electric field in y (a.u.)</td></tr>
+<tr><th scope="row">biasz</th><td>0.0d0</td><td>electric field in z (a.u.)</td></tr>
+<tr><th scope="row">tf</th><td>3.0d-3</td><td>Temp. for Fermi dist. (KT) (a.u.)</td></tr>
+<tr><th scope="row">tfmin</th><td>-3.0d2</td><td>min. of expected Fermi level (a.u.)</td></tr>
+<tr><th scope="row">tfmax</th><td>3.0d2</td><td>max. of expected Fermi level (a.u.)</td></tr>
+<tr><th scope="row">chrgd</th><td>0.0d0</td><td>(tot.neg.charge)-(tot.pos.charge)</td></tr>
+<tr><th scope="row">npolcon</th><td>0</td><td>spin pol.(0; free, 1; cf. atom.mag, 2; constr.tot.)</td></tr>
+<tr><th scope="row">polconocc</th><td>2.7d0</td><td>tot. spin pol.</td></tr>
+<tr><th scope="row">endjel</th><td>0.0d0</td><td>edge of jellium (if you do not use jellium, set chrjel to be zero.)</td></tr>
+<tr><th scope="row">chrjel</th><td>0.0d0</td><td>charge of jellium (if you do not use jellium, set chrjel to be zero.)</td></tr>
+<tr><th scope="row">fcut</th><td>1.0d-5</td><td>cutoff of force (a.u.)</td></tr>
+<tr><th scope="row">npre</th><td>0</td><td>swich for computation of initial wavefunctions & charge density (0; read from files, 1; generate, 2; generate only)</td></tr>
+<tr><th scope="row">nevhist</th><td>3</td><td>swich for charge potential & density (0: wf only, 1: wf+rho, 2: wf+Htr pot., 3: wf+rho+Htr pot., -1: non SCF calc.)</td></tr>
+<tr><th scope="row">northo</th><td>1</td><td># of its. for orthogonalization</td></tr>
+<tr><th scope="row">lveffout</th><td>.false.</td><td>swich for outout KS effective potential Potential.txt</td></tr>
+<tr><th scope="row">nso</th><td>0</td><td>spin-orbit parameters</td></tr>
+<tr><th scope="row">socang(1)</th><td>0.0d0</td><td>spin-orbit parameters</td></tr>
+<tr><th scope="row">socang(2)</th><td>0.0d0</td><td>spin-orbit parameters</td></tr>
+<tr><th scope="row">socang(3)</th><td>0.0d0</td><td>spin-orbit parameters</td></tr>
+<tr><th scope="row">eps</th><td>1.0d-16</td><td>computer epsilon</td></tr>
+<tr><th scope="row">eps_eig_diis</th><td>1.0d-14</td><td>parameters for DIIS</td></tr>
+<tr><th scope="row">alambda_diis</th><td>0.5d0</td><td>parameters for DIIS</td></tr>
+<tr><th scope="row">alambda_min</th><td>0.1d0</td><td>parameters for DIIS</td></tr>
+<tr><th scope="row">alambda_max</th><td>1.0d0</td><td>parameters for DIIS</td></tr>
+<tr><th scope="row">nradmx</th><td>1502</td><td>max. # of radial grids in pseusopotential</td></tr>
+<tr><th scope="row">nrprjmx</th><td>6</td><td>max. # of radial functions in pseudopotential. e.g., s*2 p*2 d*2 =6</td></tr>
+<tr><th scope="row">nprjmx</th><td>18</td><td>max. # of projectors in pseudopotential. e.g., s*2 p*6 d*10 =18</td></tr>
+<tr><th scope="row">lsphel</th><td>8</td><td>order of spherical integration</td></tr>
+<tr><th scope="row">nlmax</th><td>4</td><td>order of spherical harminics</td></tr>
+<tr><th scope="row">lrhomx</th><td>25</td><td>the number of spherical harminics</td></tr>
+<tr><th scope="row">nfiltyp</th><td>1</td><td>filtering type of pseudopotential (0; King-Smith type [KS], 1; Fermi distribution [FD])</td></tr>
+<tr><th scope="row">gmaxps</th><td>20.0d0</td><td>cutoff of pseusopotential (in sqrt(Ry))</td></tr>
+<tr><th scope="row">psctoff</th><td>1.05d0</td><td>cutoff radius radius of pp</td></tr>
+<tr><th scope="row">nqmx</th><td>400</td><td>the number of waves to expand projectors [KS]</td></tr>
+<tr><th scope="row">psftrad</th><td>10.0d0</td><td>period of the waves [KS]</td></tr>
+<tr><th scope="row">psctrat</th><td>1.0d0</td><td>cutoff ratio of the waves to expand projectors [KS]</td></tr>
+<tr><th scope="row">psext</th><td>2.0d0</td><td>cutoff ratio of the waves to vanish the projectors outside the augmented sphere [KS]</td></tr>
+<tr><th scope="row">filpp</th><td>0.02d0</td><td>filtering parameter in the case of nfiltyp=1 [FD]</td></tr>
+<tr><th scope="row">rctpcc</th><td>2.0d0</td><td>cutoff radius ratio of pcc charge in the case of nfiltyp=1 [FD]</td></tr>
+<tr><th scope="row">veta</th><td>0.2d0</td><td>separating parameter</td></tr>
+<tr><th scope="row">new_pwx</th><td>11</td><td>parameters for Ewald summation (x, plane wave part)</td></tr>
+<tr><th scope="row">new_pwy</th><td>11</td><td>parameters for Ewald summation (y, plane wave part)</td></tr>
+<tr><th scope="row">new_pwz</th><td>11</td><td>parameters for Ewald summation (z, plane wave part)</td></tr>
+<tr><th scope="row">new_rsx</th><td>11</td><td>parameters for Ewald summation (x, real part)</td></tr>
+<tr><th scope="row">new_rsy</th><td>11</td><td>parameters for Ewald summation (y, real part)</td></tr>
+<tr><th scope="row">new_rsz</th><td>11</td><td>parameters for Ewald summation (z, real part)</td></tr>
+<tr><th scope="row">nint1dmax</th><td>1000</td><td># of grid points for numerical integration for 1D periodic boundary condition</td></tr>
+<tr><th scope="row">nf</th><td>4</td><td>order of finite difference for KS Eq.</td></tr>
+<tr><th scope="row">nfdg</th><td>4</td><td>order of Lagrange interpolation of DG tech.</td></tr>
+<tr><th scope="row">nfh</th><td>4</td><td>order of finite difference for P. Eq.</td></tr>
+<tr><th scope="row">nmesh</th><td>2</td><td>the number of grids for double-grid technique (potential)</td></tr>
+<tr><th scope="row">npmesh</th><td>2</td><td>the number of grids for double-grid technique (nonlocal pseudopotential)</td></tr>
+<tr><th scope="row">zs_pre</th><td>0.5d0</td><td>initial spread of wave functions</td></tr>
+<tr><th scope="row">pol_pre</th><td>1.5d0</td><td>initial spin polarization of charge density</td></tr>
+</tbody>
+</table>          
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Modal -->
+<div class="modal" tabindex="-1" id="helpElements">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title">Element table</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+<table class="table">
+<thead>
+<tr>
+<th scope="col">Z</th>
+<th scope="col">Symbol</th>
+<th scope="col">Standard weight [au]</th>
+</tr>
+</thead>
+<tbody>
+<tr><th scope="row">1</th><td>H</td><td>1837.18</td></tr><tr><th scope="row">2</th><td>He</td><td>7296.30</td></tr>
+<tr><th scope="row">3</th><td>Li</td><td>12647.20</td></tr><tr><th scope="row">4</th><td>Be</td><td>16428.20</td></tr>
+<tr><th scope="row">5</th><td>B</td><td>19698.13</td></tr><tr><th scope="row">6</th><td>C</td><td>21892.16</td></tr>
+<tr><th scope="row">7</th><td>N</td><td>25532.16</td></tr><tr><th scope="row">8</th><td>O</td><td>29164.45</td></tr>
+<tr><th scope="row">9</th><td>F</td><td>34631.97</td></tr><tr><th scope="row">10</th><td>Ne</td><td>36785.34</td></tr>
+<tr><th scope="row">11</th><td>Na</td><td>41907.79</td></tr><tr><th scope="row">12</th><td>Mg</td><td>44303.48</td></tr>
+<tr><th scope="row">13</th><td>Al</td><td>49184.34</td></tr><tr><th scope="row">14</th><td>Si</td><td>51194.00</td></tr>
+<tr><th scope="row">15</th><td>P</td><td>56461.71</td></tr><tr><th scope="row">16</th><td>S</td><td>58439.98</td></tr>
+<tr><th scope="row">17</th><td>Cl</td><td>64614.11</td></tr><tr><th scope="row">18</th><td>Ar</td><td>72820.75</td></tr>
+<tr><th scope="row">19</th><td>K</td><td>71271.84</td></tr><tr><th scope="row">20</th><td>Ca</td><td>73057.72</td></tr>
+<tr><th scope="row">21</th><td>Sc</td><td>81949.61</td></tr><tr><th scope="row">22</th><td>Ti</td><td>87256.20</td></tr>
+<tr><th scope="row">23</th><td>V</td><td>92860.67</td></tr><tr><th scope="row">24</th><td>Cr</td><td>94783.09</td></tr>
+<tr><th scope="row">25</th><td>Mn</td><td>100145.93</td></tr><tr><th scope="row">26</th><td>Fe</td><td>101799.21</td></tr>
+<tr><th scope="row">27</th><td>Co</td><td>107428.64</td></tr><tr><th scope="row">28</th><td>Ni</td><td>106991.52</td></tr>
+<tr><th scope="row">29</th><td>Cu</td><td>115837.27</td></tr><tr><th scope="row">30</th><td>Zn</td><td>119180.45</td></tr>
+<tr><th scope="row">31</th><td>Ga</td><td>127097.25</td></tr><tr><th scope="row">32</th><td>Ge</td><td>132396.39</td></tr>
+<tr><th scope="row">33</th><td>As</td><td>136573.71</td></tr><tr><th scope="row">34</th><td>Se</td><td>143955.33</td></tr>
+<tr><th scope="row">35</th><td>Br</td><td>145650.61</td></tr><tr><th scope="row">36</th><td>Kr</td><td>152754.41</td></tr>
+<tr><th scope="row">37</th><td>Rb</td><td>155798.27</td></tr><tr><th scope="row">38</th><td>Sr</td><td>159721.49</td></tr>
+<tr><th scope="row">39</th><td>Y</td><td>162065.43</td></tr><tr><th scope="row">40</th><td>Zr</td><td>166291.18</td></tr>
+<tr><th scope="row">41</th><td>Nb</td><td>169357.95</td></tr><tr><th scope="row">42</th><td>Mo</td><td>174906.15</td></tr>
+<tr><th scope="row">43</th><td>Tc</td><td>178643.07</td></tr><tr><th scope="row">44</th><td>Ru</td><td>184239.34</td></tr>
+<tr><th scope="row">45</th><td>Rh</td><td>187585.25</td></tr><tr><th scope="row">46</th><td>Pd</td><td>193991.79</td></tr>
+<tr><th scope="row">47</th><td>Ag</td><td>196631.70</td></tr><tr><th scope="row">48</th><td>Cd</td><td>204918.19</td></tr>
+<tr><th scope="row">49</th><td>In</td><td>209300.41</td></tr><tr><th scope="row">50</th><td>Sn</td><td>216395.09</td></tr>
+<tr><th scope="row">51</th><td>Sb</td><td>221954.90</td></tr><tr><th scope="row">52</th><td>Te</td><td>232600.57</td></tr>
+<tr><th scope="row">53</th><td>I</td><td>231332.70</td></tr><tr><th scope="row">54</th><td>Xe</td><td>239332.50</td></tr>
+<tr><th scope="row">55</th><td>Cs</td><td>242271.82</td></tr><tr><th scope="row">56</th><td>Ba</td><td>250331.81</td></tr>
+<tr><th scope="row">57</th><td>La</td><td>253209.18</td></tr><tr><th scope="row">58</th><td>Ce</td><td>255415.84</td></tr>
+<tr><th scope="row">59</th><td>Pr</td><td>256858.95</td></tr><tr><th scope="row">60</th><td>Nd</td><td>262937.08</td></tr>
+<tr><th scope="row">61</th><td>Pm</td><td>264318.83</td></tr><tr><th scope="row">62</th><td>Sm</td><td>274089.51</td></tr>
+<tr><th scope="row">63</th><td>Eu</td><td>277013.43</td></tr><tr><th scope="row">64</th><td>Gd</td><td>286649.21</td></tr>
+<tr><th scope="row">65</th><td>Tb</td><td>289703.19</td></tr><tr><th scope="row">66</th><td>Dy</td><td>296219.38</td></tr>
+<tr><th scope="row">67</th><td>Ho</td><td>300649.60</td></tr><tr><th scope="row">68</th><td>Er</td><td>304894.51</td></tr>
+<tr><th scope="row">69</th><td>Tm</td><td>307948.24</td></tr><tr><th scope="row">70</th><td>Yb</td><td>315458.14</td></tr>
+<tr><th scope="row">71</th><td>Lu</td><td>318944.97</td></tr><tr><th scope="row">72</th><td>Hf</td><td>325367.37</td></tr>
+<tr><th scope="row">73</th><td>Ta</td><td>329847.81</td></tr><tr><th scope="row">74</th><td>W</td><td>335119.82</td></tr>
+<tr><th scope="row">75</th><td>Re</td><td>339434.60</td></tr><tr><th scope="row">76</th><td>Os</td><td>346768.08</td></tr>
+<tr><th scope="row">77</th><td>Ir</td><td>350390.16</td></tr><tr><th scope="row">78</th><td>Pt</td><td>355616.38</td></tr>
+<tr><th scope="row">79</th><td>Au</td><td>359048.09</td></tr><tr><th scope="row">80</th><td>Hg</td><td>365656.85</td></tr>
+<tr><th scope="row">81</th><td>Tl</td><td>372565.59</td></tr><tr><th scope="row">82</th><td>Pb</td><td>377702.49</td></tr>
+<tr><th scope="row">83</th><td>Bi</td><td>380947.96</td></tr><tr><th scope="row">84</th><td>Po</td><td>380983.69</td></tr>
+<tr><th scope="row">85</th><td>At</td><td>382806.58</td></tr><tr><th scope="row">86</th><td>Rn</td><td>404681.24</td></tr>
+</tbody>
+</table>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+</div>
+</div>
+</div>
+</div>
+    
       
+
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script type="text/javascript" src="./table.js?v=20220222"></script>
-    <script type="text/javascript" src="./parser.js?v=20220222"></script>
-    <script type="text/javascript" src="./script.js?v=20220222"></script>
+    <script type="text/javascript" src="./table.js?v=20220627"></script>
+    <script type="text/javascript" src="./parser.js?v=20220627"></script>
+    <script type="text/javascript" src="./script.js?v=20220627"></script>
 
 </body>
 
