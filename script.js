@@ -65,6 +65,10 @@ var nzcell = 1;
 
 var d_bond = 4.5;
 
+// エディタオブジェクト
+var editor_parameters_inp = ace.edit("parameters_inp");
+var editor_atom_xyz = ace.edit("atom_xyz");
+
 function showErrorMsg(name, errlog) {
 
 
@@ -112,15 +116,14 @@ function parse(parameters_inp, atom_xyz) {
         return 0;
     }
 
-
-    for (var i = 0; i < errlog_nml.length; i++) {
-        errmsg.push("<li>parameters.inp: line " + errlog_nml[i].line + ": " + errlog_nml[i].msg + "</li>");
-        $('#parameters_inp div.label:eq(' + (errlog_nml[i].line - 1) + ")").addClass('error');
-    }
-    for (var i = 0; i < errlog_atom.length; i++) {
-        errmsg.push("<li>atom.xyz: line " + errlog_atom[i].line + ": " + errlog_atom[i].msg + "</li>");
-        $('#atom_xyz div.label:eq(' + (errlog_atom[i].line - 1) + ")").addClass('error');
-    }
+    // for (var i = 0; i < errlog_nml.length; i++) {
+    //     errmsg.push("<li>parameters.inp: line " + errlog_nml[i].line + ": " + errlog_nml[i].msg + "</li>");
+    //     $('#parameters_inp div.label:eq(' + (errlog_nml[i].line - 1) + ")").addClass('error');
+    // }
+    // for (var i = 0; i < errlog_atom.length; i++) {
+    //     errmsg.push("<li>atom.xyz: line " + errlog_atom[i].line + ": " + errlog_atom[i].msg + "</li>");
+    //     $('#atom_xyz div.label:eq(' + (errlog_atom[i].line - 1) + ")").addClass('error');
+    // }
 
     $("#errmsg").empty();
     $("#errmsg").html(errmsg.join("\n"));
@@ -133,13 +136,13 @@ function execute() {
     // 変更済みフラグを切る
     flag_change = false;
     // エディタのセレクタ解除
-    $('#parameters_inp div').removeClass('selected');
-    $('#parameters_inp div').removeClass('error');
-    $('#atom_xyz div').removeClass('selected');
-    $('#atom_xyz div').removeClass('error');
+    // $('#parameters_inp div').removeClass('selected');
+    // $('#parameters_inp div').removeClass('error');
+    // $('#atom_xyz div').removeClass('selected');
+    // $('#atom_xyz div').removeClass('error');
     $("#error").hide();
     // テキストの読み込み
-    parse($('#parameters_inp textarea').val(), $('#atom_xyz textarea').val());
+    parse(editor_parameters_inp.getValue(), editor_atom_xyz.getValue());
     plot_structure();
     generate_element_list();
 
@@ -329,7 +332,7 @@ $('#viewer').click(function (e) {
     var intersects = raycaster.intersectObjects(group_atom.children);
 
     if (intersects.length > 0) {
-        $('#atom_xyz div.selected').removeClass('selected');
+        // $('#atom_xyz div.selected').removeClass('selected');
 
         var i = intersects[0].object.atom_index;
         var p = intersects[0].object.position;
@@ -337,15 +340,15 @@ $('#viewer').click(function (e) {
         select3d.position.copy(p);
         select3d.visible = true;
 
-        label = $('#atom_xyz div.label');
-        $(label[atom_line[i] - 1]).addClass('selected');
-        $('#atom_xyz textarea').scrollTop(
-            $('#atom_xyz div.selected')[0].offsetTop - $('#atom_xyz textarea')[0].offsetTop
-        );
+        // label = $('#atom_xyz div.label');
+        // $(label[atom_line[i] - 1]).addClass('selected');
+        // $('#atom_xyz textarea').scrollTop(
+        //     $('#atom_xyz div.selected')[0].offsetTop - $('#atom_xyz textarea')[0].offsetTop
+        // );
 
-        $("#atom_info").text(
-            "Element:" + atom_type[i] + ', Line:' + (atom_line[i])
-        );
+        // $("#atom_info").text(
+        //     "Element:" + atom_type[i] + ', Line:' + (atom_line[i])
+        // );
 
 
     }
@@ -443,28 +446,31 @@ function resize() {
     $("#panelRight").outerHeight(window_height - nav_height - footer_height);
 
 
-    $(".fillhalf").each(function (i) {
-        h = $(this).parent().innerHeight();
-        $(this).outerHeight(h*0.5);
-    });
+    // $(".fillhalf").each(function (i) {
+    //     h = $(this).parent().innerHeight();
+    //     $(this).outerHeight(h*0.5);
+    // });
+    $("#atom_xyz").outerHeight(100);
+    $("#parameters_inp").outerHeight(100);
 
-    $(".fillbottom").each(function (i) {
-        h = $(this).parent().innerHeight();
-        tp = $(this).parent().position().top;
-        t = $(this).position().top;
-        $(this).outerHeight(h - (t-tp));
-    });
+    // $(".fillbottom").each(function (i) {
+    //     h = $(this).parent().innerHeight();
+    //     tp = $(this).parent().position().top;
+    //     t = $(this).position().top;
+    //     $(this).outerHeight(h - (t-tp));
+    // });
 
 
-    $("div.editor").each(function (i) {
-        w = $(this).innerWidth();
-        h = $(this).innerHeight();
-        d = $(this).children("div");
-        t = $(this).children("textarea");
-        d.outerHeight(h);
-        t.outerHeight(h);
-        t.outerWidth(w - d.outerWidth());
-    });
+
+    // $("div.editor").each(function (i) {
+        // w = $(this).innerWidth();
+        // h = $(this).innerHeight();
+        // d = $(this).children("div");
+        // t = $(this).children("textarea");
+        // d.outerHeight(h);
+        // t.outerHeight(h);
+        // t.outerWidth(w - d.outerWidth());
+    // });
 
     viewer_width = $("#viewer").innerWidth();
     viewer_height = $("#viewer").innerHeight();
@@ -519,19 +525,21 @@ function init() {
     // フォッグを有効化
     scene.fog = new THREE.Fog(0xFFFFFF, 0, 7);
     // エディタ画面作成
-    $('div.editor').each(function (i, item) {
-        div = $(item).children('div');
-        textarea = $(item).children('textarea');
-        for (var j = 1; j <= 1000; j++) {
-            div.append("<div class='label'>" + j + "</div>");
-        }
-        textarea.scroll(function () {
-            $(this).prev('div').scrollTop($(this).scrollTop());
-        })
-    });
+    // $('div.editor').each(function (i, item) {
+    //     div = $(item).children('div');
+    //     textarea = $(item).children('textarea');
+    //     for (var j = 1; j <= 1000; j++) {
+    //         div.append("<div class='label'>" + j + "</div>");
+    //     }
+    //     textarea.scroll(function () {
+    //         $(this).prev('div').scrollTop($(this).scrollTop());
+    //     })
+    // });
     // テンプレート挿入
-    $("#parameters_inp textarea").text(template_parameters_inp);
-    $("#atom_xyz textarea").text(template_atom_xyz);
+    // $("#parameters_inp textarea").text(template_parameters_inp);
+    // $("#atom_xyz textarea").text(template_atom_xyz);
+    editor_parameters_inp.setValue(template_parameters_inp);
+    editor_atom_xyz.setValue(template_atom_xyz);
     // 計算結果を表示
     execute();
     // ボタンの説明を挿入
