@@ -445,13 +445,16 @@ function resize() {
     $("#panelLeft").outerHeight(window_height - nav_height - footer_height);
     $("#panelRight").outerHeight(window_height - nav_height - footer_height);
 
+    console.log(0.5*($("#parameters_inp").parent().innerHeight() - $("#parameters_inp").position().top))
+    $("#parameters_inp").outerHeight(0.5*($("#parameters_inp").parent().innerHeight() - $("#parameters_inp").position().top))
+    $("#atom_xyz").outerHeight(0.5*($("#parameters_inp").parent().innerHeight() - $("#parameters_inp").position().top))
 
     // $(".fillhalf").each(function (i) {
     //     h = $(this).parent().innerHeight();
     //     $(this).outerHeight(h*0.5);
     // });
-    $("#atom_xyz").outerHeight(100);
-    $("#parameters_inp").outerHeight(100);
+    // $("#atom_xyz").outerHeight(256);
+    // $("#parameters_inp").outerHeight(256);
 
     // $(".fillbottom").each(function (i) {
     //     h = $(this).parent().innerHeight();
@@ -539,7 +542,9 @@ function init() {
     // $("#parameters_inp textarea").text(template_parameters_inp);
     // $("#atom_xyz textarea").text(template_atom_xyz);
     editor_parameters_inp.setValue(template_parameters_inp);
+    editor_parameters_inp.clearSelection();
     editor_atom_xyz.setValue(template_atom_xyz);
+    editor_atom_xyz.clearSelection();
     // 計算結果を表示
     execute();
     // ボタンの説明を挿入

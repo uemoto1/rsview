@@ -9,9 +9,9 @@
     <link rel="stylesheet" href="./style.css">
 
     <script src="./lib/jquery/jquery-3.6.0.min.js"></script>
+    <script src="./lib/ace/1.7.0/ace.js"></script>
     <script src="./lib/bootstrap/5.0.2/js/bootstrap.bundle.min.js"></script>
     <script src="./lib/three/r141/three.min.js"></script>
-    <script src="./lib/ace/1.7.0/ace.js"></script>
 
 
     <title>Web RSPACE Viewer</title>
@@ -31,16 +31,6 @@
                 <li class="nav-item">
                     <a class="nav-link" href="https://github.com/uemoto1/rsview/">About</a>
                 </li>
-
-                <!-- <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        About
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <li><a class="dropdown-item" href="https://github.com/uemoto1/rsview/">GitHub repository</a></li>
-                        <li><a class="dropdown-item" href="http://www2.kobe-u.ac.jp/~tomoono/index.html">Ono group</a></li>
-                    </ul>
-                </li> -->
 
                 <li class="nav-item dropdown">
                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -63,8 +53,7 @@
         <div class="row">
 
             <div class="col-sm-6" id="panelLeft" style="background-color: lightgray;">
-                <div class="row" style="padding-top:8px;">
-
+                <div class="row" id="controlLeft" style="padding-top:8px;">
                     <!-- <div class="col-auto">
                         <button type="button" class="btn btn-secondary" id='open'>Open</button>
                         <button type="button" class="btn btn-secondary" id='save'>Save</button>
@@ -72,32 +61,12 @@
                     <div class="col-sm-12">
                         <button type="button" class="btn btn-primary" id='run'>Plot crystal structure</button>
                     </div>
-                    
                     <div class="col-sm-12" >                    
                         <a class="btn btn-outline-secondary" href="#" id="download" download="export.cif">Export CIF</a>    
                     </div>
                 </div>
-                <div class="col-sm-12 fillhalf">
-                    <strong>parameters.inp</strong>
-                    <!--
-                    <button type="button" class="btn btn-link">Open file</button>
-                    <button type="button" class="btn btn-link">Save as</button>
-                    -->
-                    <br />
-                    <div class='fillbottom' id='parameters_inp'>
-                        <!-- <div class='lineno'></div><textarea id='parameters' wrap='off'></textarea> -->
-                    </div>
-                </div>
-                <div class="col-sm-12 fillbottom">
-                    <strong>atom.xyz</strong>
-                    <!--
-                    <button type="button" class="btn btn-link">Open file</button>
-                    <button type="button" class="btn btn-link">Save as</button>
-                    --> <br />
-                    <div class='fillbottom' id='atom_xyz'>
-                        <!-- <div class='lineno'></div><textarea id='atom' wrap='off'></textarea> -->
-                    </div>
-                </div>
+                <div id='parameters_inp' style="height:500px;"></div>
+                <div id='atom_xyz' style="height:500px;"></div>
             </div>
 
             <div class="col-sm-6" id="panelRight">
