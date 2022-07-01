@@ -65,6 +65,17 @@ var nzcell = 1;
 
 var d_bond = 4.5;
 
+
+// 主要なオブジェクト
+var panelLeft = document.getElementById("panelLeft");
+var controlLeft = document.getElementById("controlLeft");
+var panelRight = document.getElementById("panelRight");
+var parameters_inp = document.getElementById("parameters_inp");
+var atom_xyz = document.getElementById("atom_xyz");
+var parameters_inp_wrapper = document.getElementById("parameters_inp_wrapper");
+var atom_xyz_wrapper = document.getElementById("atom_xyz_wrapper");
+var navbar = document.getElementById("navbar");
+var footer = document.getElementById("footer");
 // エディタオブジェクト
 var editor_parameters_inp = ace.edit("parameters_inp");
 var editor_atom_xyz = ace.edit("atom_xyz");
@@ -436,18 +447,20 @@ $('#bond').change(function (e) {
 
 function resize() {
 
-    window_width = $(window).innerWidth();
-    window_height = $(window).innerHeight();
 
-    nav_height = $("nav").outerHeight();
-    footer_height = $("#footer").outerHeight();
 
-    $("#panelLeft").outerHeight(window_height - nav_height - footer_height);
-    $("#panelRight").outerHeight(window_height - nav_height - footer_height);
+    panelLeft.style.height = (window.innerHeight - navbar.offsetHeight - footer.offsetHeight) + "px";
+    panelRight.style.height = (window.innerHeight - navbar.offsetHeight - footer.offsetHeight) + "px";
 
-    console.log(0.5*($("#parameters_inp").parent().innerHeight() - $("#parameters_inp").position().top))
-    $("#parameters_inp").outerHeight(0.5*($("#parameters_inp").parent().innerHeight() - $("#parameters_inp").position().top))
-    $("#atom_xyz").outerHeight(0.5*($("#parameters_inp").parent().innerHeight() - $("#parameters_inp").position().top))
+    parameters_inp_wrapper.style.height = ((panelLeft.clientHeight - controlLeft.offsetHeight) * 0.5) + "px";
+    atom_xyz_wrapper.style.height = ((panelLeft.clientHeight - controlLeft.offsetHeight) * 0.5) + "px";
+
+
+
+    
+    
+    editor_atom_xyz.resize();
+    editor_parameters_inp.resize();
 
     // $(".fillhalf").each(function (i) {
     //     h = $(this).parent().innerHeight();
@@ -541,10 +554,14 @@ function init() {
     // テンプレート挿入
     // $("#parameters_inp textarea").text(template_parameters_inp);
     // $("#atom_xyz textarea").text(template_atom_xyz);
+    ace.config.setModuleUrl("ace/mode/rspace", "mode-rspace.js")
+    //ace.config.setModuleUrl("ace/mode/salmon", "mode-salmon.js")
     editor_parameters_inp.setValue(template_parameters_inp);
     editor_parameters_inp.clearSelection();
+    editor_parameters_inp.session.setMode("ace/mode/rspace");
     editor_atom_xyz.setValue(template_atom_xyz);
     editor_atom_xyz.clearSelection();
+
     // 計算結果を表示
     execute();
     // ボタンの説明を挿入

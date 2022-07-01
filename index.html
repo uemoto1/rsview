@@ -21,7 +21,7 @@
 
 
 
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: indigo;">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: steelblue;" id="navbar">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Web RSPACE Viewer</a>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
@@ -29,7 +29,7 @@
                     <a class="nav-link" href="#">Setting</a>
                 </li> -->
                 <li class="nav-item">
-                    <a class="nav-link" href="https://github.com/uemoto1/rsview/">About</a>
+                    <a class="nav-link" data-bs-toggle="modal" href="#aboutModal">About</a>
                 </li>
 
                 <li class="nav-item dropdown">
@@ -37,7 +37,7 @@
                     Help
                   </a>
                   <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" data-bs-toggle="modal"href="#helpModal"   >Input parameters</a></li>
+                    <li><a class="dropdown-item" data-bs-toggle="modal" href="#helpModal"   >Input parameters</a></li>
                     <li><a class="dropdown-item" data-bs-toggle="modal" href="#helpElements" >Element table</a></li>
                   </ul>
                 </li>
@@ -48,28 +48,22 @@
 
 
     <div class="container-fluid">
-
-
-        <div class="row">
-
-            <div class="col-sm-6" id="panelLeft" style="background-color: lightgray;">
-                <div class="row" id="controlLeft" style="padding-top:8px;">
-                    <!-- <div class="col-auto">
-                        <button type="button" class="btn btn-secondary" id='open'>Open</button>
-                        <button type="button" class="btn btn-secondary" id='save'>Save</button>
-                    </div> -->
-                    <div class="col-sm-12">
+        <div class="row row-cols-2" >
+            <div class="col" id="panelLeft" style="background-color: lightgray";>
+                <div class="row" id="controlLeft" style="padding: 5px;" >
+                    <!-- <button type="button" class="btn btn-secondary" id='open'>Open</button>
+                    <button type="button" class="btn btn-secondary" id='save'>Save</button> -->
                         <button type="button" class="btn btn-primary" id='run'>Plot crystal structure</button>
-                    </div>
-                    <div class="col-sm-12" >                    
-                        <a class="btn btn-outline-secondary" href="#" id="download" download="export.cif">Export CIF</a>    
-                    </div>
                 </div>
-                <div id='parameters_inp' style="height:500px;"></div>
-                <div id='atom_xyz' style="height:500px;"></div>
+                <div class="row" id="parameters_inp_wrapper" style="padding: 5px;">
+                    <div id='parameters_inp' style="width:100%; height:100%;"></div>
+                </div>
+                <div class="row" id="atom_xyz_wrapper" style="padding: 5px;">
+                    <div id='atom_xyz' style="width:100%; height:100%;"></div>
+                </div>
             </div>
 
-            <div class="col-sm-6" id="panelRight">
+            <div class="col" id="panelRight">
                 <div class="row" style="background-color: lightgray;">
                     <div class="col-auto" style="margin:4px;">
                         <div class="input-group">
@@ -136,6 +130,11 @@
                         </div>             
                     </div>
 
+
+                    <div class="col-auto" style="margin:4px;">
+                        <a class="btn btn-outline-secondary" href="#" id="download" download="export.cif">Export CIF</a>    
+                    </div>
+    
                     
                 </div>
                 <div class="row" style="background-color: white;">
@@ -187,6 +186,46 @@
 </div>
 <div class="modal-body">
 <ul id="errmsg"></ul>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="aboutModal" tabindex="-1" aria-labelledby="aboutModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="aboutModalLabel">Web RSPACE Viewer</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+<p>
+    A interactive crystalline and molecular structure visualisation tool for <strong>RSPACE</strong> program.
+</p>
+<lu>
+    <li>Developement (GitHub): <a href="https://github.com/uemoto1/rsview">https://github.com/uemoto1/rsview</a> </li>
+    <li>RSPACE group: <a href="https://github.com/uemoto1/rsview">https://github.com/uemoto1/rsview</a> </li>
+</lu>
+<p>
+<h6>Credits:</h6>
+<lu>
+<li><a href="https://getbootstrap.jp/">Bootstrap</a> <small>The MIT License (MIT).
+Copyright (c) 2011-2018 Twitter, Inc.
+Copyright (c) 2011-2018 The Bootstrap Authors.</small></li> 
+<li><a href="https://jquery.com/">jQuery</a> <small>The MIT License (MIT).
+Copyright OpenJS Foundation and other contributors</small></li> 
+<li><a href="https://threejs.org/">three.js</a> <small>The MIT License (MIT).
+Copyright (c) 2010-2022 three.js authors</small></li> 
+<li><a href="https://ace.c9.io/">Ace (Ajax.org Cloud9 Editor)</a> <small>Copyright (c) 2010, Ajax.org B.V.
+All rights reserved.
+</small></li> 
+</lu>
+</p>
 </div>
 <div class="modal-footer">
 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
