@@ -70,15 +70,19 @@ var d_bond = 4.5;
 var panelLeft = document.getElementById("panelLeft");
 var controlLeft = document.getElementById("controlLeft");
 var panelRight = document.getElementById("panelRight");
+var controlRight = document.getElementById("controlRight");
 var parameters_inp = document.getElementById("parameters_inp");
 var atom_xyz = document.getElementById("atom_xyz");
 var parameters_inp_wrapper = document.getElementById("parameters_inp_wrapper");
 var atom_xyz_wrapper = document.getElementById("atom_xyz_wrapper");
 var navbar = document.getElementById("navbar");
 var footer = document.getElementById("footer");
+var infoRight = document.getElementById("infoRight");
+var viewer = document.getElementById("viewer");
 // エディタオブジェクト
 var editor_parameters_inp = ace.edit("parameters_inp");
 var editor_atom_xyz = ace.edit("atom_xyz");
+
 
 function showErrorMsg(name, errlog) {
 
@@ -462,31 +466,8 @@ function resize() {
     editor_atom_xyz.resize();
     editor_parameters_inp.resize();
 
-    // $(".fillhalf").each(function (i) {
-    //     h = $(this).parent().innerHeight();
-    //     $(this).outerHeight(h*0.5);
-    // });
-    // $("#atom_xyz").outerHeight(256);
-    // $("#parameters_inp").outerHeight(256);
-
-    // $(".fillbottom").each(function (i) {
-    //     h = $(this).parent().innerHeight();
-    //     tp = $(this).parent().position().top;
-    //     t = $(this).position().top;
-    //     $(this).outerHeight(h - (t-tp));
-    // });
-
-
-
-    // $("div.editor").each(function (i) {
-        // w = $(this).innerWidth();
-        // h = $(this).innerHeight();
-        // d = $(this).children("div");
-        // t = $(this).children("textarea");
-        // d.outerHeight(h);
-        // t.outerHeight(h);
-        // t.outerWidth(w - d.outerWidth());
-    // });
+    viewer.style.height = (panelRight.clientHeight - controlRight.offsetHeight - infoRight.offsetHeight) + "px";
+    viewer.style.width = panelRight.clientWidth + "px";
 
     viewer_width = $("#viewer").innerWidth();
     viewer_height = $("#viewer").innerHeight();
