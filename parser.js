@@ -148,23 +148,23 @@ function checkParam(param, atom) {
     } else {
 
         // Rule: type of variables
-        for (key in param.nml_inp_prm_kukan) {
-            if (key in tbl_vartype) {
-                switch (tbl_vartype[key.toLowerCase()].type) {
-                    case 'int':
-                        if (! isInteger(param.nml_inp_prm_kukan[key].val))
-                            errlog.push({'line': param.nml_inp_prm_kukan[key].line, 'msg': 'invalid integer format!'});
-                        break;
-                    case 'real':
-                        if (! isReal(param.nml_inp_prm_kukan[key].val))
-                            errlog.push({'line': param.nml_inp_prm_kukan[key].line, 'msg': 'invalid real number format!'});
-                        break;
-                    }
-            } else {
-                if (0 < param.nml_inp_prm_kukan[key].line)
-                errlog.push({'line': param.nml_inp_prm_kukan[key].line, 'msg': 'invalid keyword!'});
-            }
-        }
+        // for (key in param.nml_inp_prm_kukan) {
+        //     if (key in tbl_vartype) {
+        //         switch (tbl_vartype[key.toLowerCase()].type) {
+        //             case 'int':
+        //                 if (! isInteger(param.nml_inp_prm_kukan[key].val))
+        //                     errlog.push({'line': param.nml_inp_prm_kukan[key].line, 'msg': 'invalid integer format!'});
+        //                 break;
+        //             case 'real':
+        //                 if (! isReal(param.nml_inp_prm_kukan[key].val))
+        //                     errlog.push({'line': param.nml_inp_prm_kukan[key].line, 'msg': 'invalid real number format!'});
+        //                 break;
+        //             }
+        //     } else {
+        //         if (0 < param.nml_inp_prm_kukan[key].line)
+        //         errlog.push({'line': param.nml_inp_prm_kukan[key].line, 'msg': 'invalid keyword!'});
+        //     }
+        // }
         // Rule #2: existence and value of xmax
         if (! ('xmax' in param.nml_inp_prm_kukan)) {
             errlog.push({'msg': 'xmax is not defined!'})
@@ -276,7 +276,7 @@ function checkParam(param, atom) {
             errlog.push({'msg': 'numkx * numky * numkz >= 1!'})
 
         if (nk > 1) {
-
+/*
             if (! ("skpx" in param.nml_inp_prm_kukan)) {
                 errlog.push({'msg': 'skpx is not defined but nk > 1!'});
             } else {
@@ -320,7 +320,7 @@ function checkParam(param, atom) {
                     }
                 }
             }
-
+*/
         }
 
         

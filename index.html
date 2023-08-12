@@ -11,7 +11,7 @@
     <script src="./lib/jquery/jquery-3.7.0.min.js"></script>
     <script src="./lib/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="./lib/three/r155/three.min.js"></script>
-
+    <script src="./lib/ace/1.24.0/ace.js"></script>
 
     <title>Web RSPACE Viewer</title>
 </head>
@@ -20,7 +20,7 @@
 
 
 
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: indigo;">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: steelblue;">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Web RSPACE Viewer</a>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
@@ -28,7 +28,7 @@
                     <a class="nav-link" href="#">Setting</a>
                 </li> -->
                 <li class="nav-item">
-                    <a class="nav-link" href="https://github.com/uemoto1/rsview/">About</a>
+                    <a class="nav-link" data-bs-toggle="modal" data-bs-target="#aboutModal" href="#">About</a>
                 </li>
 
                 <!-- <li class="nav-item dropdown">
@@ -48,6 +48,7 @@
                   <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" data-bs-toggle="modal"href="#helpModal"   >Input parameters</a></li>
                     <li><a class="dropdown-item" data-bs-toggle="modal" href="#helpElements" >Element table</a></li>
+                    <li><a class="dropdown-item" data-bs-toggle="modal" href="#helpUnits" >Atomic units</a></li>
                   </ul>
                 </li>
             </ul>
@@ -62,47 +63,36 @@
         <div class="row">
 
             <div class="col-sm-6" id="panelLeft" style="background-color: lightgray;">
-                <div class="row" style="padding-top:8px;">
-
-                    <!-- <div class="col-auto">
-                        <button type="button" class="btn btn-secondary" id='open'>Open</button>
-                        <button type="button" class="btn btn-secondary" id='save'>Save</button>
-                    </div> -->
-                    <div class="col-auto">
+                <div class="col-sm-12" id="panelLeftCell1" style="padding:4px;">
                         <button type="button" class="btn btn-primary" id='run'>Plot crystal structure</button>
-                    </div>
-
-
-                    
-                    <div class="col-auto" >                    
-                        <a class="btn btn-outline-secondary" href="#" id="download" download="export.cif">Export CIF</a>    
-                    </div>
                 </div>
-                <div class="col-sm-12 fillhalf">
-                    <strong>parameters.inp</strong>
+                <div class="col-sm-12" id="panelLeftCell2">
+                    <strong>parameters.inp</strong> <br />
                     <!--
                     <button type="button" class="btn btn-link">Open file</button>
                     <button type="button" class="btn btn-link">Save as</button>
                     -->
-                    <br />
-                    <div class='editor fillbottom w-100' id='parameters_inp'>
-                        <div class='lineno'></div><textarea id='parameters' wrap='off'></textarea>
-                    </div>
+                    <!-- <div class='editor fillbottom w-100' id='parameters_inp'> -->
+                    <div class='w-100' id='parameters_inp'></div>
                 </div>
-                <div class="col-sm-12 fillbottom">
-                    <strong>atom.xyz</strong>
+                <div class="col-sm-12" id="panelLeftCell3">
+                    <strong>atom.xyz</strong><br />
                     <!--
                     <button type="button" class="btn btn-link">Open file</button>
                     <button type="button" class="btn btn-link">Save as</button>
-                    --> <br />
-                    <div class='editor fillbottom w-100' id='atom_xyz'>
-                        <div class='lineno'></div><textarea id='atom' wrap='off'></textarea>
-                    </div>
+                    --> 
+                    <!-- <div class='editor fillbottom w-100' id='atom_xyz'> -->
+                    <div class='w-100' id='atom_xyz'></div>
                 </div>
             </div>
 
             <div class="col-sm-6" id="panelRight">
                 <div class="row" style="background-color: lightgray;">
+                    <div class="col-auto" style="margin:4px;">
+                        <div class="input-group">
+                            <a class="btn btn-primary" href="#" id="download" download="export.cif">Export CIF</a>    
+                        </div>
+                    </div>
                     <div class="col-auto" style="margin:4px;">
                         <div class="input-group">
                             <span class="input-group-text">x</span>
@@ -145,16 +135,18 @@
                     </div>
 
 
-
+<!-- 
 
                     <div class="col-auto" style="margin:4px; padding:8px;">
                         <div class="form-check form-check-inline form-switch">
                             <input class="form-check-input" type="checkbox" id="chk_axis" checked>
                             <label class="form-check-label" for="chk_axis">Axis</label>
                         </div>
-                    </div>
+                    </div> -->
 
-                    <div class="col-auto" style="margin:4px;">
+
+
+                    <!-- <div class="col-auto" style="margin:4px;">
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="view_dir" data-bs-toggle="dropdown" aria-expanded="false">
                             Direction
@@ -166,7 +158,9 @@
                             <li><a class="dropdown-item" href="#" id="dir_0">Default</a></li>
                             </ul>
                         </div>             
-                    </div>
+                    </div> -->
+
+
 
                     
                 </div>
@@ -182,16 +176,12 @@
                         </div>
                     </div>
 
-
                     <div class="col-sm-4">
                             <strong>Zoom</strong>
-                            <a href="#"id="zoom_reset">Reset</a><br/>
-                            <input type="range" class="form-range" id="zoom" min="0.20" max="2.5" value="1.0" step="0.1">
+                            <input type="range" class="form-range" id="zoom" min="1.0" max="3.0" value="1.0" step="0.1">
                     </div>
-                
+
                 </div>
-
-
                 <canvas id="viewer" class="fillbottom w-100"></canvas>
 
             </div>
@@ -369,6 +359,9 @@
 </div>
 </div>
 
+
+
+
 <!-- Modal -->
 <div class="modal" tabindex="-1" id="helpElements">
 <div class="modal-dialog">
@@ -439,15 +432,125 @@
 </div>
 </div>
 </div>
+
+
+
+
+<!-- Modal -->
+<div class="modal" tabindex="-1" id="helpUnits">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title">Hartree atomic units</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+<table class="table">
+<thead>
+<tr>
+<th scope="col">Title</th>
+<th scope="col" >Atomic unit</th>
+<th scope="col" >Convensional unit</th>
+</tr>
+</thead>
+<tbody>
+<tr><th scope="row">Charge</th><td>1 [au]</td><td>1.602177&times;10<sup>-19</sup> [C]</td></tr>
+<tr><th scope="row">Charge density</th><td>1 [au]</td><td>1.081202&times;10<sup>12</sup> [C/m<sup>3</sup>]</td></tr>
+<tr><th scope="row">Current</th><td>1 [au]</td><td>6.6236182&times;10<sup>-3</sup> [A]</td></tr>
+<tr><th scope="row" rowspan="2">Dipole moment</th><td rowspan="2">1 [au]</td><td>8.478354&times;10<sup>-30</sup> [C&middot;m]</td></tr>
+<tr><td>2.541746 [Debye]</td></tr>
+<tr><th scope="row" rowspan="2">Electric field</th><td rowspan="2">1 [au]</td><td>5.142207&times;10<sup>11</sup> [V/m]</td></tr>
+<tr><td>51.42207 [V/&#x212B]</td></tr>
+<tr><th scope="row" rowspan="2">Energy</th><td rowspan="2">1 [Hartree]</td><td>4.359745&times;10<sup>-18</sup> [J]</td></tr>
+<tr><td>27.211386 [eV]</td></tr>
+<tr><th scope="row" rowspan="2">Force</th><td rowspan="2">1 [au]</td><td>8.238723&times;10<sup>-8</sup> [N]</td></tr>
+<tr><td>51.42207 [eV/&#x212B]</td></tr>
+<tr><th scope="row" rowspan="2">Length</th><td rowspan="2">1 [Bohr]</td><td>5.291772&times;10<sup>-11</sup> [m]</td></tr>
+<tr><td>0.5291772 [&#x212B]</td></tr>
+<tr><th scope="row">Magnetic dipole moment</th><td>1 [au]</td><td>1.854802&times;10<sup>-23</sup> [J/T]</td></tr>
+<tr><th scope="row">Magnetic flux density</th><td>1 [au]</td><td>2.350518&times;10<sup>5</sup> [T]</td></tr>
+<tr><th scope="row" rowspan="2">Mass</th><td rowspan="2">1 [au]</td><td>9.109384&times;10<sup>-31</sup> [kg]</td></tr>
+<tr><td>5.485799&times;10<sup>-4</sup> [u]</td></tr>
+<tr><th scope="row">Time</th><td>1 [au]</td><td>2.418884&times;10<sup>-17</sup> [s]</td></tr>
+</table>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+</div>
+</div>
+</div>
+</div>
     
-      
 
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script type="text/javascript" src="./table.js?v=20220627"></script>
-    <script type="text/javascript" src="./parser.js?v=20220627"></script>
-    <script type="text/javascript" src="./script.js?v=20220627"></script>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="aboutModal" tabindex="-1" aria-labelledby="aboutModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="aboutModalLabel">Web RSPACE Viewer (RSVIEW)</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+<p>
+Version 23.8.16
+</p>
+<p>
+A interactive visualization tool for <strong>RSPACE</strong> program.
+</p>
+<p>
+Copyright(c) 2023 by M. Uemoto @ Kobe Univ.
+</p>
+<p>
+<strong>Sources:</strong>
+<lu>
+<li>GitHub <a target="_blank" href="https://github.com/uemoto1/rsview/"> https://github.com/uemoto1/rsview/</a></li>
+</lu>
+</p>
+<p>
+<strong>External links:</strong>
+<lu>
+<li>Kobe Univ. Ono group <a target="_blank" href="https://www.lab.kobe-u.ac.jp/eng-ep4b/index.html">https://www.lab.kobe-u.ac.jp/eng-ep4b/index.html</a></li>
+<li>K. Hirose, T. Ono, Y. Fujimoto, and S. Tsukamoto, <i>"First-Principles Calculations in Real-Space Formalism Electronic Configurations and Transport Properties of Nanostructures"</i>, World Scientific (2005); <a  target="_blank" href="https://doi.org/10.1142/p370">https://doi.org/10.1142/p370</a>
+<li>RSPACE distribution (GitHub) <a target="_blank" href="https://github.com/onotmy/RSPACEdist">https://github.com/onotmy/RSPACEdist</a></li>
+</li>
+</lu>
+</p>
+<p>
+<strong>Credits:</strong>
+<lu>
+<li><a target="_blank" href="https://getbootstrap.jp/">Bootstrap</a> The MIT License (MIT).
+Copyright (c) 2011-2018 Twitter, Inc.
+Copyright (c) 2011-2018 The Bootstrap Authors.</li>
+<li><a target="_blank" href="https://threejs.org/">three.js</a> The MIT License (MIT).
+Copyright (c) 2010-2022 three.js authors</li>
+<li><a target="_blank" href="https://ace.c9.io/">Ace (Ajax.org Cloud9 Editor)</a> Copyright (c) 2010, Ajax.org B.V.
+All rights reserved.
+</li>
+</lu>
+</p>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+<!-- Optional JavaScript -->
+<script type="text/javascript" src="./crystal3d.js?v=20230816"></script>
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script type="text/javascript" src="./table.js?v=20230816"></script>
+<script type="text/javascript" src="./parser.js?v=20230816"></script>
+<script type="text/javascript" src="./script.js?v=20230816"></script>
 
 </body>
 
