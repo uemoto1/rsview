@@ -154,13 +154,12 @@ function execute() {
     
 
     if (errmsg.length == 0) {
-        generate_cif();
         // ボタン表示を変更
         $("#run").removeClass().addClass("btn btn-outline-primary");
-        $('#download').removeClass('disabled');
+        $('#btn_export_cif').removeClass('disabled');
     } else {
         $("#run").removeClass().addClass("btn btn-outline-danger");
-        $('#download').addClass('disbled');
+        $('#btn_export_cif').addClass('disbled');
     }
     resize();
 }
@@ -198,6 +197,7 @@ function plot_structure() {
     crystal3d.vec_a3.x = 0.00;
     crystal3d.vec_a3.y = 0.00;
     crystal3d.vec_a3.z = zmax*2;
+    crystal3d.origin_center = true;
 
     crystal3d.atom_data = []
     for (i = 0; i < natom; i++) {
@@ -305,13 +305,15 @@ function init() {
 
     execute();
     
-    $('#run').popover({
-        // "title": "Welcome to Web RSPACE view!",
-        "content": "Write parameters.inp and atom.xyz in editor and click 'Plot structure' button.",
-        "placement": "bottom",
-    });
-    $('#run').popover("show");
-    $('#run').removeClass().addClass("btn btn-primary")
+    // $('#run').popover({
+    //     "content": "Write parameters.inp and atom.xyz in editor and click 'Plot structure' button.",
+    //     "placement": "bottom",
+    //     '.popover-dismiss': {
+    //         trigger: 'focus'
+    //     },
+    // });
+    // $('#run').popover("show");
+    // $('#run').removeClass().addClass("btn btn-primary")
 
 }
 
@@ -351,19 +353,15 @@ $("#chk_axis").change(function() {
     cell3d.visible = $(this).prop("checked");
     renderer.render(scene, camera);
 })
-
-function generate_cif() {
-    var content = crystal3d.to_cif();
-    var blob = new Blob([content], {
-        "type": "text/plain"
-    });
-    if (window.navigator.msSaveBlob) {
-        window.navigator.msSaveBlob(blob, "test.cif");
-        window.navigator.msSaveOrOpenBlob(blob, "test.cif");
-    } else {
-        document.getElementById("download").href = window.URL.createObjectURL(blob);
-    }
-}
+$('#btn_export_cif').click(function() {
+    export_cif();
+})
+$('#btn_save_parameters_inp').click(function() {
+    save_parameters_inp();
+})
+$('#btn_save_atom_xyz').click(function() {
+    save_atom_xyz();
+})
 
 function selectAtom() {
     var i = crystal3d.selected_index;
@@ -381,5 +379,44 @@ function selectAtom() {
         editor_atom_xyz.gotoLine(i+1+1, 0, true);
     }
 }
-  
+
+function getTimeStamp() {
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = ('0' + (now.getMonth() + 1)).slice(-2);
+    var day = ('0' + now.getDate()).slice(-2);
+    var hour = ('0' + now.getHours()).slice(-2);
+    var minute = ('0' + now.getMinutes()).slice(-2);
+    var second = ('0' + now.getSeconds()).slice(-2);
+    return year + month + day + hour + minute + second;
+}
+
+function downloadFile(filename, content) {
+    var blob = new Blob([content], {"type": "text/plain"});
+    var link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = filename;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function save_parameters_inp() {
+    var content = editor_parameters_inp.getValue();
+    content = content.replace(/\r\n/g, '\n');
+    downloadFile("parameters." + getTimeStamp() + ".inp", content);
+}
+
+function save_atom_xyz() {
+    var content = editor_atom_xyz.getValue();
+    content = content.replace(/\r\n/g, '\n');
+    downloadFile("atom." + getTimeStamp() + ".xyz", content);
+}
+
+function export_cif() {
+    var content = crystal3d.to_cif();
+    downloadFile("export." + getTimeStamp() + ".cif", content);
+}
+
 viewer.onclick = selectAtom;

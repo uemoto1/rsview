@@ -17,30 +17,13 @@
 </head>
 
 <body>
-
-
-
     <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: steelblue;">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Web RSPACE Viewer</a>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <!-- <li class="nav-item">
-                    <a class="nav-link" href="#">Setting</a>
-                </li> -->
                 <li class="nav-item">
                     <a class="nav-link" data-bs-toggle="modal" data-bs-target="#aboutModal" href="#">About</a>
                 </li>
-
-                <!-- <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        About
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <li><a class="dropdown-item" href="https://github.com/uemoto1/rsview/">GitHub repository</a></li>
-                        <li><a class="dropdown-item" href="http://www2.kobe-u.ac.jp/~tomoono/index.html">Ono group</a></li>
-                    </ul>
-                </li> -->
-
                 <li class="nav-item dropdown">
                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Help
@@ -65,17 +48,16 @@
             <div class="col-sm-6" id="panelLeft" style="background-color: lightgray;">
                 <div class="col-sm-12" id="panelLeftCell1" style="padding:8px;">
                     <button type="button" class="btn btn-primary" id='run'>Plot crystal structure</button>
+                    <small>Write parameters.inp and atom.xyz in editor and click 'Plot' button</small>
                 </div>
                 <div class="col-sm-12" id="panelLeftCell2">
                     <strong>parameters.inp</strong>
-                    <!-- <button type="button" class="btn btn-link">Open file</button>
-                    <button type="button" class="btn btn-link">Save as</button> -->
+                    <button type="button" class="btn btn-link" id="btn_save_parameters_inp">Save(download)</button>
                     <div class='w-100' id='parameters_inp'></div>
                 </div>
                 <div class="col-sm-12" id="panelLeftCell3">
                     <strong>atom.xyz</strong>
-                    <!-- <button type="button" class="btn btn-link">Open file</button>
-                    <button type="button" class="btn btn-link">Save as</button> -->
+                    <button type="button" class="btn btn-link" id="btn_save_atom_xyz">Save(download)</button>
                     <div class='w-100' id='atom_xyz'></div>
                 </div>
             </div>
@@ -84,7 +66,7 @@
                 <div class="row" style="background-color: lightgray;">
                     <div class="col-auto" style="margin:4px;">
                         <div class="input-group">
-                            <a class="btn btn-primary" href="#" id="download" download="export.cif">Export CIF</a>    
+                            <a class="btn btn-primary" href="#" id="btn_export_cif">Export CIF</a>    
                         </div>
                     </div>
                     <div class="col-auto" style="margin:4px;">
