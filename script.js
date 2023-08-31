@@ -420,3 +420,29 @@ function export_cif() {
 }
 
 viewer.onclick = selectAtom;
+
+
+document.body.addEventListener('dragover', function(e) {
+    e.preventDefault();
+});
+
+document.body.addEventListener('drop', function(e) {
+    e.preventDefault();
+    result = window.confirm("Are you sure to open the selected files?")
+    if (result == false) return;
+    if (e.dataTransfer.files.length <= 2) {
+        for (var i=0; i<e.dataTransfer.files.length; i++) {
+            var file = e.dataTransfer.files[i];
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var text = e.target.result;
+                if (text.match(/&nml_inp_prm_kukan/)) {
+                    editor_parameters_inp.setValue(text);
+                } else {
+                    editor_atom_xyz.setValue(text);
+                }
+            };
+            reader.readAsText(file);        
+        }
+    }
+});
