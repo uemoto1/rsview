@@ -25,6 +25,19 @@
                     <a class="nav-link" data-bs-toggle="modal" data-bs-target="#aboutModal" href="#">About</a>
                 </li>
                 <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        File
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="javascript:save_parameters_inp();" >Save parameters.inp</a></li>
+                        <li><a class="dropdown-item" href="javascript:save_atom_xyz();" >Save atom.xyz</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" data-bs-toggle="modal" href="#importMolModal" >Import MOL(SDF) file (experimental)</a></li>
+                        <li><a class="dropdown-item" data-bs-toggle="modal" href="#importPOSCARModal" >Import POSCAR file (experimental)</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Help
                   </a>
@@ -66,7 +79,7 @@
                 <div class="row" style="background-color: lightgray;">
                     <div class="col-auto" style="margin:4px;">
                         <div class="input-group">
-                            <a class="btn btn-primary" href="#" id="btn_export_cif">Export CIF</a>    
+                            <a class="btn btn-secondary" href="#" id="btn_export_cif">Export CIF</a>    
                         </div>
                     </div>
                     <div class="col-auto" style="margin:4px;">
@@ -97,6 +110,7 @@
                             <span class="input-group-text">Bond</span>
                             <select class="form-select" aria-label="Default select example" id="bond">
                                 <option value="0.0">None</option>
+                                <option value="2.0">2.0</option>
                                 <option value="2.5">2.5</option>
                                 <option value="3.0">3.0</option>
                                 <option value="3.5">3.5</option>
@@ -472,7 +486,7 @@
 </div>
 <div class="modal-body">
 <p>
-Version 23.8.29
+Version 23.9.3
 </p>
 <p>
 A interactive visualization tool for <strong>RSPACE</strong> program.
@@ -521,11 +535,107 @@ All rights reserved.
 
 
 
+<!-- Modal -->
+<div class="modal fade" id="importMolModal" tabindex="-1" aria-labelledby="importMolModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importMolModalLabel">Import MOL(SDF) file (experimental)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-12">
+                    <label for="fileMol" class="form-label">Select <code>.mol</code> or <code>.sdf</code> file from your
+                        computer:</label>
+                    <input class="form-control" type="file" id="fileMol" accept=".mol,.sdf">
+                    <label for="spacingMol" class="col-sm-6 col-form-label">Grid spacing (Bohr)</label>
+                    <select class="form-select" id="selectMolImportGrid" aria-label="Default select example">
+                        <option value="0.60">0.60 (H, Al, Si ...)</option>
+                        <option value="0.50">0.50 (Li, Na ...)</option>
+                        <option value="0.35">0.35 (O, S ...)</option>
+                        <option value="0.33" selected> 0.33 (C, N, F, Cl ...)</option>
+                        <option value="0.30">0.30 (Fe, W ...)</option>
+                        <option value="0.27">0.27 (Cu ...)</option>
+                    </select>
+                    <label for="selectMolImportVacuum" class="col-sm-6 col-form-label">Vacuum region (Bohr)</label>
+                    <select class="form-select" id="selectMolImportVacuum" aria-label="Default select example">
+                        <option value="5">5.0</option>
+                        <option value="10" selected>10.0</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                        id="btnImportMol">Convert</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="importPOSCARModal" tabindex="-1" aria-labelledby="importPOSCARModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importPOSCARModalLabel">Import POSCAR file (experimental)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-12">
+                    <label for="filePOSCAR" class="form-label">Select <code>POSCAR</code> file
+                        from your computer:</label>
+                    <input class="form-control" type="file" id="filePOSCAR">
+                    <label for="spacingPOSCAR" class="col-sm-6 col-form-label">Grid spacing (Bohr)</label>
+                    <select class="form-select" id="selectPOSCARImportGrid" aria-label="Default select example">
+                        <option value="0.60">0.60 (H, Al, Si ...)</option>
+                        <option value="0.50">0.50 (Li, Na ...)</option>
+                        <option value="0.35">0.35 (O, S ...)</option>
+                        <option value="0.33" selected> 0.33 (C, N, F, Cl ...)</option>
+                        <option value="0.30">0.30 (Fe, W ...)</option>
+                        <option value="0.27">0.27 (Cu ...)</option>
+                    </select>
+                    <div class="row">
+                        <label for="numkx" class="form-label"><i>k</i>-space mesh:</label>
+                        <div class="col">
+                          <input type="text" class="form-control" value="1"  id="numkx">
+                        </div>
+                        <div class="col">
+                          <input type="text" class="form-control" value="1" id="numky">
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control" value="1" id="numkz">
+                        </div>
+                        <small>Gamma centered grid</small>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                        id="btnImportPOSCAR">Convert</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- Optional JavaScript -->
-<script type="text/javascript" src="./crystal3d.js?v=20230829"></script>
-<script type="text/javascript" src="./table.js?v=20230829"></script>
-<script type="text/javascript" src="./parser.js?v=20230829"></script>
-<script type="text/javascript" src="./script.js?v=20230829"></script>
+<script type="text/javascript" src="./crystal3d.js?v=20230903"></script>
+<script type="text/javascript" src="./table.js?v=20230903"></script>
+<script type="text/javascript" src="./parser.js?v=20230903"></script>
+<script type="text/javascript" src="./mol_loader.js?v=20230903"></script>
+<script type="text/javascript" src="./script.js?v=20230903"></script>
 
 </body>
 

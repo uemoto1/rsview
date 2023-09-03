@@ -155,10 +155,10 @@ function execute() {
 
     if (errmsg.length == 0) {
         // ボタン表示を変更
-        $("#run").removeClass().addClass("btn btn-outline-primary");
+        $("#run").removeClass().addClass("btn btn-primary");
         $('#btn_export_cif').removeClass('disabled');
     } else {
-        $("#run").removeClass().addClass("btn btn-outline-danger");
+        $("#run").removeClass().addClass("btn btn-danger");
         $('#btn_export_cif').addClass('disbled');
     }
     resize();
@@ -248,7 +248,6 @@ function notify_change() {
 }
 
 $('#run').click(function (e) {
-    $('#run').popover("dispose");
     execute();
 });
 
@@ -362,6 +361,52 @@ $('#btn_save_parameters_inp').click(function() {
 $('#btn_save_atom_xyz').click(function() {
     save_atom_xyz();
 })
+$('#btnImportMol').click(function(){
+    var file = document.getElementById("fileMol")
+    var modal =  document.getElementById("importMolModal")
+    if (file.files.length == 1) {
+        var reader = new FileReader;
+        reader.readAsText(file.files[0], "utf8");
+        reader.onload = function(){
+          const code = reader.result;
+          const grid = parseFloat(document.getElementById("selectMolImportGrid").value);
+          const vacuum = parseFloat(document.getElementById("selectMolImportVacuum").value);
+          var result =load_mol(code, grid, vacuum)
+          editor_parameters_inp.setValue(result[0]);
+          editor_atom_xyz.setValue(result[1]);
+          document.getElementById("bond").value = "3.0";
+          crystal3d.bond_length = 3.0;
+          execute();
+        };
+      }
+      file.value = "";    
+})
+$('#btnImportPOSCAR').click(function(){
+    var file = document.getElementById("filePOSCAR")
+    var modal =  document.getElementById("importPOSCARModal")
+    if (file.files.length == 1) {
+        var reader = new FileReader;
+        reader.readAsText(file.files[0], "utf8");
+        reader.onload = function(){
+          const code = reader.result;
+          const grid = parseFloat(document.getElementById("selectMolImportGrid").value);
+          const numkx = parseFloat(document.getElementById("numkx").value)
+          const numky = parseFloat(document.getElementById("numky").value)
+          const numkz = parseFloat(document.getElementById("numkz").value)
+          var result = load_poscar(code, grid, numkx, numky, numkz);
+          if (result.length == 0) {
+            alart("Non orthogonal cell is not supported.")
+          } else {
+            editor_parameters_inp.setValue(result[0]);
+            editor_atom_xyz.setValue(result[1]);
+            document.getElementById("bond").value = "4.5";
+            crystal3d.bond_length = 4.5;
+            execute();
+          }
+        };
+      }
+      file.value = "";    
+})
 
 function selectAtom() {
     var i = crystal3d.selected_index;
@@ -387,8 +432,7 @@ function getTimeStamp() {
     var day = ('0' + now.getDate()).slice(-2);
     var hour = ('0' + now.getHours()).slice(-2);
     var minute = ('0' + now.getMinutes()).slice(-2);
-    var second = ('0' + now.getSeconds()).slice(-2);
-    return year + month + day + hour + minute + second;
+    return year + month + day + hour + minute;
 }
 
 function downloadFile(filename, content) {

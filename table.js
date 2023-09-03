@@ -136,8 +136,8 @@ template_parameters_inp = `! alpha SiO2 (quartz)
     numkz  =       1 ! # of sampling k points (z)
     cexco  =   'vwn' ! type of exchange correlation functional vwn,pz,pbe,pw91
     nspv   =       1 ! spin (1; degenerate, 2; free_collinear, 4; free_noncollinear)
-    eps_scf=  1.0d-6 ! criteria of the convergency for SCF
-    ncgmax =     300 ! max. # of its. for CG (P. eq.)
+    eps_scf = 1.0d-6 ! criteria of the convergency for SCF
+    looplimit = 1000 ! max. # of its. for SCF
 /
 `;
 
