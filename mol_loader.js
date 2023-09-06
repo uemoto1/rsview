@@ -6,6 +6,28 @@ function fortran_float(x, d=true, ndigit=6, nlen=12) {
     return " ".repeat(nspace) + tmp;
 }
 
+function estimate_eigmx_atom(iz) { 
+    if ((1 <= iz) && (iz <= 4)) {
+        return 1; // s orbit
+    } else if ((5 <= iz) && (iz <= 10)) {
+        return 4; // s, px, py, and pz orbits
+    } else if ((11 <= iz) && (iz <= 12)) {
+        return 1; // s, px, py, and pz orbits
+    } else if ((13 <= iz) && (iz <= 18)) {
+        return 4; // s, px, py, and pz orbits
+    } else if ((13 <= iz) && (iz <= 18)) {
+        return 4; // s, px, py, and pz orbits
+    } else if ((19 <= iz) && (iz <= 20)) {
+        return 1; // s orbit
+    } else if ((31 <= iz) && (iz <= 36)) {
+        return 4; // s, px, py, and pz orbits
+    } else if ((37 <= iz) && (iz <= 38)) {
+        return 1; // s orbit
+    } else {
+        return 9; // s+p+d orbits
+    }
+}
+
 function load_mol(code, grid=0.5, vacuum=10.0) {
     const tbl = {
         'H': [1, 1837.18],'He': [2, 7296.30],'Li': [3, 12647.20],'Be': [4, 16428.20],
@@ -82,10 +104,12 @@ function load_mol(code, grid=0.5, vacuum=10.0) {
     xmax = grid * nxmax
     ymax = grid * nymax
     zmax = grid * nzmax
+    var neigmx = 0;
     var atom_xyz = "! [x], [y], [z], [atom number], switch [x], [y], [z], [weight], switches [soc], [pp], [na]\n";
     for (var i=0; i<natom; i++) {
         var iz = tbl[e[i]][0]
         var mass = tbl[e[i]][1]
+        neigmx += estimate_eigmx_atom(iz)
         atom_xyz += fortran_float(x[i]-xshift, false) 
             + ' ' + fortran_float(y[i]-yshift, false) 
             + ' ' + fortran_float(z[i]-zshift, false)
@@ -100,7 +124,7 @@ function load_mol(code, grid=0.5, vacuum=10.0) {
     parameters_inp = parameters_inp.replace(/%NYMAX%/, nymax)
     parameters_inp = parameters_inp.replace(/%NZMAX%/, nzmax)
     parameters_inp = parameters_inp.replace(/%NATOM%/, natom)
-    parameters_inp = parameters_inp.replace(/%NEIGMX%/, (natom*9))
+    parameters_inp = parameters_inp.replace(/%NEIGMX%/, neigmx)
     return [parameters_inp, atom_xyz]
 }
 
@@ -231,7 +255,7 @@ function load_poscar(code, grid=0.5, nkx=1, nky=1, nkz=1) {
             k++;
         }
     }
-    
+    var neigmx = 0
     var nxmax = Math.round(xmax / grid)
     var nymax = Math.round(ymax / grid)
     var nzmax = Math.round(zmax / grid)
@@ -239,6 +263,7 @@ function load_poscar(code, grid=0.5, nkx=1, nky=1, nkz=1) {
     for (var i=0; i<natom; i++) {
         var iz = tbl[e[i]][0]
         var mass = tbl[e[i]][1]
+        neigmx += estimate_eigmx_atom(iz);
         atom_xyz += fortran_float(x[i], false) 
             + ' ' + fortran_float(y[i], false) 
             + ' ' + fortran_float(z[i], false)
@@ -271,7 +296,7 @@ function load_poscar(code, grid=0.5, nkx=1, nky=1, nkz=1) {
     parameters_inp = parameters_inp.replace(/%NYMAX%/, nymax)
     parameters_inp = parameters_inp.replace(/%NZMAX%/, nzmax)
     parameters_inp = parameters_inp.replace(/%NATOM%/, natom)
-    parameters_inp = parameters_inp.replace(/%NEIGMX%/, (natom*9))
+    parameters_inp = parameters_inp.replace(/%NEIGMX%/, neigmx)
     parameters_inp = parameters_inp.replace(/%NUMKX%/, nkx)
     parameters_inp = parameters_inp.replace(/%NUMKY%/, nky)
     parameters_inp = parameters_inp.replace(/%NUMKZ%/, nkz)
